@@ -1,0 +1,26 @@
+=Marley 
+
+Sorry for the lack of documentation.  For now, please just read through the source code if you're interested.
+
+The basics:  Marley makes lots of assumptions, all of which should be override-able.
+
+* Marley looks for resources (as indicated by the first part of the URL) in the Marley::Resources namespace as constants
+  * A resource must respond either to a "controller" method or to one or more REST verbs. 
+  * Resources implementing a "controller" method should return an object that responds to one or more REST verbs from that method
+  * REST verb methods should return a string to be sent to the client
+
+* Marley provides 2 plugins for the Sequel ORM.
+  * RestConvenience - Adds a default controller for standard rest routes to a model
+  * RestAuthorization - Adds default authorization to a model
+
+* "Joints" are pre-packaged resource sets that can be included in a Marley application.  Unfortunately, for now, their behavior can only be chaged by monkey patching. 
+
+* The default Marley client is "Jamaica", which consists of JS/CSS for browsers.  It sucks right now and I'm hoping somebody takes it over as a sub-project, but it does work - at least on FF.
+
+* The server and client use a JSON based data representation I developed for this project and tentatively named "Reggae."  I need to nail it down and document it, but basically it's a recursive list of lists, each of which has the format ["name",{properties},[contents]].
+
+More when I can spare the time.
+
+
+
+
