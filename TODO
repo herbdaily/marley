@@ -1,0 +1,16 @@
+
+
+- nail down and document protocol - Reggae
+- rdoc
+- test scripts
+- better logging
+
+* Push to github
+
+
+- hints for resources/columns
+- better filtering options for posts
+
+??? expose validation reflections to views
+??? caching protocol for autocompleters/validation options
+
