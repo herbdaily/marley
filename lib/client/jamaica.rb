@@ -24,8 +24,7 @@ module Marley
       <<-EOHTML
       <head>
         <title>#{@opts[:app_name]}</title>
-        <script type='text/javascript'>var _jamaica_json=#{json};</script>
-        <script type='text/javascript'>#{ LIBS.map{ |x| File.new("#{CLIENT_DIR}/" + x).read }.push(@opts[:js]).join("\n") }</script>
+        <script type='text/javascript'>var _jamaica_json=#{json}; #{ LIBS.map{ |x| File.new("#{CLIENT_DIR}/" + x).read }.push(@opts[:js]).join("\n") }</script>
         <style>#{ STYLES.map{ |x| File.new("#{CLIENT_DIR}/" + x).read }.push(@opts[:css]).join("\n") }
       </head>
       <body></body>
