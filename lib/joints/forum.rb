@@ -42,12 +42,6 @@ module Marley
     class Moderator < User
       def self.requires_user?;true;end
     end
-    class Vendor < User
-      def self.requires_user?;true;end
-    end
-    class Payee < User
-      def self.requires_user?;true;end
-    end
 
     class MessageTag < Sequel::Model
       many_to_one :message
