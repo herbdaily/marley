@@ -30,7 +30,7 @@ The basics:  Marley makes lots of assumptions, all of which should be override-a
 Joints
 ----
 
-"Joints" are pre-packaged resource sets that can be included in a Marley application.  Unfortunately, for now, their behavior can only be chaged by monkey patching. 
+"Joints" are pre-packaged resource sets that can be included in a Marley application.  Unfortunately, for now, their behavior can only be changed by monkey patching. 
 
 Reggae
 ----
