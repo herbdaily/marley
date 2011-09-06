@@ -15,7 +15,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 module Marley
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
-  DEFAULT_OPTS={:client => {:app_name => 'Application'},:defaults => {:client => 'jamaica',:resource => 'Menu'}}
+  DEFAULT_OPTS={:defaults => {:resource => 'Menu'}}
   module Resources
   end
   module MainMethods #this module is included in the main object at the end of the file
@@ -28,7 +28,7 @@ module Marley
     def joint(joint_name)
       joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}#{joint_name}.rb") }
       require "#{joint_d}#{joint_name}"
-      @marley_opts[:client].joint(joint_d,joint_name)
+      @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
     end
     def run(opts={})
       @marley_opts||={}
@@ -70,7 +70,7 @@ module Marley
       elsif request.request_method.downcase=='post' #for iframe file upload hack
         [200,{'Content-Type' => 'text/html; charset=utf-8'}, json]
       else
-        [200,{'Content-Type' => 'text/html; charset=utf-8'}, @opts[:client].to_s(json)]
+        [200,{'Content-Type' => 'text/html; charset=utf-8'}, @opts[:client] ? @opts[:client].to_s(json) : json]
       end
     rescue AuthenticationError
       $log.error("Authentication failed for #{@auth.credentials}") if (@auth.provided? && @auth.basic? && @auth.credentials)
