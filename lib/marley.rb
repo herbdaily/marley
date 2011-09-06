@@ -9,12 +9,12 @@ require 'sequel_plugins'
 require 'controllers'
 require 'logger'
 Sequel.extension :inflector
-JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
 
 log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
 module Marley
+  JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
   DEFAULT_OPTS={:client => {:app_name => 'Application'},:defaults => {:client => 'jamaica',:resource => 'Menu'}}
   module Resources
   end
@@ -28,10 +28,7 @@ module Marley
     def joint(joint_name)
       joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}#{joint_name}.rb") }
       require "#{joint_d}#{joint_name}"
-      [:css,:js].each do |ext|
-        fn="#{joint_d}#{joint_name}.#{ext.to_s}"
-        File.exists?(fn) && @marley_opts[:client].respond_to?(ext) && @marley_opts[:client].send(ext,File.new(fn,"r").read)
-      end
+      @marley_opts[:client].joint(joint_d,joint_name)
     end
     def run(opts={})
       @marley_opts||={}

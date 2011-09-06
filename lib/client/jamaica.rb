@@ -12,6 +12,12 @@ module Marley
     def initialize(opts={})
       @opts={:name => 'Application',:css => '', :js => ''}.merge(opts)
     end
+    def joint(joint_d,joint_name)
+      [:css,:js].each do |ext|
+        fn="#{joint_d}#{joint_name}.#{ext.to_s}"
+        File.exists?(fn) && send(ext,File.new(fn,"r").read)
+      end
+    end
     def css(add_css=nil)
       @opts[:css]+=add_css if add_css
       @opts[:css]
