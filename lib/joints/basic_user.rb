@@ -57,7 +57,7 @@ module Marley
         else
           { :title => 'Main Menu',
           :name => 'main',
-          :description => "Welcome to the #{app_name}, #{$request[:user][:name]}",
+          :description => "Welcome to #{app_name}, #{$request[:user][:name]}",
           :items => [ [:resource,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:resource,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] }
         end
       end
