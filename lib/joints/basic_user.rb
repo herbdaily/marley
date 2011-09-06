@@ -49,14 +49,14 @@ module Marley
         if new?
           u=User.new.to_a
           u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
-          { :title => 'Welcome to the forum',
+          { :title => "Welcome to #{$request[:opts][:app_name]}",
           :name => 'signup',
           :description => 'Login or signup here.',
           :items => [LOGIN_FORM,u] }
         else
           { :title => 'Main Menu',
           :name => 'main',
-          :description => "Welcome to the forum, #{$request[:user][:name]}",
+          :description => "Welcome to the #{$request[:opts][:app_name]}, #{$request[:user][:name]}",
           :items => [ [:resource,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:resource,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] }
         end
       end

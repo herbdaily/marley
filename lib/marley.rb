@@ -15,7 +15,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 module Marley
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
-  DEFAULT_OPTS={:port => 1620,:defaults => {:resource => 'Menu'}}
+  DEFAULT_OPTS={:app_name => 'Application',:port => 1620,:defaults => {:resource => 'Menu'}}
   module Resources
   end
   module MainMethods #this module is included in the main object at the end of the file
