@@ -15,12 +15,12 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 module Marley
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
-  DEFAULT_OPTS={:defaults => {:resource => 'Menu'}}
+  DEFAULT_OPTS={:port => 1620,:defaults => {:resource => 'Menu'}}
   module Resources
   end
   module MainMethods #this module is included in the main object at the end of the file
     def marley_config(opts=nil)
-      @marley_opts||={}
+      @marley_opts||=DEFAULT_OPTS
       @marley_opts.merge!(opts) if opts
       yield @marley_opts if block_given?
       @marley_opts
@@ -31,13 +31,13 @@ module Marley
       @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
     end
     def run(opts={})
-      @marley_opts||={}
+      @marley_opts||=DEFAULT_OPTS
       marley_opts=@marley_opts.merge!(opts)
       Rack::Handler::Thin.run(Rack::Builder.new {
         use Rack::Reloader,0
         use Rack::Static, :urls => [opts[:image_path]] if opts[:image_path]
         run(Marley::Router.new(marley_opts))
-      }.to_app,{:Port => 1620})
+      }.to_app,{:Port => @marley_opts[:port]})
     end
   end
   class Router  
@@ -47,7 +47,7 @@ module Marley
     def call(env)
       request= Rack::Request.new(env)
       @auth =  Rack::Auth::Basic::Request.new(env)
-      $request={:request => request}
+      $request={:request => request,:opts => @opts}
       $request[:get_params]=Marley::Utils.hash_keys_to_syms(request.GET)
       $request[:post_params]=Marley::Utils.hash_keys_to_syms(request.POST)
       if (@auth.provided? && @auth.basic? && @auth.credentials)
