@@ -15,7 +15,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 module Marley
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
-  DEFAULT_OPTS={:app_name => 'Application',:port => 1620,:defaults => {:resource => 'Menu'}}
+  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:defaults => {:resource => 'Menu'}}
   module Resources
   end
   module MainMethods #this module is included in the main object at the end of the file
@@ -50,11 +50,13 @@ module Marley
       $request={:request => request,:opts => @opts}
       $request[:get_params]=Marley::Utils.hash_keys_to_syms(request.GET)
       $request[:post_params]=Marley::Utils.hash_keys_to_syms(request.POST)
-      if (@auth.provided? && @auth.basic? && @auth.credentials)
-        $request[:user]=Resources.const_get(:User).authenticate(@auth.credentials)
-        raise AuthenticationError unless $request[:user]
-      else
-        $request[:user]=Resources.const_get(:User).new
+      if @opts[:http_auth]
+        if (@auth.provided? && @auth.basic? && @auth.credentials)
+          $request[:user]=Resources.const_get(:User).authenticate(@auth.credentials)
+          raise AuthenticationError unless $request[:user]
+        else
+          $request[:user]=Resources.const_get(:User).new
+        end
       end
       $request[:path]=request.path.split('/')[1..-1]
       verb=request.request_method.downcase
@@ -62,7 +64,7 @@ module Marley
       $request[:verb]="rest_#{verb}"
       @resource=Resources.const_get($request[:path] ? $request[:path][0].camelize : @opts[:defaults][:resource])
       raise RoutingError $request[:path] unless @resource
-      raise AuthenticationError if @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
+      raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
       @controller=@resource.respond_to?($request[:verb]) ? @resource : @resource.controller
       json=@controller.send($request[:verb]).to_json
       if request.xhr?

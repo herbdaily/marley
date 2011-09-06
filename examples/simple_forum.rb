@@ -10,7 +10,7 @@ DB=Sequel.sqlite("#{APP_DIR}/forum.sqlite3")#,:loggers => [Logger.new($stdout)])
 RESERVED_PM_TAGS=['inbox','sent']
 RESERVED_POST_TAGS=['announcement']
 
-marley_config({:app_name => 'The Forum',:client => Marley::Client.new({:app_name => 'Forum'})})
+marley_config({:app_name => 'The Forum',:client => Marley::Client.new({:app_name => 'The Forum'})})
 
 Sequel::Model.plugin :rest_convenience
 Sequel::Model.plugin :rest_authorization
