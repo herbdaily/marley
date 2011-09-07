@@ -10,7 +10,8 @@ module Marley
         ! ($request[:verb]=='rest_get' && $request[:path].nil?)
       end
     end
-    class User < Sequel::Model
+    class BasicUser < Sequel::Model
+      set_dataset :users
       attr_accessor :old_password,:password, :confirm_password
       def rest_schema
         schema=super.delete_if {|c| c[NAME_INDEX]==:pw_hash || c[NAME_INDEX]==:description}
@@ -46,20 +47,12 @@ module Marley
         [[:msg,{:title => 'Success!'},"Your login, '#{self.name}', has been sucessfully created. You can now log in."]]
       end
       def main_menu
-        app_name=$request[:opts][:app_name]
-        if new?
-          u=User.new.to_a
-          u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
-          { :title => "Welcome to #{app_name}",
-          :name => 'signup',
-          :description => 'Login or signup here.',
-          :items => [LOGIN_FORM,u] }
-        else
-          { :title => 'Main Menu',
-          :name => 'main',
-          :description => "Welcome to #{app_name}, #{$request[:user][:name]}",
-          :items => [ [:resource,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:resource,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] }
-        end
+        u=User.new.to_a
+        u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
+        { :title => "Welcome to #{$request[:opts][:app_name]}",
+        :name => 'signup',
+        :description => 'Login or signup here.',
+        :items => [LOGIN_FORM,u] }
       end
     end
   end

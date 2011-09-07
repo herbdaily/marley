@@ -2,7 +2,7 @@
 
 module Marley
   module Resources
-    class User 
+    class User < BasicUser 
       plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| name.sub(/User/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       one_to_many :message_tags 
       def pm_tags
@@ -24,6 +24,16 @@ module Marley
           threads=DB[MessageTag.filter(params.merge({:user_id => nil})).join('messages', :id => :message_id).group(:thread_id)]
         end
         threads.order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
+      end
+      def main_menu
+        if new?
+          super
+        else
+          { :title => 'Main Menu',
+          :name => 'main',
+          :description => "Welcome to #{$request[:opts][:app_name]}, #{$request[:user][:name]}",
+          :items => [ [:resource,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:resource,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] }
+        end
       end
       def private_messages_menu
         { :title => 'Private Messages',
