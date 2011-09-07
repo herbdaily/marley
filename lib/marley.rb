@@ -15,7 +15,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 module Marley
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
-  DEFAULT_OPTS={:auth_class => :User,:http_auth => true,:app_name => 'Application',:port => 1620,:defaults => {:resource => 'Menu'}}
+  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu'}
   module Resources
   end
   module MainMethods #this module is included in the main object at the end of the file
@@ -52,17 +52,17 @@ module Marley
       $request[:post_params]=Marley::Utils.hash_keys_to_syms(request.POST)
       if @opts[:http_auth]
         if (@auth.provided? && @auth.basic? && @auth.credentials)
-          $request[:user]=Resources.const_get(:User).authenticate(@auth.credentials)
+          $request[:user]=Resources.const_get(@opts[:auth_class]).authenticate(@auth.credentials)
           raise AuthenticationError unless $request[:user]
         else
-          $request[:user]=Resources.const_get(@opts[:auth_class]).new
+          $request[:user]=Resources.const_get(@opts[:default_user_class]).new
         end
       end
       $request[:path]=request.path.split('/')[1..-1]
       verb=request.request_method.downcase
       verb=$request[:post_params].delete(:_method).match(/^(put|delete)$/i)[1] rescue verb 
       $request[:verb]="rest_#{verb}"
-      @resource=Resources.const_get($request[:path] ? $request[:path][0].camelize : @opts[:defaults][:resource])
+      @resource=Resources.const_get($request[:path] ? $request[:path][0].camelize : @opts[:default_resource])
       raise RoutingError $request[:path] unless @resource
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
       @controller=@resource.respond_to?($request[:verb]) ? @resource : @resource.controller
