@@ -17,8 +17,17 @@ module Sequel::Plugins::RestConvenience
       [:resource,{:url => "/#{self.resource}/#{action}",:title => "#{action.humanize} #{self.resource.humanize}".strip}]
     end
     def list(params=nil)
-      if $request[:user].respond_to?(otm=self.resource.pluralize)
-        $request[:user].send(otm,$request[:get_params][resource.to_sym])
+      user=$request[:user]
+      if user.respond_to?(otm=self.resource.pluralize)
+        if user.method(otm).arity==1  
+          if (relationship=user.send(otm)).respond_to?(:filter)
+            relationship.filter($request[:get_params][resource.to_sym])
+          else
+            user.send(otm)
+          end
+        else
+          user.send(otm,$request[:get_params][resource.to_sym])
+        end
       else
         raise Marley::AuthorizationError
       end

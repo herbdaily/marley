@@ -14,7 +14,7 @@ module Marley
         @title,@name,@description,@items=args
       end
       def to_json
-        [:menu,{:name => @name,:description => @description,:items => @items}]
+        [:menu,{:title => @title,:name => @name,:description => @description,:items => @items}]
       end
     end
     class BasicUser < Sequel::Model
