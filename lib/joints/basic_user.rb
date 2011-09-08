@@ -2,17 +2,31 @@ require 'digest/sha1'
 LOGIN_FORM= [:instance,{:resource => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
 module Marley
   module Resources
-    module Menu
+    class Menu
+      attr_accessor :title,:name,:description, :items
       def self.rest_get
-        [[:menu,$request[:user].send("#{$request[:path].to_a[1] ? $request[:path][1] : 'main'}_menu")]]
+        $request[:user].menu($request[:path].to_a[1])
       end
       def self.requires_user?
         ! ($request[:verb]=='rest_get' && $request[:path].nil?)
       end
+      def initialize(*args)
+        @title,@name,@description,@items=args
+      end
+      def to_json
+        [:menu,{:name => @name,:description => @description,:items => @items}]
+      end
     end
     class BasicUser < Sequel::Model
       set_dataset :users
+      attr_reader :menus
       attr_accessor :old_password,:password, :confirm_password
+      def initialize(*args)
+        super
+        u=to_a
+        u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
+        @menus={:main => Menu.new("Welcome to #{$request[:opts][:app_name]}",'signup','Login or signup here.',[LOGIN_FORM,u])}
+      end
       def rest_schema
         schema=super.delete_if {|c| c[NAME_INDEX]==:pw_hash || c[NAME_INDEX]==:description}
         schema.push([:old_password,:password,0]) unless new?
@@ -30,10 +44,6 @@ module Marley
         validates_unique [:name]
         validates_unique [:email] if respond_to?(:email)
       end
-      def before_create
-        super
-        user_type='User'
-      end
       def before_save
         if self.new? || self.old_password.to_s + self.pw.to_s + self.pw_confirm.to_s > ''
           errors[:password]=['Password must contain at least 8 characters'] if self.password.to_s.length < 8
@@ -46,13 +56,10 @@ module Marley
       def create_msg
         [[:msg,{:title => 'Success!'},"Your login, '#{self.name}', has been sucessfully created. You can now log in."]]
       end
-      def main_menu
-        u=User.new.to_a
-        u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
-        { :title => "Welcome to #{$request[:opts][:app_name]}",
-        :name => 'signup',
-        :description => 'Login or signup here.',
-        :items => [LOGIN_FORM,u] }
+      def menu(menu_name)
+        menu_name='main' unless menu_name
+        @menus[menu_name.to_sym].to_json
+        @menus[menu_name.to_sym].to_json
       end
     end
   end

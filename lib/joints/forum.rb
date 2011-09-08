@@ -5,6 +5,14 @@ module Marley
     class User < BasicUser 
       plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| name.sub(/User/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       one_to_many :message_tags 
+      def initialize(*args)
+        super
+        if ! new?
+          @menus[:main]=Menu.new( 'Main Menu', 'main', "Welcome to #{$request[:opts][:app_name]}, #{self.name}", [ [:resource,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:resource,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] )
+          @menus[:private_messages]=Menu.new( 'Private Messages', 'private_messages','', self.message_tags_dataset.group(:tag).select(:tag).map{|t| [:resource,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_resource('new'))) 
+          @menus[:public_messages]=Menu.new( 'Public Messages', 'public_messages','', MessageTag.filter(:user_id => nil).group(:tag).select(:tag).map{|t| [:resource,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:resource,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_resource('new')) )
+        end
+      end
       def pm_tags
         private_message_tags.map{|t| t.tag }.compact
       end
@@ -24,26 +32,6 @@ module Marley
           threads=DB[MessageTag.filter(params.merge({:user_id => nil})).join('messages', :id => :message_id).group(:thread_id)]
         end
         threads.order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
-      end
-      def main_menu
-        if new?
-          super
-        else
-          { :title => 'Main Menu',
-          :name => 'main',
-          :description => "Welcome to #{$request[:opts][:app_name]}, #{$request[:user][:name]}",
-          :items => [ [:resource,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:resource,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] }
-        end
-      end
-      def private_messages_menu
-        { :title => 'Private Messages',
-        :name => 'private_messages',
-        :items => $request[:user].message_tags_dataset.group(:tag).select(:tag).map{|t| [:resource,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_resource('new')) }
-      end
-      def public_messages_menu
-        { :title => 'Public Messages',
-        :name => 'public_messages',
-        :items => MessageTag.filter(:user_id => nil).group(:tag).select(:tag).map{|t| [:resource,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:resource,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_resource('new')) }
       end
     end
     class Admin < User 
