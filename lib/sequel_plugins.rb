@@ -107,7 +107,7 @@ module Sequel::Plugins::RestAuthorization
   end
   module InstanceMethods
     def after_initialize
-      send("#{self.class.owner_col}=",self.class.user[:id]) if self.class.owner_col && new?
+      send("#{self.class.owner_col}=",$request[:user][:id]) if self.class.owner_col && new?
     end
     def requires_user?(verb=nil,meth=nil);true;end
     def authorize(meth)

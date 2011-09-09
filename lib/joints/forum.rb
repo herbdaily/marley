@@ -1,4 +1,4 @@
-#require 'sanitize'
+require 'sanitize'
 
 module Marley
   module Resources
@@ -48,6 +48,7 @@ module Marley
         [:resource, {:url => "/messages_tag/#{id}",:updatable => true,:deletable => true,:title => tag.tag.humanize}]
       end
       def after_initialize
+        super
         self.tag.strip!
       end
       def before_save
@@ -73,6 +74,7 @@ module Marley
         schema
       end
       def after_initialize
+        super
         if new?
           self.author_id=$request[:user][:id]
           self.thread_id=parent ? parent.thread_id : Message.select(:max.sql_function(:thread_id).as(:tid)).all[0][:tid].to_i + 1
@@ -138,7 +140,7 @@ module Marley
         end
         if $request[:user].class==User
           self.recipients.split(',').each do |recipient|
-            errors.add(:recipients, "You may only send PM's to Admins, Mods, Vendors and Payees. #{recipient} is none of those") unless [Admin,Moderator,Vendor,Payee].include?(User[:name => recipient].class)
+            errors.add(:recipients, "You may only send PM's to Admins or Mods. #{recipient} is neither of those") unless [Admin,Moderator].include?(User[:name => recipient].class)
           end
         end
       end
