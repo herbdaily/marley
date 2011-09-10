@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+$: << File.dirname(__FILE__)
 require 'rubygems'
 require 'json/ext'
 require 'thin'
@@ -118,3 +119,6 @@ module Marley
   end
 end
 include Marley::MainMethods
+at_exit do
+  run if ARGV[0]=='run' || ARGV[0]=='testing'
+end

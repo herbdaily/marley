@@ -24,7 +24,6 @@ module Marley
         @instances=if p=$request[:get_params][@model.to_s.underscore.to_sym] 
           method.call(p) 
         else 
-          p @model
           method.call
         end 
       end

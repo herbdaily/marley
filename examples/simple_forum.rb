@@ -21,4 +21,3 @@ Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_upd
 joint 'basic_user'
 joint 'forum'
 
-run if ARGV[0]=='run' || ARGV[0]=='testing'
