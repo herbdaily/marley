@@ -1,48 +1,33 @@
 require 'test/unit'
 EXAMPLES_DIR=File.dirname(__FILE__) + '/../examples'
 
-`cp #{EXAMPLES_DIR}/empty.sqlite3 #{EXAMPLES_DIR}/forum.sqlite3`
+`cp #{EXAMPLES_DIR}/empty.sqlite3 #{EXAMPLES_DIR}/forum_test.sqlite3`
+ARGV[0]='test'
 require "#{EXAMPLES_DIR}/simple_forum.rb"
-R=Marley::Resources
+require 'smoke'
 
 class ExampleTests < Test::Unit::TestCase
-  # def setup
-  # end
-
-  # def teardown
-  # end
-  def test_user_models
-    assert_kind_of R::User, R::User.new
-    new_user=R::User.new(:name => 'foo',:password => 'asdfasdf', :confirm_password => '')
-    assert_raises(Sequel::ValidationFailed){new_user.save}
-    new_user.confirm_password='asdfasdf'
-    assert_nothing_raised {new_user.save}
-    assert_equal new_user, R::User[1]
-
-    new_user=R::User.new(:name => 'foo',:password => 'asdfasdf', :confirm_password => 'asdfasdf')
-    new_user.save rescue err=$!
-    assert_kind_of Sequel::ValidationFailed, err
-    assert_equal 2, err.errors.count
-    assert_kind_of String, err.errors[[:name]][0]
-    assert_kind_of String, err.errors[[:email]][0]
-
-    new_user.name='bar'
-    new_user.save rescue err=$!
-    assert_kind_of Sequel::ValidationFailed, err
-    assert_equal 1, err.errors.count
-    assert_kind_of String, err.errors[[:email]][0]
-
-    new_user.email='bar'
-    assert_nothing_raised {new_user.save}
-    assert_equal new_user, R::User[2]
-
-    admin_try=R::User.new(:name => 'admin_try',:password => 'asdfasdf', :confirm_password => 'asdfasdf', :user_type => 'Admin')
-    assert_raises(Sequel::ValidationFailed) {admin_try.save}
+  include Marley::Smoke
+  def setup
+    @req=Rack::MockRequest.new(Marley::Router.new)
+  end
+  def test_return_client
+    smoke
+    assert_equal 200, @req.get('/').status
+    assert_equal 500, @req.get('/asdf').status
   end
   def test_user_rest
-    r=Rack::MockRequest.new(Marley::Router.new)
-    assert_equal 200, r.get('/').status
-    assert_equal 500, r.get('/asdf').status
-
+    resp=@req.post('/user/',:params => 'user=')
+    assert_equal 500, resp.status
+    json=JSON.parse(resp.body)
+    assert_equal "validation", json[0]
+    assert_equal "name", json[1].keys[0]
+    resp=@req.post('/user/',:params => 'user[name]=asdf')
+    assert_equal 500, resp.status
+    json=JSON.parse(resp.body)
+    assert_equal "validation", json[0]
+    assert_equal 'password', json[1].keys[0]
+    resp=@req.post('/user/',:params => 'user[name]=asdf&user[password]=asdfasdf&user[confirm_password]=asdfasdf')
+    assert_equal 200, resp.status
   end
 end

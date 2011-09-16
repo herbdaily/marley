@@ -119,6 +119,4 @@ module Marley
   end
 end
 include Marley::MainMethods
-at_exit do
-  run if ARGV[0]=='run' || ARGV[0]=='testing'
-end
+at_exit {run  if ARGV[0]=='run'}

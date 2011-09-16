@@ -40,9 +40,10 @@ module Marley
         find(:name => credentials[0], :pw_hash => Digest::SHA1.hexdigest(credentials[1]))
       end
       def validate
+        super
         validates_presence [:name]
         validates_unique [:name]
-        validates_unique [:email] if respond_to?(:email)
+        validates_unique :email, :allow_blank => true if respond_to?(:email)
       end
       def before_save
         if self.new? || self.old_password.to_s + self.pw.to_s + self.pw_confirm.to_s > ''

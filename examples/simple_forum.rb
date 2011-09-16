@@ -2,10 +2,13 @@ require 'rubygems'
 require 'sequel'
 require 'digest/sha1'
 
+$: << "#{File.dirname(__FILE__)}/../lib/"
+
 APP_DIR=File.dirname(__FILE__)
-require "#{APP_DIR}/../lib/marley"
-require "#{APP_DIR}/../lib/client/jamaica"
-DB=Sequel.sqlite("#{APP_DIR}/forum.sqlite3")#,:loggers => [Logger.new($stdout)])
+require "marley"
+require "client/jamaica"
+#need to automate the following somehow but can't think of anything that isn't ugly ATM
+DB=Sequel.sqlite("#{APP_DIR}/forum#{ARGV[0]=='test' ? '_test' : ''}.sqlite3")#,:loggers => [Logger.new($stdout)])
 
 RESERVED_PM_TAGS=['inbox','sent']
 RESERVED_POST_TAGS=['announcement']
