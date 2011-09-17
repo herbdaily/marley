@@ -43,7 +43,6 @@ module Marley
         super
         validates_presence [:name]
         validates_unique [:name]
-        validates_unique :email, :allow_blank => true if respond_to?(:email)
       end
       def before_save
         if self.new? || self.old_password.to_s + self.pw.to_s + self.pw_confirm.to_s > ''
