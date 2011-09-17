@@ -60,7 +60,6 @@ module Marley
       def menu(menu_name)
         menu_name='main' unless menu_name
         @menus[menu_name.to_sym].to_json
-        @menus[menu_name.to_sym].to_json
       end
     end
   end
