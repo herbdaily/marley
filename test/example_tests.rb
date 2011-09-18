@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'test/unit'
 require "rack/test"
-require 'rack-test-rest'
+require '/home/user/rack-test-rest/lib/rack-test-rest'
 EXAMPLES_DIR=File.dirname(__FILE__) + '/../examples'
 
 `cp #{EXAMPLES_DIR}/empty.sqlite3 #{EXAMPLES_DIR}/forum_test.sqlite3`

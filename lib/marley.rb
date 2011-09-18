@@ -68,30 +68,39 @@ module Marley
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
       @controller=@resource.respond_to?($request[:verb]) ? @resource : @resource.controller
       json=@controller.send($request[:verb]).to_json
-      if request.xhr?
-        [200,{'Content-Type' => 'application/json; charset=utf-8'}, json]
-      elsif request.request_method.downcase=='post' #for iframe file upload hack
-        [200,{'Content-Type' => 'text/html; charset=utf-8'}, json]
-      else
-        [200,{'Content-Type' => 'text/html; charset=utf-8'}, @opts[:client] ? @opts[:client].to_s(json) : json]
-      end
+      html=@opts[:client] ? @opts[:client].to_s(json) : json
+      resp_code={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}[verb]
     rescue AuthenticationError
       $log.error("Authentication failed for #{@auth.credentials}") if (@auth.provided? && @auth.basic? && @auth.credentials)
-      [401,{'WWW-Authenticate' => %(Basic realm="Application")},'Not Authorized']
+      resp_code=401
+      headers={'WWW-Authenticate' => %(Basic realm="Application")}
+      json=html='You must log in'
     rescue AuthorizationError
       $log.error($!.message)
-      [403,{'Content-Type' => 'text/html'}, "<p>You are not authorized for this opteration: #{$!.message}</p>"]
+      resp_code=403
+      json=[:authorization,{:message => 'Not authorized'}].to_json
+      html="<p>You are not authorized for this opteration: #{$!.message}</p>"
     rescue RoutingError
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
-      [500,{'Content-Type' => 'text/html'}, "<p>A routing error has occurred: #{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre>"]
+      resp_code=404
+      json=[:routing,{:message => $!.message}].to_json
+      html="<p>A routing error has occurred: #{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre>"
     rescue Sequel::ValidationFailed
       $log.error($!.errors)
-      [500,{'Content-Type' => 'application/json'}, [:validation,$!.errors].to_json]
+      resp_code=400
+      json=[:validation,$!.errors][:validation,$!.errors].to_json
+      html="<pre>#{$!.errors}</pre>"
     rescue
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
-      [500,{'Content-Type' => 'text/html'}, "<p>#{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre><pre>#{$!.inspect}</pre>"]
+      resp_code=500
+      json=[:unknown, {:message => $!.message}].to_json
+      html="<p>#{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre><pre>#{$!.inspect}</pre>"
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
+      content_type=request.xhr? ? 'application/json' : env['HTTP_ACCEPT'].to_s.sub(/,.*/,'') 
+      content_type='text/html' unless content_type > ''
+      headers||={'Content-Type' => "#{content_type}; charset=utf-8"}
+      return [resp_code,headers,content_type.match(/json/) ? json : html]
     end
   end
   class AuthenticationError < StandardError; end
