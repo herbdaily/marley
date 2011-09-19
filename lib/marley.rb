@@ -94,7 +94,7 @@ module Marley
     rescue
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=500
-      json=[:unknown, {:message => $!.message}].to_json
+      json=[:unknown, {:message => $!.message,:backtrace => $!.backtrace}].to_json
       html="<p>#{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre><pre>#{$!.inspect}</pre>"
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})

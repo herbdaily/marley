@@ -6,7 +6,7 @@ module Marley
         "#{@marley_test[:root_uri]}/#{@marley_test[:resource]}"
       end
       def process(method,params={})
-        expected_code = params.delete(:code)
+        expected_code = params.delete(:code) if params
         puts "#{method} to: '#{resource_uri}#{@marley_test[:extension]}'" if @marley_test[:debug]
         puts "params: #{params}" if @marley_test[:debug]
         send(method,resource_uri,params)
