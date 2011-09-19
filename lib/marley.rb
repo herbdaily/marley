@@ -17,6 +17,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 module Marley
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu'}
+  RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   module Resources
   end
   module MainMethods #this module is included in the main object at the end of the file
@@ -69,7 +70,7 @@ module Marley
       @controller=@resource.respond_to?($request[:verb]) ? @resource : @resource.controller
       json=@controller.send($request[:verb]).to_json
       html=@opts[:client] ? @opts[:client].to_s(json) : json
-      resp_code={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}[verb]
+      resp_code=RESP_CODES[verb]
     rescue AuthenticationError
       $log.error("Authentication failed for #{@auth.credentials}") if (@auth.provided? && @auth.basic? && @auth.credentials)
       resp_code=401
@@ -88,7 +89,7 @@ module Marley
     rescue Sequel::ValidationFailed
       $log.error($!.errors)
       resp_code=400
-      json=[:validation,$!.errors][:validation,$!.errors].to_json
+      json=[:validation,$!.errors].to_json
       html="<pre>#{$!.errors}</pre>"
     rescue
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
@@ -99,6 +100,7 @@ module Marley
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
       content_type=request.xhr? ? 'application/json' : env['HTTP_ACCEPT'].to_s.sub(/,.*/,'') 
       content_type='text/html' unless content_type > ''
+      content_type='application/json' if env['rack.test']==true #there has to be a better way to do this...
       headers||={'Content-Type' => "#{content_type}; charset=utf-8"}
       return [resp_code,headers,content_type.match(/json/) ? json : html]
     end

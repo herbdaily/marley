@@ -43,13 +43,14 @@ module Marley
         super
         validates_presence [:name]
         validates_unique [:name]
-      end
-      def before_save
         if self.new? || self.old_password.to_s + self.pw.to_s + self.pw_confirm.to_s > ''
           errors[:password]=['Password must contain at least 8 characters'] if self.password.to_s.length < 8
           errors[:confirm_password]=['Passwords do not match'] unless self.password==self.confirm_password
           errors[:old_password]=['Old Password Incorrect'] if !self.new? && Digest::SHA1.hexdigest(self.old_password.to_s) != self.pw_hash
-          raise Sequel::ValidationFailed.new(errors) if errors.length>0
+        end
+      end
+      def before_save
+        if self.new? || self.old_password.to_s + self.pw.to_s + self.pw_confirm.to_s > ''
           self.pw_hash=Digest::SHA1.hexdigest(self.password)
         end
       end
