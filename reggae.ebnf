@@ -2,5 +2,14 @@ resource ::= '[' resource_type ',' '{' properties '}' (','  '[' (resource (',')?
 
 resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' 
 
-properties ::= ('{'  property_name ':'  value '}' )*
+properties ::= ('{' (menu_property | msg_property | uri_property | instance_property) ':' value '}')+
+
+menu_property ::=  'title' | 'description' | 'items'
+
+uri_property ::= 'title' | 'description' | 'url'
+
+msg_property ::= 'message'
+
+instance_property ::= 'uri' | 'new_rec' | 'schema' | 'search'
+
 
