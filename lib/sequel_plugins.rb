@@ -10,23 +10,23 @@ module Sequel::Plugins::RestConvenience
     def controller
       Marley::ModelController.new(self)
     end
-    def resource
+    def resource_name
       self.name.sub(/.*::/,'').underscore
     end
-    def json_resource(action=nil)
-      [:resource,{:url => "/#{self.resource}/#{action}",:title => "#{action.humanize} #{self.resource.humanize}".strip}]
+    def json_uri(action=nil)
+      [:uri,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
     end
     def list(params=nil)
       user=$request[:user]
-      if user.respond_to?(otm=self.resource.pluralize)
+      if user.respond_to?(otm=self.resource_name.pluralize)
         if user.method(otm).arity==1  
           if (relationship=user.send(otm)).respond_to?(:filter)
-            relationship.filter($request[:get_params][resource.to_sym])
+            relationship.filter($request[:get_params][resource_name.to_sym])
           else
             user.send(otm)
           end
         else
-          user.send(otm,$request[:get_params][resource.to_sym])
+          user.send(otm,$request[:get_params][resource_name.to_sym])
         end
       else
         raise Marley::AuthorizationError
@@ -72,13 +72,13 @@ module Sequel::Plugins::RestConvenience
       respond_to?('name') ? name : id.to_s
     end
     def to_a
-      [:instance, {:resource => self.class.resource ,:new_rec => self.new?,:schema => rest_schema,:instance_get_actions => self.class.instance_get_actions}]
+      [:instance, {:uri => self.class.resource_name ,:new_rec => self.new?,:schema => rest_schema,:instance_get_actions => self.class.instance_get_actions}]
     end
     def to_json
       to_a.to_json
     end
-    def json_resource(action=nil)
-      [:resource,{:url => "/#{self.class.resource}/#{self[:id]}/#{action}",:title => "#{action.humanize}"}]
+    def json_uri(action=nil)
+      [:uri,{:url => "/#{self.class.resource_name}/#{self[:id]}/#{action}",:title => "#{action.humanize}"}]
     end
   end
 end
@@ -98,7 +98,7 @@ module Sequel::Plugins::RestAuthorization
         when 'rest_put','rest_delete'
           false 
         when 'rest_post'
-          new($request[:post_params][resource.to_sym]).current_user_role=='owner' && meth.nil?
+          new($request[:post_params][resource_name.to_sym]).current_user_role=='owner' && meth.nil?
         when 'rest_get'
           meth=='list'||meth=='new'
         end

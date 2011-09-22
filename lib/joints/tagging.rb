@@ -17,8 +17,8 @@ module Marley
         validates_presence :tag
         validates_uniqueness [:tag,:user_id]
       end
-      def json_resource
-        [:resource, {:url => "/messages_tag/#{id}",:updatable => true,:deletable => true,:title => tag.tag.humanize}]
+      def json_uri
+        [:uri, {:url => "/messages_tag/#{id}",:updatable => true,:deletable => true,:title => tag.tag.humanize}]
       end
       def after_initialize
         super

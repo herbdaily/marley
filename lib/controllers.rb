@@ -31,7 +31,7 @@ module Marley
     def rest_get; @instances || @instance; end
     def rest_post
       if @instance
-        raise RoutingError.new(@model,@instance,@method) unless (@instances && p=$request[:post_params][@model.resource][@method])
+        raise RoutingError.new(@model,@instance,@method) unless (@instances && p=$request[:post_params][@model.resource_name][@method])
         p=[p] unless p.class==Array
         p.map do |i|
           @newinstance=@model.send("add_#{@method}",i)
@@ -39,7 +39,7 @@ module Marley
           @instances << @newinstance
         end
       else
-        @instance=@model.new($request[:post_params][@model.resource.to_sym] || {})
+        @instance=@model.new($request[:post_params][@model.resource_name.to_sym] || {})
         @instance.save(@instance.write_cols)
         @instance.respond_to?('create_msg') ? @instance.create_msg : @instance
       end
@@ -48,7 +48,7 @@ module Marley
       raise RoutingError(@model) unless @instance
       (@instances || [@instance]).map do |i|
         i.modified!
-        i.update_only($request[:post_params][@model.resource.to_sym],i.write_cols)
+        i.update_only($request[:post_params][@model.resource_name.to_sym],i.write_cols)
       end
     end
     def rest_delete

@@ -1,5 +1,6 @@
 resource ::= '[' resource_type ',' '{' properties '}' (','  '[' (resource (',')?)* ']' )? ']'  
 
-resource_type ::= 'menu' | 'msg' | 'resource'  
+resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' 
 
 properties ::= ('{'  property_name ':'  value '}' )*
+

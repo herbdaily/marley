@@ -7,9 +7,9 @@ module Marley
       def initialize(*args)
         super
         if ! new?
-          @menus[:main]=Menu.new( 'Main Menu', 'main', "Welcome to #{$request[:opts][:app_name]}, #{self.name}", [ [:resource,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:resource,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] )
-          @menus[:private_messages]=Menu.new( 'Private Messages', 'private_messages','', self.tags.map{|t| [:resource,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_resource('new'))) 
-          @menus[:public_messages]=Menu.new( 'Public Messages', 'public_messages','', Tag.filter(:user_id => nil).map{|t| [:resource,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:resource,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_resource('new')) )
+          @menus[:main]=Menu.new( 'Main Menu', 'main', "Welcome to #{$request[:opts][:app_name]}, #{self.name}", [ [:uri,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:uri,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] )
+          @menus[:private_messages]=Menu.new( 'Private Messages', 'private_messages','', self.tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))) 
+          @menus[:public_messages]=Menu.new( 'Public Messages', 'public_messages','', Tag.filter(:user_id => nil).map{|t| [:uri,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:uri,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_uri('new')) )
         end
       end
       def private_messages(params)

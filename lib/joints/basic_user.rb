@@ -1,5 +1,5 @@
 require 'digest/sha1'
-LOGIN_FORM= [:instance,{:resource => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
+LOGIN_FORM= [:instance,{:uri => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
 module Marley
   module Resources
     class Menu
