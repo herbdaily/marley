@@ -11,10 +11,10 @@ module Marley
         ! ($request[:verb]=='rest_get' && $request[:path].nil?)
       end
       def initialize(*args)
-        @title,@name,@description,@items=args
+        @title,@description,@items=args
       end
       def to_json
-        [:menu,{:title => @title,:name => @name,:description => @description,:items => @items}]
+        [:menu,{:title => @title,:description => @description,:items => @items}]
       end
     end
     class BasicUser < Sequel::Model

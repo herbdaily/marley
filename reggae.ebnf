@@ -8,8 +8,28 @@ menu_property ::=  'title' | 'description' | 'items'
 
 uri_property ::= 'title' | 'description' | 'url'
 
-msg_property ::= 'message'
+msg_property ::= 'title' | 'description'
 
 instance_property ::= 'uri' | 'new_rec' | 'schema' | 'search'
 
+title_value ::= string_literal
 
+description_value ::= string_literal
+
+items_value ::= resource
+
+new_rec_value ::= 'true' | 'false'
+
+search_value ::= 'true' | 'false'
+
+schema_value ::= '[' (col_spec)+ ']'
+
+col_spec ::= '[' col_type ',' col_name ',' col_restrictions ',' (col_value)?  ']'
+
+col_type ::= 'text' | 'clob' | 'integer' | 'decimal' | 'image'
+
+col_name ::= string_literal
+
+col_restrictions ::= [1-7]
+
+col_value ::= string_literal
