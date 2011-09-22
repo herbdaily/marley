@@ -5,7 +5,7 @@ EXAMPLES_DIR=File.dirname(__FILE__) + '/../examples'
 
 `cp #{EXAMPLES_DIR}/empty.sqlite3 #{EXAMPLES_DIR}/forum_test.sqlite3`
 ARGV[0]='test'
-require "#{EXAMPLES_DIR}/simple_forum.rb"
+require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
 
 class MessageTests < Test::Unit::TestCase
@@ -15,7 +15,6 @@ class MessageTests < Test::Unit::TestCase
     Marley::Resources::User.delete
     Marley::Resources::Message.delete
     Marley::Resources::MessageTag.delete
-    Marley::Resources::Tag.delete
     @marley_test={:root_uri => '', :resource => 'user'}
     marley_create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
     marley_create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
@@ -29,7 +28,7 @@ class MessageTests < Test::Unit::TestCase
   def test_private_message
     @marley_test={:root_uri => '', :resource => 'private_message'}
     authorize 'user1','asdfasdf'
-    resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+    #resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
   end
 
 end
@@ -66,17 +65,17 @@ class UserTests < Test::Unit::TestCase
   end
   def test_auth
     marley_create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    @marley_test[:resource]='menu/private_message'
+    @marley_test[:resource]='menu/private_messages'
     marley_read({:code => 401})
-    @marley_test[:resource]='menu/public_message'
+    @marley_test[:resource]='menu/public_messages'
     marley_read({:code => 401})
 
     authorize 'asdf','asdfasdf'
     @marley_test[:resource]=''
     marley_read({})
-    @marley_test[:resource]='menu/private_message'
+    @marley_test[:resource]='menu/private_messages'
     marley_read({})
-    @marley_test[:resource]='menu/public_message'
-    marley_read({})
+    @marley_test[:resource]='menu/public_messages'
+    p marley_read({})
   end
 end
