@@ -25,7 +25,7 @@ module Marley
         super
         u=to_a
         u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
-        @menus={:main => Menu.new("Welcome to #{$request[:opts][:app_name]}",'signup','Login or signup here.',[LOGIN_FORM,u])}
+        @menus={:main => Menu.new("Welcome to #{$request[:opts][:app_name]}",'Login or signup here.',[LOGIN_FORM,u])}
       end
       def rest_schema
         schema=super.delete_if {|c| c[NAME_INDEX]==:pw_hash || c[NAME_INDEX]==:description}

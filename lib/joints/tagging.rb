@@ -8,7 +8,7 @@ module Marley
     Resources.const_get(join_class.to_sym).set_dataset(join_class.underscore.pluralize.to_sym) #apparently this is necessary when declaring a Sequel::Model like this
     if opts[:user]
       Resources.const_get(opts[:user]).one_to_many :tags
-      Resources::Tag.many_to_one :user
+      Resources::Tag.many_to_one Resources.const_get(opts[:user]).name.underscore.to_sym
     end
   end
   module Resources
