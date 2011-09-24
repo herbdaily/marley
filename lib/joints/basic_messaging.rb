@@ -2,28 +2,6 @@ require 'sanitize'
 
 module Marley
   module Resources
-    class User < BasicUser 
-      def private_messages(params)
-        params.each_pair {|k,v| params[k]=" #{v}" if RESERVED_PM_TAGS.include?(v)}
-        params[:user_id]=self.id
-        DB[message_tags_dataset.filter(params).join('messages', :id => :message_id).select(:thread_id).group(:thread_id).order(:max.sql_function(:date_created).desc)].map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
-      end
-      def posts(params)
-        if params[:untagged].to_s=='true'
-          threads=Post.filter('(select count(*) from message_tags where message_id=messages.id)=0'.lit).group(:thread_id)
-        else
-          params.each_pair {|k,v| params[k]=" #{v}" if RESERVED_POST_TAGS.include?(v)}
-          threads=DB[MessageTag.filter(params.merge({:user_id => nil})).join('messages', :id => :message_id).group(:thread_id)]
-        end
-        threads.order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
-      end
-    end
-    class Admin < User 
-      def self.requires_user?;true;end
-    end
-    class Moderator < User
-      def self.requires_user?;true;end
-    end
 
     class Message < Sequel::Model
       plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
