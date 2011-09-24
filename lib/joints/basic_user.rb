@@ -2,31 +2,11 @@ require 'digest/sha1'
 LOGIN_FORM= [:instance,{:uri => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
 module Marley
   module Resources
-    class Menu
-      attr_accessor :title,:name,:description, :items
-      def self.rest_get
-        $request[:user].menu($request[:path].to_a[1])
-      end
-      def self.requires_user?
-        ! ($request[:verb]=='rest_get' && $request[:path].nil?)
-      end
-      def initialize(*args)
-        @title,@description,@items=args
-      end
-      def to_json
-        [:menu,{:title => @title,:description => @description,:items => @items}]
-      end
-    end
     class BasicUser < Sequel::Model
       set_dataset :users
+      plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| name.sub(/BasicUser/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       attr_reader :menus
       attr_accessor :old_password,:password, :confirm_password
-      def initialize(*args)
-        super
-        u=to_a
-        u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
-        @menus={:main => Menu.new("Welcome to #{$request[:opts][:app_name]}",'Login or signup here.',[LOGIN_FORM,u])}
-      end
       def rest_schema
         schema=super.delete_if {|c| c[NAME_INDEX]==:pw_hash || c[NAME_INDEX]==:description}
         schema.push([:old_password,:password,0]) unless new?
@@ -56,10 +36,6 @@ module Marley
       end
       def create_msg
         [[:msg,{:title => 'Success!'},"Your login, '#{self.name}', has been sucessfully created. You can now log in."]]
-      end
-      def menu(menu_name)
-        menu_name='main' unless menu_name
-        @menus[menu_name.to_sym].to_json
       end
     end
   end

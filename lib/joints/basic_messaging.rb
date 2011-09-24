@@ -3,15 +3,6 @@ require 'sanitize'
 module Marley
   module Resources
     class User < BasicUser 
-      plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| name.sub(/User/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
-      def initialize(*args)
-        super
-        if ! new?
-          @menus[:main]=Menu.new( 'Main Menu', "Welcome to #{$request[:opts][:app_name]}, #{self.name}", [ [:uri,{:url => '/menu/private_messages',:title => 'Private Messages'}], [:uri,{:url => '/menu/public_messages',:title => 'Public Messages'}] ] )
-          @menus[:private_messages]=Menu.new( 'Private Messages', '', self.tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))) 
-          @menus[:public_messages]=Menu.new( 'Public Messages', '', Tag.filter(:user_id => nil).map{|t| [:uri,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:uri,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_uri('new')) )
-        end
-      end
       def private_messages(params)
         params.each_pair {|k,v| params[k]=" #{v}" if RESERVED_PM_TAGS.include?(v)}
         params[:user_id]=self.id

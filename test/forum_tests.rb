@@ -65,17 +65,16 @@ class UserTests < Test::Unit::TestCase
   end
   def test_auth
     marley_create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    @marley_test[:resource]='menu/private_messages'
+    @marley_test[:resource]='private_message_menu'
     marley_read({:code => 401})
-    @marley_test[:resource]='menu/public_messages'
+    @marley_test[:resource]='post_menu'
     marley_read({:code => 401})
 
     authorize 'asdf','asdfasdf'
     @marley_test[:resource]=''
     marley_read({})
-    @marley_test[:resource]='menu/private_messages'
+    @marley_test[:resource]='private_message_menu'
     marley_read({})
-    @marley_test[:resource]='menu/public_messages'
-    p marley_read({})
+    @marley_test[:resource]='post_menu'
   end
 end
