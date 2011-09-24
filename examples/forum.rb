@@ -25,7 +25,6 @@ joint 'basic_user'
 joint 'basic_menu_system'
 joint 'basic_messaging'
 joint 'tagging'
-Marley.tagging_for('Message',:user => 'User')
 module Marley
   module Resources
     class MainMenu < Menu
@@ -81,4 +80,5 @@ module Marley
       def self.requires_user?;true;end
     end
   end
+  tagging_for('Message',:user => 'User')
 end
