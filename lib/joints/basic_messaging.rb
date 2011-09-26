@@ -1,13 +1,23 @@
 require 'sanitize'
 
 module Marley
-  module Resources
+  #tagging joint must be loaded before any of these is run
+  def message_tagging(user_class=nil)
+    post_tagging(user_class)
+    pm_tagging(user_class) if user_class
+  end
+  def post_tagging(user_class=nil)
+    tagging_for('Post', user_class)
+  end
+  def pm_tagging(user_class)
+    tagging_for('PrivateMessate', user_class)
+  end
 
+  module Resources
     class Message < Sequel::Model
       plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       plugin :tree
       many_to_one :author, :class => :User
-      one_to_many :message_tags
       attr_accessor :tags
       def write_cols;new? ? [:message,:title,:tags,:parent_id] : [:tags];end
       def required_cols; write_cols - [:parent_id]; end

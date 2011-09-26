@@ -80,5 +80,5 @@ module Marley
       def self.requires_user?;true;end
     end
   end
-  tagging_for('Message',:user => 'User')
+  tagging_for('Message', 'User')
 end
