@@ -10,7 +10,7 @@ module Marley
           filter(:user_id => $request[:user][:id])
         end
       end
-      Resources.const_get(user_class).one_to_many :user_tags
+      Resources.const_get(user_class).one_to_many :user_tags, :join_table => join_table
       Resources::UserTag.many_to_one Resources.const_get(user_class).name.underscore.to_sym
     else
       Resources::PublicTag.many_to_many klass.to_sym, :join_table => join_table

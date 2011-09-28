@@ -17,15 +17,16 @@ module Marley
     class Message < Sequel::Model
       plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       plugin :tree
-      many_to_one :author, :class => :User
+      many_to_one :author, :class => :'Marley::Resources::User'
       @owner_col=:author_id
       def rest_schema
         schema=super
         schema << [:text,:author,RESTRICT_RO,author.to_s]
         if new?
-          schema << [:text, :tags, 0,tags] if (respond_to(:tags) && (respond_to?(:public_tags) || respond_to?(:user_tags)) )
+          schema << [:text, :tags, 0,tags] if (respond_to?(:tags) && (respond_to?(:public_tags) || respond_to?(:user_tags)) )
           schema << [:text, :my_tags, 0,my_tags] if respond_to?(:user_tags) && respond_to?(:my_tags)
         end
+        schema
       end
       def write_cols
         new? ?  [:message,:title,:parent_id] : []

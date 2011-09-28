@@ -29,7 +29,7 @@ module Marley
   module Resources
     class MainMenu < Menu
       def self.requires_user?
-        false
+        ! ($request[:path]==[])
       end
       def initialize
         @name='main'
@@ -42,7 +42,7 @@ module Marley
         else
           @title = 'Forum Main Menu'
           @description="Welcome to #{$request[:opts][:app_name]}, #{$request[:user].name}"
-          @items=[ [:uri,{:url => '/private_messages_menu',:title => 'Private Messages'}], [:uri,{:url => '/post_menu',:title => 'Posts'}] ]
+          @items=[ [:uri,{:url => '/pm_menu',:title => 'Private Messages'}], [:uri,{:url => '/post_menu',:title => 'Posts'}] ]
         end
       end
     end
@@ -50,14 +50,14 @@ module Marley
       def initialize
         @name='posts'
         @title='Posts'
-        @items=$request[:user].tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))
+        @items=Tag.filter(:user_id => nil).map{|t| [:uri,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:uri,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_uri('new')) 
       end
     end
-    class PrivateMessageMenu < Menu
+    class PmMenu < Menu
       def initialize
         @name='pm'
         @title='Private Messages'
-        @items=Tag.filter(:user_id => nil).map{|t| [:uri,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:uri,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_uri('new')) 
+        @items=$request[:user].user_tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))
       end
     end
     class User < BasicUser 
