@@ -41,13 +41,15 @@ module Sequel::Plugins::RestConvenience
     def rest_cols
       columns.reject do |c| 
         if new?
-          c.to_s.match(/(^id$)|(^active$)|(_type$)|(date_(created|updated))/)
+          c.to_s.match(/(^id$)|(_type$)|(date_(created|updated))/)
         else
           c.to_s.match(/_type$/)
         end
       end
     end
-    def hidden_cols;[];end
+    def hidden_cols
+      columns.select {|c| c.to_s.match(/(_id$)/)}
+    end
     def write_cols
       rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}
     end
@@ -55,18 +57,13 @@ module Sequel::Plugins::RestConvenience
     def rest_schema
       rest_cols.map do |col_name|
         db_spec=db_schema.to_hash[col_name]
-        if a=self.class.association_reflections[col_name.to_s.sub(/_id$/,'').to_sym]
-          col_type=a[:type]
-        else
-          col_type=db_spec ? db_spec[:db_type].downcase : col_name
-        end
+        col_type=db_spec ? db_spec[:db_type].downcase : col_name
         restrictions=0
         restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
         restrictions|=RESTRICT_RO unless write_cols.include?(col_name)
         restrictions|=RESTRICT_REQ if required_cols.include?(col_name) || (db_spec && !db_spec[:allow_null])
-        val=col_type==:many_to_one ? [values[col_name],send(col_name.to_s.sub(/_id$/,'')).to_s] : send(col_name)
-        [col_type, col_name, restrictions,val]
-      end.compact
+        [col_type, col_name, restrictions,send(col_name)]
+      end
     end
     def to_s
       respond_to?('name') ? name : id.to_s

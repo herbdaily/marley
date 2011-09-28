@@ -1,6 +1,6 @@
-resource ::= '[' resource_type ',' '{' properties '}' (','  '[' (resource (',')?)* ']' )? ']'  
+resource ::= '[' resource_type ',' '{' properties '}' (','  '[' resource (',' resource )* ']' )? ']'  
 
-resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' | 'instance_list'
+resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' 
 
 properties ::= ('{' (menu_property | msg_property | uri_property | instance_property) ':' value '}')+
 
@@ -12,23 +12,21 @@ msg_property ::= 'title' | 'description'
 
 instance_property ::= 'uri' | 'new_rec' | 'search' | 'schema'
 
-instance_list_property ::= 'uri' | 'title' | 'schema' | 'values'
-
 title_value ::= string_literal
 
 description_value ::= string_literal
 
-items_value ::= resource
+items_value ::= '[' resource (',' resource)? ']'
 
-new_rec_value ::= 'true' | 'false'
+new_rec_value ::= boolean_value
 
-search_value ::= 'true' | 'false'
+search_value ::= boolean_value
 
-schema_value ::= '[' (col_spec(',')?)+ ']'
+schema_value ::= '[' col_spec (',' colspec)? ']'
 
 col_spec ::= '[' col_type ',' col_name ',' col_restrictions (',' col_value)?  ']'
 
-col_type ::= 'text' | 'clob' | 'integer' | 'decimal' | 'image'
+col_type ::= 'text' | 'clob' | 'integer' | 'decimal' | 'image' 
 
 col_name ::= string_literal
 
@@ -36,4 +34,6 @@ col_restrictions ::= [1-7]
 
 col_value ::= string_literal
 
-values_value='[' ('[' col_value ']')* ']'
+values_value='[' ('[' col_value (',' col_value))* ']')* ']'
+
+
