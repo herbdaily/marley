@@ -1,11 +1,15 @@
 
 module Marley
-  def self.tagging_for(klass, user_class=nil)
+  def self.tagging_for(klass, user_class=nil,join_table=nil)
     tagged_class=Resources.const_get(klass.to_sym)
-    join_table="#{tagged_class.table_name}_tags"
+    join_table||="#{tagged_class.table_name}_tags"
     if user_class
       Resources::UserTag.many_to_many klass.to_sym, :join_table => join_table
-      tagged_class.many_to_many :user_tags
+      tagged_class.many_to_many :user_tags,:extend => Module.new  do
+        def current_user_tags
+          filter(:user_id => $request[:user][:id])
+        end
+      end
       Resources.const_get(user_class).one_to_many :user_tags
       Resources::UserTag.many_to_one Resources.const_get(user_class).name.underscore.to_sym
     else
@@ -19,13 +23,6 @@ module Marley
       def validate
         validates_presence :tag
         validates_uniqueness [:tag,:user_id,:tag_type]
-      end
-      def json_uri
-        [:uri, {:url => "/#{self.class.name.underscore}/#{id}",:updatable => true,:deletable => true,:title => tag.humanize}]
-      end
-      def after_initialize
-        super
-        self.tag.strip!
       end
       def before_save
         super

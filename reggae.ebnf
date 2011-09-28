@@ -1,6 +1,6 @@
 resource ::= '[' resource_type ',' '{' properties '}' (','  '[' (resource (',')?)* ']' )? ']'  
 
-resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' 
+resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' | 'instance_list'
 
 properties ::= ('{' (menu_property | msg_property | uri_property | instance_property) ':' value '}')+
 
@@ -10,7 +10,9 @@ uri_property ::= 'title' | 'description' | 'url'
 
 msg_property ::= 'title' | 'description'
 
-instance_property ::= 'uri' | 'new_rec' | 'schema' | 'search'
+instance_property ::= 'uri' | 'new_rec' | 'search' | 'schema'
+
+instance_list_property ::= 'uri' | 'title' | 'schema' | 'values'
 
 title_value ::= string_literal
 
@@ -22,9 +24,9 @@ new_rec_value ::= 'true' | 'false'
 
 search_value ::= 'true' | 'false'
 
-schema_value ::= '[' (col_spec)+ ']'
+schema_value ::= '[' (col_spec(',')?)+ ']'
 
-col_spec ::= '[' col_type ',' col_name ',' col_restrictions ',' (col_value)?  ']'
+col_spec ::= '[' col_type ',' col_name ',' col_restrictions (',' col_value)?  ']'
 
 col_type ::= 'text' | 'clob' | 'integer' | 'decimal' | 'image'
 
@@ -33,3 +35,5 @@ col_name ::= string_literal
 col_restrictions ::= [1-7]
 
 col_value ::= string_literal
+
+values_value='[' ('[' col_value ']')* ']'
