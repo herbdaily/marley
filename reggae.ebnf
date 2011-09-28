@@ -4,7 +4,7 @@ resource_type ::= 'menu' | 'msg' | 'uri' | 'instance'
 
 properties ::= ('{' (menu_property | msg_property | uri_property | instance_property) ':' value '}')+
 
-menu_property ::=  'title' | 'description' | 'items'
+menu_property ::=  'title' | 'description' | 'name' | 'items'
 
 uri_property ::= 'title' | 'description' | 'url'
 
@@ -15,6 +15,8 @@ instance_property ::= 'uri' | 'new_rec' | 'search' | 'schema'
 title_value ::= string_literal
 
 description_value ::= string_literal
+
+name_value ::= string_literal
 
 items_value ::= '[' resource (',' resource)? ']'
 

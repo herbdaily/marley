@@ -21,20 +21,14 @@ module Marley
       @owner_col=:author_id
       def rest_schema
         schema=super
-        schema.rassoc(:parent_id)[RESTRICTIONS_INDEX]=RESTRICT_HIDE
+        schema << [:text,:author,RESTRICT_RO,author.to_s]
         if new?
           schema << [:text, :tags, 0,tags] if (respond_to(:tags) && (respond_to?(:public_tags) || respond_to?(:user_tags)) )
           schema << [:text, :my_tags, 0,my_tags] if respond_to?(:user_tags) && respond_to?(:my_tags)
         end
       end
       def write_cols
-        if new?
-          cols= [:message,:title,:parent_id]
-          cols << :tags if rest_schema.lassoc(:tags)
-          cols << :my_tags if rest_schema.lassoc(:my_tags)
-        else
-          []
-        end
+        new? ?  [:message,:title,:parent_id] : []
       end
       def required_cols; write_cols - [:parent_id]; end
       def authorize_rest_get(meth)

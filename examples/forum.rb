@@ -32,6 +32,7 @@ module Marley
         false
       end
       def initialize
+        @name='main'
         if $request[:user].new?
           u=$request[:user].to_a
           u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
@@ -47,12 +48,14 @@ module Marley
     end
     class PostMenu < Menu
       def initialize
+        @name='posts'
         @title='Posts'
         @items=$request[:user].tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))
       end
     end
     class PrivateMessageMenu < Menu
       def initialize
+        @name='pm'
         @title='Private Messages'
         @items=Tag.filter(:user_id => nil).map{|t| [:uri,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:uri,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.json_uri('new')) 
       end

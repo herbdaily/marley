@@ -10,7 +10,7 @@ module Marley
         true
       end
       def to_json
-        [:menu,{:title => @title,:description => @description,:items => @items}]
+        [:menu,{:title => @title,:description => @description,:name => @name, :items => @items}]
       end
     end
   end
