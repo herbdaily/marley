@@ -29,7 +29,7 @@ module Marley
   module Resources
     class MainMenu < Menu
       def self.requires_user?
-        ! ($request[:path]==[])
+        ! ($request[:path].to_a==[])
       end
       def initialize
         @name='main'
@@ -61,13 +61,16 @@ module Marley
       end
     end
     class User < BasicUser 
-      def private_messages(params)
+      def private_messages(params={})
+        params ||= {}
         params.each_pair {|k,v| params[k]=" #{v}" if RESERVED_PM_TAGS.include?(v)}
         params[:user_id]=self.id
         DB[message_tags_dataset.filter(params).join('messages', :id => :message_id).select(:thread_id).group(:thread_id).order(:max.sql_function(:date_created).desc)].map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
-      def posts(params)
-        if params[:untagged].to_s=='true'
+      def posts(params={})
+        if ! params
+          threads=Post.group(:thread_id)
+        elsif params[:untagged].to_s=='true'
           threads=Post.filter('(select count(*) from message_tags where message_id=messages.id)=0'.lit).group(:thread_id)
         else
           params.each_pair {|k,v| params[k]=" #{v}" if RESERVED_POST_TAGS.include?(v)}

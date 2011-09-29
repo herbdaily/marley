@@ -25,6 +25,12 @@ class MessageTests < Test::Unit::TestCase
   def app
     Marley::Router.new
   end
+  def test_posts
+    @marley_test={:root_uri => '', :resource => 'post'}
+    marley_read({:code => 401})
+    authorize 'user1','asdfasdf'
+    marley_read
+  end
   def test_private_message
     @marley_test={:root_uri => '', :resource => 'private_message'}
     authorize 'user1','asdfasdf'
@@ -65,7 +71,7 @@ class UserTests < Test::Unit::TestCase
   end
   def test_auth
     marley_create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    @marley_test[:resource]='private_message_menu'
+    @marley_test[:resource]='pm_menu'
     marley_read({:code => 401})
     @marley_test[:resource]='post_menu'
     marley_read({:code => 401})
@@ -73,7 +79,7 @@ class UserTests < Test::Unit::TestCase
     authorize 'asdf','asdfasdf'
     @marley_test[:resource]=''
     marley_read({})
-    @marley_test[:resource]='private_message_menu'
+    @marley_test[:resource]='pm_menu'
     marley_read({})
     @marley_test[:resource]='post_menu'
   end
