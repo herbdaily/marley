@@ -25,16 +25,17 @@ class MessageTests < Test::Unit::TestCase
   def app
     Marley::Router.new
   end
+  def test_private_message
+    @marley_test={:root_uri => '', :resource => 'private_message'}
+    authorize 'user1','asdfasdf'
+    marley_read
+    #resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+  end
   def test_posts
     @marley_test={:root_uri => '', :resource => 'post'}
     marley_read({:code => 401})
     authorize 'user1','asdfasdf'
-    marley_read
-  end
-  def test_private_message
-    @marley_test={:root_uri => '', :resource => 'private_message'}
-    authorize 'user1','asdfasdf'
-    #resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+    #marley_read
   end
 
 end

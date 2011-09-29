@@ -62,10 +62,15 @@ module Marley
     end
     class User < BasicUser 
       def private_messages(params={})
-        params ||= {}
-        params.each_pair {|k,v| params[k]=" #{v}" if RESERVED_PM_TAGS.include?(v)}
-        params[:user_id]=self.id
-        DB[message_tags_dataset.filter(params).join('messages', :id => :message_id).select(:thread_id).group(:thread_id).order(:max.sql_function(:date_created).desc)].map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
+        params||={}
+        if specified_tags=params.delete(:tags)
+          tag_ids=user_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
+        end
+        threads=PrivateMessage.filter(params)
+        if specified_tags
+          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => tag_ids)
+        end
+        threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
       def posts(params={})
         if ! params
@@ -86,5 +91,5 @@ module Marley
       def self.requires_user?;true;end
     end
   end
-  tagging_for('Message', 'User')
+  message_tagging('User')
 end

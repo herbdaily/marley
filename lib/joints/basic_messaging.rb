@@ -2,14 +2,14 @@ require 'sanitize'
 
 module Marley
   #tagging joint must be loaded before any of these is run
-  def message_tagging(user_class=nil)
-    post_tagging(user_class)
-    pm_tagging(user_class) if user_class
+  def self.message_tagging(user_class=nil)
+    self.post_tagging(user_class)
+    self.pm_tagging(user_class) if user_class
   end
-  def post_tagging(user_class=nil)
+  def self.post_tagging(user_class=nil)
     tagging_for('Post', user_class)
   end
-  def pm_tagging(user_class)
+  def self.pm_tagging(user_class)
     tagging_for('PrivateMessage', user_class)
   end
 
