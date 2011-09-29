@@ -73,15 +73,23 @@ module Marley
         threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
       def posts(params={})
-        if ! params
-          threads=Post.group(:thread_id)
-        elsif params[:untagged].to_s=='true'
-          threads=Post.filter('(select count(*) from message_tags where message_id=messages.id)=0'.lit).group(:thread_id)
-        else
-          params.each_pair {|k,v| params[k]=" #{v}" if RESERVED_POST_TAGS.include?(v)}
-          threads=DB[MessageTag.filter(params.merge({:user_id => nil})).join('messages', :id => :message_id).group(:thread_id)]
+        params||={}
+        if specified_tags=params.delete(:tags)
+          tag_ids=public_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
         end
-        threads.order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
+        if specified_user_tags=params.delete(:user_tags)
+          user_tag_ids=user_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
+        end
+        threads=Post.filter(params)
+        if specified_tags
+          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => tag_ids)
+          if specified_user_tags
+            threads=threads.or(:tag_id => user_tag_ids)
+          end
+        elsif specified_user_tags
+          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => user_tag_ids)
+        end
+        threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
     end
     class Admin < User 
