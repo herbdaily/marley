@@ -28,14 +28,14 @@ class MessageTests < Test::Unit::TestCase
   def test_private_message
     @marley_test={:root_uri => '', :resource => 'private_message'}
     authorize 'user1','asdfasdf'
-    marley_read
+    marley_read({})
     #resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
   end
   def test_posts
     @marley_test={:root_uri => '', :resource => 'post'}
     marley_read({:code => 401})
     authorize 'user1','asdfasdf'
-    #marley_read
+    marley_read({})
   end
 
 end
