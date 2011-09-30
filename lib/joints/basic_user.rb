@@ -17,20 +17,21 @@ module Marley
         ! ($request[:verb]=='rest_post')
       end
       def self.authenticate(credentials)
-        find(:name => credentials[0], :pw_hash => Digest::SHA1.hexdigest(credentials[1]))
+        u=find(:name => credentials[0], :pw_hash => Digest::SHA1.hexdigest(credentials[1]))
+        u.respond_to?(:user_type) ? Marley::Resources.const_get(u[:user_type].to_sym)[u[:id]] : u
       end
       def validate
         super
         validates_presence [:name]
         validates_unique [:name]
-        if self.new? || self.old_password.to_s + self.pw.to_s + self.pw_confirm.to_s > ''
+        if self.new? || self.old_password.to_s + self.password.to_s + self.confirm_password.to_s > ''
           errors[:password]=['Password must contain at least 8 characters'] if self.password.to_s.length < 8
           errors[:confirm_password]=['Passwords do not match'] unless self.password==self.confirm_password
           errors[:old_password]=['Old Password Incorrect'] if !self.new? && Digest::SHA1.hexdigest(self.old_password.to_s) != self.pw_hash
         end
       end
       def before_save
-        if self.new? || self.old_password.to_s + self.pw.to_s + self.pw_confirm.to_s > ''
+        if self.new? || self.old_password.to_s + self.password.to_s + self.confirm_password.to_s > ''
           self.pw_hash=Digest::SHA1.hexdigest(self.password)
         end
       end

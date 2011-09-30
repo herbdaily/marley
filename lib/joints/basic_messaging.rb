@@ -57,7 +57,7 @@ module Marley
       end
     end
     class PrivateMessage < Message
-      attr_writer :tags
+      attr_reader :tags
       @instance_get_actions=['reply','reply_all']
       def write_cols;new? ? super << :recipients : super;end
       def required_cols;new? ? super << :recipients : [];end
@@ -65,8 +65,12 @@ module Marley
       def authorize_rest_get(meth)
         super && ($request[:user]==author || self.recipients.match(/\b#{$request[:user].name}\b}/))
       end
-      def tags
-        user_tags.current_user_tags.map{|t| t.tag}.join(",") unless new?
+      def self.authorize_rest_post(asdf)
+        true #need to change this
+      end
+      def after_initialize
+        super
+        @tags=user_tags.current_user_tags.map{|t| t.tag}.join(",") unless new?
       end
       def reply
         self.class.new({:parent_id => self[:id],:author_id => $request[:user][:id],:recipients => author.name, :title => "re: #{title}"})
@@ -79,11 +83,18 @@ module Marley
       def after_create
         if respond_to?(:user_tags)
           recipients.split(',').each do |recipient|
-            add_user_tag({:user_id => User[:name => recipient][:id],:tag =>'inbox'})
-            tags.split(/\s*,\s*/).each {|tag| add_user_tag({:user_id => User[:name => recipient][:id],:tag =>tag})} if tags 
+            "inbox,#{tags}".split(/\s*,\s*/).each do |tag|
+              t={:user_id => User[:name => recipient][:id],:tag =>tag}
+              p t
+              add_user_tag(UserTag[t] || UserTag.create(t))
+            end
           end
-          add_user_tag({:user_id => author_id,:tag =>'sent'})
-          tags.split(/\s*,\s*/).each {|tag| add_message_tag({:user_id => author_id,:tag =>tag})} if tags && ! recipients.match(/\b#{author.name}\b/)
+          if  ! recipients.match(/\b#{author.name}\b/)
+            "sent,#{tags}".split(/\s*,\s*/).each do |tag|
+              t={:user_id => author_id,:tag =>tag}
+              add_user_tag(UserTag[t] || UserTag.create(t))
+            end
+          end
         end
       end
       def validate

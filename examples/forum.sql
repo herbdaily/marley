@@ -3,9 +3,9 @@ CREATE INDEX tag_user_id on tags(user_id);
 CREATE INDEX tag_tag on tags(tag);
 CREATE UNIQUE INDEX tag_tag_user_id on tags(user_id,tag);
 
-CREATE TABLE message_tags ( id integer PRIMARY KEY, message_id integer, tag_id integer);
-CREATE INDEX msg_tag_id on message_tags(tag_id);
-CREATE INDEX tag_msg_id on message_tags(message_id);
+CREATE TABLE messages_tags ( id integer PRIMARY KEY, message_id integer, tag_id integer);
+CREATE INDEX msg_tag_id on messages_tags(tag_id);
+CREATE INDEX tag_msg_id on messages_tags(message_id);
 
 CREATE TABLE messages (
     id integer PRIMARY KEY,

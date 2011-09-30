@@ -92,6 +92,7 @@ module Marley
       json=[:validation,$!.errors].to_json
       html="<pre>#{$!.errors}</pre>"
     rescue
+      p "#{$!.message}\n#{$!.backtrace}"
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=500
       json=[:unknown, {:message => $!.message,:backtrace => $!.backtrace}].to_json
