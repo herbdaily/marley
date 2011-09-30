@@ -88,43 +88,23 @@ class ForumTests < Test::Unit::TestCase
       Marley::Resources::User[:name => 'admin'].update(:user_type => 'Admin')
       @marley_test[:resource]='private_message'
     end
-    should "work" do
-      true
+    context "user1 logged in" do
+      setup do
+        authorize 'user1','asdfasdf'
+      end
+      should "show PM list" do
+        marley_read({})
+      end
+      should "reject a PM with only recipients" do
+        marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+      end
+      should "reject a PM from user to user" do
+        marley_create({:code => 400,:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+      end
+      should "accept a PM to admin" do
+         marley_create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+      end
     end
   end
 end
 
-class MessageTests < Test::Unit::TestCase
-  include Rack::Test::Methods
-  include Marley::TestHelpers
-  def setup
-    Marley::Resources::User.delete
-    Marley::Resources::Message.delete
-    Marley::Resources::Tag.delete
-    @marley_test={:root_uri => '', :resource => 'user'}
-    marley_create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    marley_create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    marley_create(:'user[name]' => 'user3',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    marley_create(:'user[name]' => 'user4',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    marley_create(:'user[name]' => 'user5',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-  end
-  def app
-    Marley::Router.new
-  end
-  def test_private_message
-    @marley_test={:root_uri => '', :resource => 'private_message'}
-    authorize 'user1','asdfasdf'
-    marley_read({})
-    marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
-    Marley::Resources::User[:name => 'user1'].update(:user_type => 'Admin')
-    marley_create({:code => 400,:'private_message[recipients]' => 'user2',:'private_message[message]' => 'asdf'})
-    marley_create({:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
-  end
-  def test_posts
-    @marley_test={:root_uri => '', :resource => 'post'}
-    marley_read({:code => 401})
-    authorize 'user1','asdfasdf'
-    marley_read({})
-  end
-
-end

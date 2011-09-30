@@ -104,7 +104,7 @@ module Marley
         end
         if $request[:user].class==User
           self.recipients.split(',').each do |recipient|
-            errors.add(:recipients, "You may only send PM's to Admins or Mods. #{recipient} is neither of those") unless [Admin,Moderator].include?(User[:name => recipient].class)
+            errors.add(:recipients, "You may only send PM's to Admins or Mods. #{recipient} is neither of those") unless ['Admin','Moderator'].include?(User[:name => recipient].user_type)
           end
         end
       end
