@@ -55,7 +55,7 @@ class UserTests < Test::Unit::TestCase
     get '/'
     assert_equal 200, last_response.status
     get '/asdf'
-    assert_equal 500, last_response.status
+    assert_equal 404, last_response.status
   end
   def test_new_users
     resp=marley_create(:code => 400 )

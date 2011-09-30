@@ -81,7 +81,7 @@ module Marley
       resp_code=403
       json=[:authorization,{:message => 'Not authorized'}].to_json
       html="<p>You are not authorized for this opteration: #{$!.message}</p>"
-    rescue RoutingError
+    rescue RoutingError,NameError
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=404
       json=[:routing,{:message => $!.message}].to_json
@@ -92,7 +92,6 @@ module Marley
       json=[:validation,$!.errors].to_json
       html="<pre>#{$!.errors}</pre>"
     rescue
-      p "#{$!.message}\n#{$!.backtrace}"
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=500
       json=[:unknown, {:message => $!.message,:backtrace => $!.backtrace}].to_json
