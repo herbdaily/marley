@@ -64,8 +64,9 @@ module Marley
       verb=request.request_method.downcase
       verb=$request[:post_params].delete(:_method).match(/^(put|delete)$/i)[1] rescue verb 
       $request[:verb]="rest_#{verb}"
-      @resource=Resources.const_get($request[:path] ? $request[:path][0].camelize : @opts[:default_resource])
-      raise RoutingError $request[:path] unless @resource
+      rn=$request[:path] ? $request[:path][0].camelize : @opts[:default_resource]
+      raise RoutingError $request[:path] unless Resources.constants.include?(rn)
+      @resource=Resources.const_get(rn)
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
       @controller=@resource.respond_to?($request[:verb]) ? @resource : @resource.controller
       json=@controller.send($request[:verb]).to_json
@@ -81,7 +82,7 @@ module Marley
       resp_code=403
       json=[:authorization,{:message => 'Not authorized'}].to_json
       html="<p>You are not authorized for this opteration: #{$!.message}</p>"
-    rescue RoutingError,NameError
+    rescue RoutingError
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=404
       json=[:routing,{:message => $!.message}].to_json

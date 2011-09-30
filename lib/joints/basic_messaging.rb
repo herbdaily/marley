@@ -100,11 +100,10 @@ module Marley
         super
         validates_presence [:recipients]
         self.recipients.split(',').each do |recipient|
-          errors.add(:recipients, "Invalid user: #{recipient}") unless User[:name => recipient]
-        end
-        if $request[:user].class==User
-          self.recipients.split(',').each do |recipient|
-            errors.add(:recipients, "You may only send PM's to Admins or Mods. #{recipient} is neither of those") unless ['Admin','Moderator'].include?(User[:name => recipient].user_type)
+          if u=User[:name => recipient]
+            errors.add(:recipients, "You may only send PM's to Admins or Mods. #{recipient} is neither of those") unless (['Admin','Moderator'].include?(User[:name => recipient].user_type) || [Admin,Moderator].include?($request[:user].class))
+          else
+            errors.add(:recipients, "Invalid user: #{recipient}")
           end
         end
       end

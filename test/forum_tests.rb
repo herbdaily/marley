@@ -96,10 +96,20 @@ class ForumTests < Test::Unit::TestCase
         marley_read({})
       end
       should "reject a PM with only recipients" do
-        marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+        resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+        assert_equal "validation", resp[0]
+        assert_equal ["is required"], resp[1]['title']
+        assert_equal ["is required"], resp[1]['message']
+      end
+      should "reject a PM to a non-existent user" do
+        resp=marley_create({:code => 400,:'private_message[recipients]' => 'asdfasdfasdfasdf',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+        assert_equal "validation", resp[0]
+        assert resp[1]['recipients']
       end
       should "reject a PM from user to user" do
-        marley_create({:code => 400,:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+        resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+        assert_equal "validation", resp[0]
+        assert resp[1]['recipients']
       end
       should "accept a PM to admin" do
          marley_create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
@@ -110,7 +120,10 @@ class ForumTests < Test::Unit::TestCase
         authorize 'admin','asdfasdf'
       end
       should "reject a PM with only recipients" do
-        marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+        resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+        assert_equal "validation", resp[0]
+        assert_equal ["is required"], resp[1]['title']
+        assert_equal ["is required"], resp[1]['message']
       end
       should "accept a PM to user1" do
          marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
