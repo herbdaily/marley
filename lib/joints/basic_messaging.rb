@@ -66,7 +66,7 @@ module Marley
         super && ($request[:user]==author || self.recipients.match(/\b#{$request[:user].name}\b}/))
       end
       def self.authorize_rest_post(asdf)
-        true #need to change this
+        true #may need to change this, for now auth is handled in validation
       end
       def after_initialize
         super
@@ -85,7 +85,6 @@ module Marley
           recipients.split(',').each do |recipient|
             "inbox,#{tags}".split(/\s*,\s*/).each do |tag|
               t={:user_id => User[:name => recipient][:id],:tag =>tag}
-              p t
               add_user_tag(UserTag[t] || UserTag.create(t))
             end
           end
