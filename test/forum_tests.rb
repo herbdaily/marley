@@ -105,6 +105,17 @@ class ForumTests < Test::Unit::TestCase
          marley_create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
     end
+    context "admin logged in" do
+      setup do
+        authorize 'admin','asdfasdf'
+      end
+      should "reject a PM with only recipients" do
+        marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
+      end
+      should "accept a PM to user1" do
+         marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+      end
+    end
   end
 end
 
