@@ -6,11 +6,12 @@ module Marley
     klass_key="#{tagged_class.table_name.to_s.singularize}_id"
     if user_class
       Resources::UserTag.many_to_many klass.to_sym, :join_table => join_table,:left_key => 'tag_id',:right_key => klass_key
-      tagged_class.many_to_many :user_tags,:join_table => join_table,:left_key => klass_key,:right_key => 'tag_id' ,:extend => Module.new  do
-        def current_user_tags
-          filter(:user_id => $request[:user][:id])
-        end
-      end
+      tagged_class.many_to_many :user_tags,:join_table => join_table,:left_key => klass_key,:right_key => 'tag_id' 
+      #tagged_class.many_to_many :user_tags,:join_table => join_table,:left_key => klass_key,:right_key => 'tag_id' ,:extend => Module.new  do
+      #  def current_user_tags
+      #    filter(:user_id => $request[:user][:id])
+      #  end
+      #end
       Resources.const_get(user_class).one_to_many :user_tags
       Resources::UserTag.many_to_one Resources.const_get(user_class).name.underscore.to_sym
     else

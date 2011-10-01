@@ -71,6 +71,7 @@ module Marley
           threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => tag_ids)
         end
         threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
+        []
       end
       def posts(params={})
         params||={}

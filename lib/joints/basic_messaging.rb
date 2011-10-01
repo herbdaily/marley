@@ -70,7 +70,8 @@ module Marley
       end
       def after_initialize
         super
-        @tags=user_tags.current_user_tags.map{|t| t.tag}.join(",") unless new?
+        @tags=user_tags_dataset.filter(:user_id => $request[:user][:id]).map{|t| t.tag}.join(",") unless new?
+        #@tags=user_tags_dataset.current_user_tags.map{|t| t.tag}.join(",") unless new?
       end
       def reply
         self.class.new({:parent_id => self[:id],:author_id => $request[:user][:id],:recipients => author.name, :title => "re: #{title}"})
@@ -115,7 +116,8 @@ module Marley
         public_tags.map{|t| t.tag}.join(",") unless new?
       end
       def my_tags
-        user_tags.current_user_tags.map{|t| t.tag}.join(",") unless new?
+        user_tags.filter(:user_id => $request[:user][:id]).map{|t| t.tag}.join(",") unless new?
+        #user_tags.current_user_tags.map{|t| t.tag}.join(",") unless new?
       end
       def after_create
         tags.split(/\s*,\s*/).each {|tag| add_message_tag({:user_id => nil,:tag =>tag})} if respond_to?(:public_tags) && tags

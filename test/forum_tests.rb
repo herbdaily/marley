@@ -9,13 +9,12 @@ ARGV[0]='test'
 require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
 
-class ForumTests < Test::Unit::TestCase
+class BasicTests < Test::Unit::TestCase
   include Rack::Test::Methods
   include Marley::TestHelpers
   def app
     Marley::Router.new
   end
-
   context "no user" do
     setup do
       Marley::Resources::User.delete
@@ -75,8 +74,14 @@ class ForumTests < Test::Unit::TestCase
       marley_read({})
     end
   end
-
-  context "PM validation" do
+end
+class MessageTests < Test::Unit::TestCase
+  include Rack::Test::Methods
+  include Marley::TestHelpers
+  def app
+    Marley::Router.new
+  end
+  context "Private Messages" do
     setup do
       Marley::Resources::User.delete
       Marley::Resources::Message.delete
@@ -88,7 +93,7 @@ class ForumTests < Test::Unit::TestCase
       Marley::Resources::User[:name => 'admin'].update(:user_type => 'Admin')
       @marley_test[:resource]='private_message'
     end
-    context "user1 logged in" do
+    context "regular user validations" do
       setup do
         authorize 'user1','asdfasdf'
       end
@@ -115,7 +120,7 @@ class ForumTests < Test::Unit::TestCase
          marley_create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
     end
-    context "admin logged in" do
+    context "admin validations" do
       setup do
         authorize 'admin','asdfasdf'
       end
@@ -127,6 +132,13 @@ class ForumTests < Test::Unit::TestCase
       end
       should "accept a PM to user1" do
          marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+      end
+    end
+    context "send and receive" do
+      should "sent message should have sent tag in senders tags" do
+        authorize 'admin','asdfasdf'
+         marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+         resp=marley_read({})
       end
     end
   end
