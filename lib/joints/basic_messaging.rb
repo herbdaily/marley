@@ -137,6 +137,25 @@ module Marley
         user_tags.filter(:user_id => $request[:user][:id]).map{|t| t.tag}.join(",") unless new?
         #user_tags.current_user_tags.map{|t| t.tag}.join(",") unless new?
       end
+      def self.list(params={})
+        params||={}
+        if specified_tags=params.delete(:tags)
+          tag_ids=PublicTags.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
+        end
+        if specified_user_tags=params.delete(:user_tags)
+          user_tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
+        end
+        threads=filter(params)
+        if specified_tags
+          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => tag_ids)
+          if specified_user_tags
+            threads=threads.or(:tag_id => user_tag_ids)
+          end
+        elsif specified_user_tags
+          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => user_tag_ids)
+        end
+        threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
+      end
       def after_create
         tags.split(/\s*,\s*/).each {|tag| add_message_tag({:user_id => nil,:tag =>tag})} if respond_to?(:public_tags) && tags
         my_tags.split(/\s*,\s*/).each {|tag| add_message_tag({:user_id => $request[:user][:id],:tag =>tag})} if respond_to?(:user_tags) && my_tags
