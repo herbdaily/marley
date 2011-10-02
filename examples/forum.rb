@@ -61,18 +61,6 @@ module Marley
       end
     end
     class User < BasicUser 
-      def private_messages(params={})
-        params||={}
-        if specified_tags=params.delete(:tags)
-          tag_ids=user_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
-        end
-        threads=PrivateMessage.filter("author_id=#{$request[:user][:id]} or recipients like('%#{$request[:user][:name]}%')".lit)
-        threads=threads.filter(params)
-        if specified_tags
-          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => tag_ids)
-        end
-        threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
-      end
       def posts(params={})
         params||={}
         if specified_tags=params.delete(:tags)
