@@ -134,11 +134,15 @@ class MessageTests < Test::Unit::TestCase
          marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
     end
-    context "send and receive" do
-      should "sent message should have sent tag in senders tags" do
+    context "send message" do
+      should "show up in PM list of sender and receiver" do
         authorize 'admin','asdfasdf'
-         marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
-         resp=marley_read({})
+        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+        resp=marley_read({})
+        assert_equal 1, resp.length
+        authorize 'user1','asdfasdf'
+        resp=marley_read({})
+        assert_equal 1, resp.length
       end
     end
   end

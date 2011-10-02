@@ -12,6 +12,12 @@ module Marley
   def self.pm_tagging(user_class)
     tagging_for('PrivateMessage', user_class)
   end
+  module MessageUserMethods
+  end
+  module PrivateMessageUserMethods
+  end
+  module PostUserMethods
+  end
 
   module Resources
     class Message < Sequel::Model
