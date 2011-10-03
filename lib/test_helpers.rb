@@ -39,12 +39,20 @@ module Marley
         super(n)
       end
     end
+    def name
+      self.properties && self.properties['name'] || self.properties['uri']
+    end
+    def schema
+      self.resource.to_s=='instance' && ReggaeSchema.new(self.properties.schema)
+    end
     def find_resource(rn)
       if is_resource?
-        self.resource==rn ? self : (contents.nil? ? nil : contents.find_resource(rn))
+        self.name.to_s==rn ? self : (contents.nil? ? nil : contents.find_resource(rn))
       else
         find {|a| self.class.new(a).find_resource(rn)}
       end
+    end
+    class ReggaeSchema < Array
     end
   end
 end
