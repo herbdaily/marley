@@ -11,12 +11,40 @@ module Marley
         puts "params: #{params}" if @marley_test[:debug]
         send(method,resource_uri,params)
         assert_equal(expected_code || RESP_CODES[method],last_response.status)
-        JSON.parse(last_response.body) rescue last_response.body
+        Reggae.new(JSON.parse(last_response.body)) rescue last_response.body
       end
       ['create','read','update','delete'].each do |op|
         define_method("marley_#{op}".to_sym) do |params| 
           process(CRUD2REST[op],params)
         end
       end
+  end
+  class Reggae < Array
+    def resource
+      self[0].class==String ? self[0] : nil
+    end
+    def properties
+      self[1].class==Hash ? self[1] : nil
+    end
+    def contents
+      resource ? self[2] : nil
+    end
+    def is_resource?
+      ! resource.nil?
+    end
+    def [](n)
+      if super(n).class==Array
+        self.class.new(super(n))
+      else
+        super(n)
+      end
+    end
+    def find_resource(rn)
+      if is_resource?
+        self.resource==rn ? self : (contents.nil? ? nil : contents.find_resource(rn))
+      else
+        find {|a| self.class.new(a).find_resource(rn)}
+      end
+    end
   end
 end
