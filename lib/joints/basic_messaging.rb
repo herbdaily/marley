@@ -12,12 +12,6 @@ module Marley
   def self.pm_tagging(user_class)
     tagging_for('PrivateMessage', user_class)
   end
-  module MessageUserMethods
-  end
-  module PrivateMessageUserMethods
-  end
-  module PostUserMethods
-  end
 
   module Resources
     class Message < Sequel::Model
@@ -25,6 +19,8 @@ module Marley
       plugin :tree
       many_to_one :author, :class => :'Marley::Resources::User'
       @owner_col=:author_id
+      def write_cols; new? ?  [:message,:title,:parent_id] : []; end
+      def required_cols; write_cols - [:parent_id]; end
       def rest_schema
         schema=super
         schema << [:text,:author,RESTRICT_RO,author.to_s]
@@ -34,10 +30,12 @@ module Marley
         end
         schema
       end
-      def write_cols
-        new? ?  [:message,:title,:parent_id] : []
+      def rest_associations
+        assoc=[]
+        assoc << :public_tags if respond_to?(:public_tags)
+        assoc << user_tags_dataset.filter(:user_id => $request[:user][:id]) if respond_to?(:user_tags)
+        assoc
       end
-      def required_cols; write_cols - [:parent_id]; end
       def authorize_rest_get(meth)
         self.class.instance_get_actions.include?(meth)
       end
@@ -57,9 +55,6 @@ module Marley
       end
       def thread
         to_a << children.map{|m| m.thread}
-      end
-      def to_a
-        a=super
       end
     end
     class PrivateMessage < Message
@@ -107,11 +102,9 @@ module Marley
               add_user_tag(UserTag[t] || UserTag.create(t))
             end
           end
-          if  ! recipients.match(/\b#{author.name}\b/)
-            "sent,#{tags}".split(/\s*,\s*/).each do |tag|
-              t={:user_id => author_id,:tag =>tag}
-              add_user_tag(UserTag[t] || UserTag.create(t))
-            end
+          "sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}".split(/\s*,\s*/).each do |tag|
+            t={:user_id => author_id,:tag =>tag}
+            add_user_tag(UserTag[t] || UserTag.create(t))
           end
         end
       end

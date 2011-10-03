@@ -86,6 +86,7 @@ class MessageTests < Test::Unit::TestCase
       Marley::Resources::User.delete
       Marley::Resources::Message.delete
       Marley::Resources::Tag.delete
+      DB[:messages_tags].delete
       @marley_test={:root_uri => '', :resource => 'user'}
       marley_create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
       marley_create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
