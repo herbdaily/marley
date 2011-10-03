@@ -141,9 +141,11 @@ class MessageTests < Test::Unit::TestCase
         marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
         resp=marley_read({})
         assert_equal 1, resp.length
+        assert_equal 3, resp[0].length
         authorize 'user1','asdfasdf'
         resp=marley_read({})
         assert_equal 1, resp.length
+        assert_equal 3, resp[0].length
       end
     end
   end

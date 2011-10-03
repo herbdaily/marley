@@ -54,7 +54,7 @@ module Marley
         validates_type User, :author
       end
       def thread
-        to_a << children.map{|m| m.thread}
+        children.length > 0 ? to_a << children.map{|m| m.thread} : to_a
       end
     end
     class PrivateMessage < Message
