@@ -154,7 +154,7 @@ class MessageTests < Test::Unit::TestCase
       should "have sent tag for sender" do
         resp=marley_read({})
         assert_equal 3, resp[0].length
-        p resp.find_instance('user_tag')
+        p resp.find_instances('user_tag')
         assert_contains resp[0][2][0][0][1]["schema"][2], "sent"
       end
     end

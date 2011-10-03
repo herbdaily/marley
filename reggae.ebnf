@@ -1,8 +1,8 @@
 resource ::= '[' resource_type ',' '{' properties '}' (','  '[' resource (',' resource )* ']' )? ']'  
 
-resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' 
+resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' | 'validation'
 
-properties ::= ('{' (menu_property | msg_property | uri_property | instance_property) ':' value '}')+
+properties ::= ('{' (menu_property | msg_property | uri_property | instance_property | validation_property) ':' value '}')+
 
 menu_property ::=  'title' | 'description' | 'name' | 'items'
 
@@ -11,6 +11,8 @@ uri_property ::= 'title' | 'description' | 'url'
 msg_property ::= 'title' | 'description'
 
 instance_property ::= 'uri' | 'new_rec' | 'search' | 'schema'
+
+validation_property ::= string_literal
 
 title_value ::= string_literal
 
