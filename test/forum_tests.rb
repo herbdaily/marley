@@ -26,21 +26,21 @@ class BasicTests < Test::Unit::TestCase
     end
     should "return an error when trying to create a user with no params" do
       resp=marley_create(:code => 400 )
-      assert_equal "validation", resp.resource
+      assert_equal "validation", resp.resource_type
       assert_equal ["is required"], resp.properties['name']
     end
     should "return an error when trying to create a user with only a name" do
       resp=marley_create(:code => 400, :'user[name]' => 'asdf')
-      assert_equal "validation", resp.resource
+      assert_equal "validation", resp.resource_type
     end
     should "return an error when password is too short" do
       resp=marley_create(:code => 400, :'user[name]' => 'asdf',:'user[password]' => 'asdfaf')
-      assert_equal "validation", resp.resource
+      assert_equal "validation", resp.resource_type
       assert_equal ["Password must contain at least 8 characters"], resp.properties['password']
     end
     should "return an error when trying to create a user with only a name and password" do
       resp=marley_create(:code => 400, :'user[name]' => 'asdf',:'user[password]' => 'asdfasdf')
-      assert_equal "validation", resp.resource
+      assert_equal "validation", resp.resource_type
       assert_equal ["Passwords do not match"], resp.properties['confirm_password']
     end
     should "allow creation of a new user and disallow user with the same name" do
@@ -103,18 +103,18 @@ class MessageTests < Test::Unit::TestCase
       end
       should "reject a PM with only recipients" do
         resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
-        assert_equal "validation", resp.resource
+        assert_equal "validation", resp.resource_type
         assert_equal ["is required"], resp.properties['title']
         assert_equal ["is required"], resp.properties['message']
       end
       should "reject a PM to a non-existent user" do
         resp=marley_create({:code => 400,:'private_message[recipients]' => 'asdfasdfasdfasdf',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
-        assert_equal "validation", resp.resource
+        assert_equal "validation", resp.resource_type
         assert resp.properties['recipients']
       end
       should "reject a PM from user to user" do
         resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
-        assert_equal "validation", resp.resource
+        assert_equal "validation", resp.resource_type
         assert resp.properties['recipients']
       end
       should "accept a PM to admin" do
@@ -127,7 +127,7 @@ class MessageTests < Test::Unit::TestCase
       end
       should "reject a PM with only recipients" do
         resp=marley_create({:code => 400,:'private_message[recipients]' => 'user2'})
-        assert_equal "validation", resp.resource
+        assert_equal "validation", resp.resource_type
         assert_equal ["is required"], resp.properties['title']
         assert_equal ["is required"], resp.properties['message']
       end
@@ -154,7 +154,7 @@ class MessageTests < Test::Unit::TestCase
       should "have sent tag for sender" do
         resp=marley_read({})
         assert_equal 3, resp[0].length
-        p resp.find_resource('user_tag')
+        p resp.find_instance('user_tag')
         assert_contains resp[0][2][0][0][1]["schema"][2], "sent"
       end
     end
