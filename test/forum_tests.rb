@@ -156,6 +156,12 @@ class MessageTests < Test::Unit::TestCase
         assert_equal 3, resp[0].length
         assert_equal "sent", resp.find_instances('user_tag')[0].schema.tag
       end
+      should "have inbox tag for receiver" do
+        authorize 'user1','asdfasdf'
+        resp=marley_read({})
+        assert_equal 3, resp[0].length
+        assert_equal "inbox", resp.find_instances('user_tag')[0].schema.tag
+      end
     end
   end
 end
