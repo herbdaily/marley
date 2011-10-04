@@ -53,7 +53,7 @@ module Marley
       ReggaeSchema.new(self.properties["schema"])
     end
   end
-  class ReggaeValidation < Reggae
+  class ReggaeValidation < ReggaeResource
   end
   class ReggaeSchema < Array
     def [](*args)

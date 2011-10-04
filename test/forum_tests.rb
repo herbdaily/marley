@@ -135,7 +135,7 @@ class MessageTests < Test::Unit::TestCase
          marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
     end
-    context "send message" do
+    context "send message with no tags" do
       setup do
         Marley::Resources::Message.delete
         Marley::Resources::Tag.delete
@@ -162,6 +162,18 @@ class MessageTests < Test::Unit::TestCase
         assert_equal 3, resp[0].length
         assert_equal "inbox", resp.find_instances('user_tag')[0].schema.tag
       end
+    end
+    context "send message with 2 tags" do
+      setup do
+        Marley::Resources::Message.delete
+        Marley::Resources::Tag.delete
+        DB[:messages_tags].delete
+        @marley_test={:root_uri => '', :resource => 'private_message'}
+        authorize 'admin','asdfasdf'
+        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :tags => 'test,test2'})
+      end
+    end
+    should "work" do
     end
   end
 end
