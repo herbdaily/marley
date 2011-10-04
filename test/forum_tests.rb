@@ -170,10 +170,17 @@ class MessageTests < Test::Unit::TestCase
         DB[:messages_tags].delete
         @marley_test={:root_uri => '', :resource => 'private_message'}
         authorize 'admin','asdfasdf'
-        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :tags => 'test,test2'})
+        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
       end
-    end
-    should "work" do
+      should "have sent tag and both specified tags for sender" do
+        resp=marley_read({})
+        assert_equal 3, resp[0].find_instances('user_tag').length
+      end
+      should "have inbox tag and both specified tags for receiver" do
+        authorize 'user1','asdfasdf'
+        resp=marley_read({})
+        assert_equal 3, resp[0].find_instances('user_tag').length
+      end
     end
   end
 end

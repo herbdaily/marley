@@ -69,11 +69,6 @@ module Marley
       def self.authorize_rest_post(asdf)
         true #may need to change this, for now auth is handled in validation
       end
-      def after_initialize
-        super
-        @tags=user_tags_dataset.filter(:user_id => $request[:user][:id]).map{|t| t.tag}.join(",") unless new?
-        #@tags=user_tags_dataset.current_user_tags.map{|t| t.tag}.join(",") unless new?
-      end
       def self.list(params={})
         params||={}
         if specified_tags=params.delete(:tags)
