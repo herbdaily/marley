@@ -137,10 +137,6 @@ class MessageTests < Test::Unit::TestCase
     end
     context "send message with no tags" do
       setup do
-        Marley::Resources::Message.delete
-        Marley::Resources::Tag.delete
-        DB[:messages_tags].delete
-        @marley_test={:root_uri => '', :resource => 'private_message'}
         authorize 'admin','asdfasdf'
         marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
@@ -163,23 +159,58 @@ class MessageTests < Test::Unit::TestCase
         assert_equal "inbox", resp.find_instances('user_tag')[0].schema.tag
       end
     end
-    context "send message with 2 tags" do
+    context "message with 2 tags" do
       setup do
-        Marley::Resources::Message.delete
-        Marley::Resources::Tag.delete
-        DB[:messages_tags].delete
-        @marley_test={:root_uri => '', :resource => 'private_message'}
         authorize 'admin','asdfasdf'
         marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
       end
       should "have sent tag and both specified tags for sender" do
         resp=marley_read({})
-        assert_equal 3, resp[0].find_instances('user_tag').length
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["sent", "test", "test2"], user_tags.map{|t| t.schema.tag}
       end
       should "have inbox tag and both specified tags for receiver" do
         authorize 'user1','asdfasdf'
         resp=marley_read({})
-        assert_equal 3, resp[0].find_instances('user_tag').length
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema.tag}
+      end
+      should "have no  messages for user2" do
+        authorize 'user2','asdfasdf'
+        resp=marley_read({})
+        assert_equal 0, resp.length
+      end
+    end
+    context "message with 2 tags and 2 receivers" do
+      setup do
+        authorize 'admin','asdfasdf'
+        marley_create({:'private_message[recipients]' => 'user1,user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
+      end
+      should "have sent tag and both specified tags for sender" do
+        resp=marley_read({})
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["sent", "test", "test2"], user_tags.map{|t| t.schema.tag}
+      end
+      should "have inbox tag and both specified tags for receiver1" do
+        authorize 'user1','asdfasdf'
+        resp=marley_read({})
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema.tag}
+      end
+      should "have inbox tag and both specified tags for receiver2" do
+        authorize 'user2','asdfasdf'
+        resp=marley_read({})
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema.tag}
+      end
+    end
+    context "message listing" do
+      setup do
+        authorize 'admin','asdfasdf'
+        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
+      end
+      should "work" do
+        true
       end
     end
   end
