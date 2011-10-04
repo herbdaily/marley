@@ -227,6 +227,35 @@ class MessageTests < Test::Unit::TestCase
           resp=marley_read({:'private_message[tags]' => 'test1'})
           assert_equal 2, resp.length
         end
+        should "show 5 messages with 'inbox' tag" do
+          resp=marley_read({:'private_message[tags]' => 'inbox'})
+          assert_equal 5, resp.length
+        end
+        should "show 5 messages with 'test' or 'test1' tags" do
+          resp=marley_read({:'private_message[tags]' => 'test,test1'})
+          assert_equal 5, resp.length
+        end
+      end
+      context "user2 listings" do
+        setup do
+          authorize 'user2','asdfasdf'
+        end
+        should "show 0 messages with 'test' tag" do
+          resp=marley_read({:'private_message[tags]' => 'test'})
+          assert_equal 0, resp.length
+        end
+        should "show 2 messages with 'test1' tag" do
+          resp=marley_read({:'private_message[tags]' => 'test1'})
+          assert_equal 2, resp.length
+        end
+        should "show 2 messages with 'inbox' tag" do
+          resp=marley_read({:'private_message[tags]' => 'inbox'})
+          assert_equal 2, resp.length
+        end
+        should "show 2 messages with 'test' or 'test1' tags" do
+          resp=marley_read({:'private_message[tags]' => 'test,test1'})
+          assert_equal 2, resp.length
+        end
       end
     end
   end
