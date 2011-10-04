@@ -207,10 +207,26 @@ class MessageTests < Test::Unit::TestCase
     context "message listing" do
       setup do
         authorize 'admin','asdfasdf'
-        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
+        #3 messages with tag "test" for user 1
+        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test'})
+        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test'})
+        marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title3',:'private_message[message]' => 'body3', :'private_message[tags]' => 'test'})
+        #2 messages with tag "test1" for user1 and user2
+        marley_create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test1'})
+        marley_create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test1'})
       end
-      should "work" do
-        true
+      context "user1 listings" do
+        setup do
+          authorize 'user1','asdfasdf'
+        end
+        should "show 3 messages with 'test' tag" do
+          resp=marley_read({:'private_message[tags]' => 'test'})
+          assert_equal 3, resp.length
+        end
+        should "show 2 messages with 'test1' tag" do
+          resp=marley_read({:'private_message[tags]' => 'test1'})
+          assert_equal 2, resp.length
+        end
       end
     end
   end

@@ -21,7 +21,7 @@ module Marley
         raise AuthorizationError unless a.authorize(@method)
       end
       if method
-        @instances=if p=$request[:get_params][@model.to_s.underscore.to_sym] 
+        @instances=if p=$request[:get_params][@model.to_s.sub(/.*::/,'').underscore.to_sym]
           method.call(p) 
         else 
           method.call

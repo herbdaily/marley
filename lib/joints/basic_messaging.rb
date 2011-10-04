@@ -77,7 +77,7 @@ module Marley
         threads=filter("author_id=#{$request[:user][:id]} or recipients like('%#{$request[:user][:name]}%')".lit)
         threads=threads.filter(params)
         if specified_tags
-          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => tag_ids)
+          threads=threads.join(:messages_tags,:message_id => :id).filter(:tag_id => tag_ids)
         end
         threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
@@ -135,12 +135,12 @@ module Marley
         end
         threads=filter(params)
         if specified_tags
-          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => tag_ids)
+          threads=threads.join(:messages_tags,:message_id => :id).filter(:tag_id => tag_ids)
           if specified_user_tags
             threads=threads.or(:tag_id => user_tag_ids)
           end
         elsif specified_user_tags
-          threads=threads.join(:message_tags,:message_id => :id).filter(:tag_id => user_tag_ids)
+          threads=threads.join(:messages_tags,:message_id => :id).filter(:tag_id => user_tag_ids)
         end
         threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
