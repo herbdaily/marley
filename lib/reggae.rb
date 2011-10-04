@@ -56,7 +56,20 @@ module Marley
   class ReggaeValidation < Reggae
   end
   class ReggaeSchema < Array
+    def [](*args)
+      ReggaeColSpec.new(super).to_resource 
+    end
+    def method_missing(meth, *args, &block)
+      if spec=ReggaeColSpec.new(find {|cs|ReggaeColSpec.new(cs).col_name==meth.to_s})
+        spec.col_value
+      else
+        super
+      end
+    end
   end
   class ReggaeColSpec < Array
+    ['col_type','col_name','col_restrictions', 'col_value'].each_with_index do |prop_name, i|
+      define_method(prop_name.to_sym) {self[i]} 
+    end
   end
 end
