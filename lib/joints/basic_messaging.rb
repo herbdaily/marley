@@ -7,10 +7,10 @@ module Marley
     self.pm_tagging(user_class) if user_class
   end
   def self.post_tagging(user_class=nil)
-    tagging_for('Post', user_class)
+    Resources::Tag.tagging_for('Post', user_class)
   end
   def self.pm_tagging(user_class)
-    tagging_for('PrivateMessage', user_class)
+    Resources::Tag.tagging_for('PrivateMessage', user_class)
   end
 
   module Resources
@@ -94,12 +94,12 @@ module Marley
           recipients.split(',').each do |recipient|
             "inbox,#{tags}".split(/\s*,\s*/).each do |tag|
               t={:user_id => User[:name => recipient][:id],:tag =>tag}
-              add_user_tag(UserTag[t] || UserTag.create(t))
+              add_user_tag(UserTag.find_or_create(t))
             end
           end
           "sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}".split(/\s*,\s*/).each do |tag|
             t={:user_id => author_id,:tag =>tag}
-            add_user_tag(UserTag[t] || UserTag.create(t))
+            add_user_tag(UserTag.find_or_create(t))
           end
         end
       end
@@ -145,8 +145,8 @@ module Marley
         threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
       def after_create
-        tags.split(/\s*,\s*/).each {|tag| add_message_tag({:user_id => nil,:tag =>tag})} if respond_to?(:public_tags) && tags
-        my_tags.split(/\s*,\s*/).each {|tag| add_message_tag({:user_id => $request[:user][:id],:tag =>tag})} if respond_to?(:user_tags) && my_tags
+        tags.split(/\s*,\s*/).each {|tag| add_message_tag(PublicTag.find_or_create({:user_id => nil,:tag =>tag}))} if respond_to?(:public_tags) && tags
+        my_tags.split(/\s*,\s*/).each {|tag| add_message_tag(UserTag.find_or_create({:user_id => $request[:user][:id],:tag =>tag}))} if respond_to?(:user_tags) && my_tags
       end
       def reply
         self.class.new({:parent_id => self[:id],:author_id => $request[:user][:id],:tags => self.tags, :title => "re: #{title}"})
