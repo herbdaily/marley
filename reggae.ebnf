@@ -1,4 +1,4 @@
-resource_list ::= '[' resource (',' resource)+ ']'
+resource_list ::= '[' resource (',' resource)* ']'
 
 resource ::= '[' resource_type ',' '{' properties '}' (','  '[' resource (',' resource )* ']' )? ']'  
 
@@ -12,7 +12,7 @@ uri_property ::= 'title' | 'description' | 'url'
 
 msg_property ::= 'title' | 'description'
 
-instance_property ::= 'uri' | 'new_rec' | 'search' | 'schema'
+instance_property ::= 'uri' | 'new_rec' | 'search' | 'schema' | 'instance_get_actions'
 
 validation_property ::= string_literal
 
@@ -29,6 +29,10 @@ new_rec_value ::= boolean_value
 search_value ::= boolean_value
 
 schema_value ::= '[' col_spec (',' colspec)? ']'
+
+instance_get_actions ::= '[' action (',' action)*']'
+
+action ::= string_value
 
 col_spec ::= '[' col_type ',' col_name ',' col_restrictions (',' col_value)?  ']'
 

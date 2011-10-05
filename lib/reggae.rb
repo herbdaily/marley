@@ -48,7 +48,7 @@ module Marley
     @@valid_properties=['title','description','uri']
   end
   class ReggaeInstance < ReggaeResource
-    @@valid_properties=['new_rec','search','uri']
+    @@valid_properties=['new_rec','search','uri','instance_get_actions']
     def schema
       ReggaeSchema.new(self.properties["schema"])
     end

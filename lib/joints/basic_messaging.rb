@@ -50,8 +50,9 @@ module Marley
       end
     end
     class PrivateMessage < Message
-      attr_accessor :tags
       def self.tagging(user_class)
+        attr_accessor :tags
+        @instance_get_actions << 'add_tag'
         Tag.tagging_for('PrivateMessage', user_class)
       end
       @instance_get_actions=['reply','reply_all']
@@ -111,8 +112,8 @@ module Marley
       end
     end
     class Post < Message
-      attr_accessor :tags,:my_tags
       def self.tagging(user_class=nil)
+        attr_accessor :tags,:my_tags
         Tag.tagging_for('Post', user_class) if user_class
         Tag.tagging_for('Post')
       end

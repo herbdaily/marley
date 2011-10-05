@@ -158,6 +158,10 @@ class MessageTests < Test::Unit::TestCase
         assert_equal 3, resp[0].length
         assert_equal "inbox", resp.find_instances('user_tag')[0].schema.tag
       end
+      should "have reply, reply_all and add_tag instance get actions" do
+        resp=marley_read({})
+        assert_same_elements ['reply','reply_all','add_tag'], resp[0].instance_get_actions
+      end
     end
     context "message with 2 tags" do
       setup do
