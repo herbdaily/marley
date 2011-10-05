@@ -68,6 +68,6 @@ module Marley
     class Moderator < User
       def self.requires_user?;true;end
     end
+    Message.tagging('User')
   end
-  message_tagging('User')
 end

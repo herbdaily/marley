@@ -1,20 +1,12 @@
 require 'sanitize'
 
 module Marley
-  #tagging joint must be loaded before any of these is run
-  def self.message_tagging(user_class=nil)
-    self.post_tagging(user_class)
-    self.pm_tagging(user_class) if user_class
-  end
-  def self.post_tagging(user_class=nil)
-    Resources::Tag.tagging_for('Post', user_class)
-  end
-  def self.pm_tagging(user_class)
-    Resources::Tag.tagging_for('PrivateMessage', user_class)
-  end
-
   module Resources
     class Message < Sequel::Model
+      def self.tagging(user_class=nil)
+        Post.tagging(user_class)
+        PrivateMessage.tagging(user_class)
+      end
       plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       plugin :tree
       many_to_one :author, :class => :'Marley::Resources::User'
@@ -59,6 +51,9 @@ module Marley
     end
     class PrivateMessage < Message
       attr_accessor :tags
+      def self.tagging(user_class)
+        Tag.tagging_for('PrivateMessage', user_class) if user_class
+      end
       @instance_get_actions=['reply','reply_all']
       def write_cols;new? ? super << :recipients : super;end
       def required_cols;new? ? super << :recipients : [];end
@@ -117,6 +112,9 @@ module Marley
     end
     class Post < Message
       attr_writer :tags,:my_tags
+      def self.tagging(user_class=nil)
+        Tag.tagging_for('Post', user_class) if user_class
+      end
       @instance_get_actions=['reply']
       def tags
         public_tags.map{|t| t.tag}.join(",") unless new?
