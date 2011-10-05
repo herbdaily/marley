@@ -215,6 +215,23 @@ class MessageTests < Test::Unit::TestCase
         marley_create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test1'})
         marley_create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test1'})
       end
+      context "admin listings" do
+        setup do
+          authorize 'admin','asdfasdf'
+        end
+        should "show 3 messages with 'test' tag" do
+          resp=marley_read({:'private_message[tags]' => 'test'})
+          assert_equal 3, resp.length
+        end
+        should "show 2 messages with 'test1' tag" do
+          resp=marley_read({:'private_message[tags]' => 'test1'})
+          assert_equal 2, resp.length
+        end
+        should "show 5 messages with 'sent' tag" do
+          resp=marley_read({:'private_message[tags]' => 'sent'})
+          assert_equal 5, resp.length
+        end
+      end
       context "user1 listings" do
         setup do
           authorize 'user1','asdfasdf'

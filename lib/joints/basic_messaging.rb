@@ -52,7 +52,7 @@ module Marley
     class PrivateMessage < Message
       attr_accessor :tags
       def self.tagging(user_class)
-        Tag.tagging_for('PrivateMessage', user_class) if user_class
+        Tag.tagging_for('PrivateMessage', user_class)
       end
       @instance_get_actions=['reply','reply_all']
       def write_cols;new? ? super << :recipients : super;end
@@ -111,18 +111,12 @@ module Marley
       end
     end
     class Post < Message
-      attr_writer :tags,:my_tags
+      attr_accessor :tags,:my_tags
       def self.tagging(user_class=nil)
         Tag.tagging_for('Post', user_class) if user_class
+        Tag.tagging_for('Post')
       end
       @instance_get_actions=['reply']
-      def tags
-        public_tags.map{|t| t.tag}.join(",") unless new?
-      end
-      def my_tags
-        user_tags.filter(:user_id => $request[:user][:id]).map{|t| t.tag}.join(",") unless new?
-        #user_tags.current_user_tags.map{|t| t.tag}.join(",") unless new?
-      end
       def self.list(params={})
         params||={}
         if specified_tags=params.delete(:tags)

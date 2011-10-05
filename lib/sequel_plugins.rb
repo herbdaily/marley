@@ -6,7 +6,8 @@ NAME_INDEX=1
 RESTRICTIONS_INDEX=2
 module Sequel::Plugins::RestConvenience
   module ClassMethods
-    attr_accessor :instance_get_actions
+    attr_accessor :instance_get_actions 
+    @instance_get_actions=[]
     def controller
       Marley::ModelController.new(self)
     end

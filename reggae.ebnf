@@ -1,3 +1,5 @@
+resource_list ::= '[' resource (',' resource)+ ']'
+
 resource ::= '[' resource_type ',' '{' properties '}' (','  '[' resource (',' resource )* ']' )? ']'  
 
 resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' | 'validation'
@@ -37,7 +39,4 @@ col_name ::= string_literal
 col_restrictions ::= [1-7]
 
 col_value ::= string_literal
-
-values_value='[' ('[' col_value (',' col_value))* ']')* ']'
-
 
