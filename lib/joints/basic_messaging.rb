@@ -8,6 +8,13 @@ module Marley
         PrivateMessage.tagging(user_class)
       end
       def add_user_tags(user,tags) #does not conflict with add_user_tag
+        if user.class==String
+          user.split(',').each {|u| add_user_tags(User[:name => u][:id],tags)}
+        elsif user.class==Array
+          user.each {|u| add_user_tags(u,tags)}
+        elsif user.class==Fixnum
+          tags.to_s.split(',').each {|tag| add_user_tag(UserTag.find_or_create(:user_id => user, :tag => tag))}
+        end
       end
       def add_public_tags(tags)
       end
@@ -27,10 +34,7 @@ module Marley
         schema
       end
       def rest_associations
-        assoc=[]
-        assoc << :public_tags if respond_to?(:public_tags)
-        assoc << user_tags_dataset.filter(:user_id => $request[:user][:id]) if respond_to?(:user_tags)
-        assoc
+        [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.filter(:user_id => $request[:user][:id]) : nil].compact
       end
       def authorize_rest_get(meth)
         self.class.instance_get_actions.include?(meth)
@@ -91,16 +95,8 @@ module Marley
       end
       def after_create
         if respond_to?(:user_tags)
-          recipients.split(',').each do |recipient|
-            "inbox,#{tags}".split(/\s*,\s*/).each do |tag|
-              t={:user_id => User[:name => recipient][:id],:tag =>tag}
-              add_user_tag(UserTag.find_or_create(t))
-            end
-          end
-          "sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}".split(/\s*,\s*/).each do |tag|
-            t={:user_id => author_id,:tag =>tag}
-            add_user_tag(UserTag.find_or_create(t))
-          end
+          add_user_tags(recipients,"inbox,#{tags}")
+          add_user_tags(author_id,"sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}")
         end
       end
       def validate
