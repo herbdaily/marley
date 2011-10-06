@@ -4,39 +4,39 @@ module Marley
       @model=model
       if $request[:path][1].to_s.match(/^\d+$/) #references a specific instance by ID
         @instance=@model[$request[:path][1].to_i]
-        @method=$request[:path][2]  
-        if @method
-          raise RoutingError.new(@model,@instance,@method) unless @instance.respond_to?(@method)
-          method=@instance.method(@method)
+        @method_name=$request[:path][2]  
+        if @method_name
+          raise RoutingError.new(@model,@instance,@method_name) unless @instance.respond_to?(@method_name)
+          @method=@instance.method(@method_name)
         end
       else #class method -- should yield 0 or more instances of model in an array
-        @method=$request[:path][1] 
-        @method='list' if @method.nil? && $request[:verb]=='rest_get'
-        if @method
-          raise RoutingError.new(@model,@instance,@method) unless @model.respond_to?(@method)
-          method=@model.method(@method)
+        @method_name=$request[:path][1] 
+        @method_name='list' if @method_name.nil? && $request[:verb]=='rest_get'
+        if @method_name
+          raise RoutingError.new(@model,@instance,@method_name) unless @model.respond_to?(@method_name)
+          @method=@model.method(@method_name)
         end
       end
       if (a=@instance || @model).requires_user?
-        raise AuthorizationError unless a.authorize(@method)
+        raise AuthorizationError unless a.authorize(@method_name)
       end
-      if method
+      if @method && $request[:verb] != 'rest_post'
         @instances=if p=$request[:get_params][@model.resource_name.to_sym]
-          method.call(p) 
+          @method.call(p) 
         else 
-          method.call
+          @method.call
         end 
       end
     end
     def rest_get; @instances || @instance; end
     def rest_post
       if @instance
-        raise RoutingError.new(@model,@instance,@method) unless (@instances && p=$request[:post_params][@model.resource_name][@method])
-        p=[p] unless p.class==Array
-        p.map do |i|
-          @newinstance=@model.send("add_#{@method}",i)
-          @newinstance.save(@newinstance.write_cols)
-          @instances << @newinstance
+        raise RoutingError.new(@model,@instance,@method_name) unless @method
+        params=$request[:post_params][@model.resource_name][@method_name] || $request[:post_params][@method_name]
+        raise ValidationFailed unless params
+        params=[params] unless params.class==Array
+        params.map do |param|
+          @model.send("add_#{@method_name}",param)
         end
       else
         @instance=@model.new($request[:post_params][@model.resource_name.to_sym] || {})

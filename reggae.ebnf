@@ -12,7 +12,7 @@ uri_property ::= 'title' | 'description' | 'url'
 
 msg_property ::= 'title' | 'description'
 
-instance_property ::= 'uri' | 'new_rec' | 'search' | 'schema' | 'instance_get_actions'
+instance_property ::= 'name' | 'uri' | 'new_rec' | 'search' | 'schema' | 'instance_get_actions'
 
 validation_property ::= string_literal
 

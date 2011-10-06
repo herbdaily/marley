@@ -7,6 +7,10 @@ module Marley
         Post.tagging(user_class)
         PrivateMessage.tagging(user_class)
       end
+      def add_user_tags(user,tags) #does not conflict with add_user_tag
+      end
+      def add_public_tags(tags)
+      end
       plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       plugin :tree
       many_to_one :author, :class => :'Marley::Resources::User'
