@@ -17,6 +17,7 @@ module Marley
         end
       end
       def add_public_tags(tags)
+        tags.to_s.split(',').each {|tag| add_public_tag(PublicTag.find_or_create(:tag => tag))}
       end
       plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       plugin :tree
