@@ -7,11 +7,12 @@ module Marley
         Post.tagging(user_class)
         PrivateMessage.tagging(user_class)
       end
-      def add_user_tags(user,tags) #does not conflict with add_user_tag
+      def add_user_tags(tags,user=nil) #does not conflict with add_user_tag
+        user||=$request[:user][:id]
         if user.class==String
-          user.split(',').each {|u| add_user_tags(User[:name => u][:id],tags)}
+          user.split(',').each {|u| add_user_tags(tags,User[:name => u][:id])}
         elsif user.class==Array
-          user.each {|u| add_user_tags(u,tags)}
+          user.each {|u| add_user_tags(tags,u)}
         elsif user.class==Fixnum
           tags.to_s.split(',').each {|tag| add_user_tag(UserTag.find_or_create(:user_id => user, :tag => tag))}
         end
@@ -96,8 +97,8 @@ module Marley
       end
       def after_create
         if respond_to?(:user_tags)
-          add_user_tags(recipients,"inbox,#{tags}")
-          add_user_tags(author_id,"sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}")
+          add_user_tags("inbox,#{tags}",recipients)
+          add_user_tags("sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}",author_id)
         end
       end
       def validate
