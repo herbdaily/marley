@@ -70,8 +70,8 @@ module Sequel::Plugins::RestConvenience
       respond_to?('name') ? name : id.to_s
     end
     def to_a
-      a=[:instance, {:uri => self.class.resource_name ,:new_rec => self.new?,:schema => rest_schema,:instance_get_actions => self.class.instance_get_actions}]
-      if respond_to?(:rest_associations)
+      a=[:instance, {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:instance_get_actions => self.class.instance_get_actions}]
+      if respond_to?(:rest_associations) && ! new?
         a << rest_associations.map do |assoc|
           (assoc.class==Symbol ? send(assoc) : assoc).map{|instance| instance.to_a}
         end
@@ -81,8 +81,11 @@ module Sequel::Plugins::RestConvenience
     def to_json
       to_a.to_json
     end
+    def url(action=nil)
+      "/#{self.class.resource_name}/#{self[:id]}/#{action}"
+    end
     def json_uri(action=nil)
-      [:uri,{:url => "/#{self.class.resource_name}/#{self[:id]}/#{action}",:title => "#{action.humanize}"}]
+      [:uri,{:url => url,:title => "#{action.humanize}"}]
     end
   end
 end

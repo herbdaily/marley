@@ -1,3 +1,6 @@
+
+COLLECTION!!
+
 resource_list ::= '[' resource (',' resource)* ']'
 
 resource ::= '[' resource_type ',' '{' properties '}' (','  '[' resource (',' resource )* ']' )? ']'  

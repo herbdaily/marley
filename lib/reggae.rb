@@ -21,7 +21,7 @@ module Marley
       is_resource? ? Marley.const_get("Reggae#{resource_type.camelize}".to_sym).new(self) : self
     end
     def find_instances(rn,instances=Reggae.new([]))
-      if self.class==ReggaeInstance && self.uri.to_s==rn 
+      if self.class==ReggaeInstance && self.name.to_s==rn 
         instances << self
       else
         (is_resource? ? contents : self).each {|a| a && Reggae.new(a).to_resource.find_instances(rn,instances)}
@@ -45,10 +45,10 @@ module Marley
     @@valid_properties=['title','description','items']
   end
   class ReggaeUri < ReggaeResource
-    @@valid_properties=['title','description','uri']
+    @@valid_properties=['title','description','url']
   end
   class ReggaeInstance < ReggaeResource
-    @@valid_properties=['new_rec','search','uri','instance_get_actions']
+    @@valid_properties=['name','new_rec','search','url','instance_get_actions']
     def schema
       ReggaeSchema.new(self.properties["schema"])
     end

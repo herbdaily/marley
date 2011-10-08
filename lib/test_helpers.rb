@@ -4,6 +4,7 @@ module Marley
   module TestHelpers
       CRUD2REST={'create' => 'post','read' => 'get','update' => 'put', 'delete' => 'delete'}
       def resource_uri
+        @marley_test[:resource].sub!(/^\/+/,'')
         "#{@marley_test[:root_uri]}/#{@marley_test[:resource]}"
       end
       def process(method,params={})

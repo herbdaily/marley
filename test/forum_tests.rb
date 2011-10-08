@@ -158,9 +158,21 @@ class MessageTests < Test::Unit::TestCase
         assert_equal 3, resp[0].length
         assert_equal "inbox", resp.find_instances('user_tag')[0].schema.tag
       end
-      should "have reply, reply_all and add_tag instance get actions" do
+      should "have reply, reply_all and new_tags instance get actions" do
         resp=marley_read({})
-        assert_same_elements ['reply','reply_all','add_tag'], resp[0].instance_get_actions
+        assert_same_elements ['reply','reply_all','new_tags'], resp[0].instance_get_actions
+      end
+      context "user1 requests reply form" do
+        setup do
+          authorize 'user1','asdfasdf'
+          resp=marley_read({})
+          @marley_test[:resource]="#{resp[0].url}#{resp[0].instance_get_actions[0]}"
+          @reply=marley_read({}).to_resource
+        end
+        should "have author in to field and default title beginning with 're:'" do
+          assert_equal 'admin', @reply.schema.recipients
+          assert_equal 're: ', @reply.schema.title[0 .. 3]
+        end
       end
     end
     context "message with 2 tags" do
