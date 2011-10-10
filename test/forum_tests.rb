@@ -172,5 +172,37 @@ class MessageTests < Test::Unit::TestCase
         end
       end
     end
+    context "message with 2 tags" do
+      setup do
+        @client.auth=['admin','asdfasdf']
+        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
+      end
+      should "have sent tag and both specified tags for sender" do
+        resp=@client.read({})
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["sent", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
+      end
+      context "receiver (user1)" do
+        setup do
+          @client.auth=['user1','asdfasdf']
+          @resp=@client.read
+        end
+        should "have inbox tag and both specified tags for receiver" do
+          user_tags=@resp[0].find_instances('user_tag')
+          assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
+        end
+        should "have specified tags in reply" do
+          reply=@client.read({},{:instance_id => @resp[0].schema[:id].col_value,:method => 'reply'}).to_resource
+          assert_equal 'test,test2', reply.schema[:tags].col_value
+        end
+      end
+      context 'user2' do
+        should "have no messages" do
+          @client.auth=['user2','asdfasdf']
+          assert resp=@client.read
+          assert_equal 0, resp.length
+        end
+      end
+    end
   end
 end
