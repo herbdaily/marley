@@ -9,7 +9,6 @@ require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
 
 class BasicTests < Test::Unit::TestCase
-  include Marley::TestHelpers
   context "no user" do
     setup do
       Marley::Resources::User.delete
@@ -72,12 +71,15 @@ class MessageTests < Test::Unit::TestCase
       @client.create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
       @client.create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
       @client.create(:'user[name]' => 'admin',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+      @admin_auth=['admin','asdfasdf']
+      @user1_auth=['user1','asdfasdf']
+      @user2_auth=['user2','asdfasdf']
       Marley::Resources::User[:name => 'admin'].update(:user_type => 'Admin')
       @client.resource_name='private_message'
     end
     context "regular user validations" do
       setup do
-        @client.auth=['user1','asdfasdf']
+        @client.auth=@user1_auth
       end
       should "show PM list" do
         assert @client.read({})
@@ -104,7 +106,7 @@ class MessageTests < Test::Unit::TestCase
     end
     context "admin validations" do
       setup do
-        @client.auth=['admin','asdfasdf']
+        @client.auth=@admin_auth
       end
       should "reject a PM with only recipients" do
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
@@ -118,13 +120,13 @@ class MessageTests < Test::Unit::TestCase
     end
     context "message with no tags" do
       setup do
-        @client.auth=['admin','asdfasdf']
+        @client.auth=@admin_auth
         @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
       should "show up in PM list of sender and receiver" do
         resp=@client.read({})
         assert_equal 1, resp.length
-        resp=@client.read({},{:auth => [ 'user1','asdfasdf']})
+        resp=@client.read({},{:auth => @user1_auth})
         assert_equal 1, resp.length
       end
       should "have sent tag for sender" do
@@ -133,7 +135,7 @@ class MessageTests < Test::Unit::TestCase
         assert_equal "sent", resp.find_instances('user_tag')[0].schema[:tag].col_value
       end
       should "have inbox tag for receiver" do
-        resp=@client.read({},{:auth => [ 'user1','asdfasdf']})
+        resp=@client.read({},{:auth => @user1_auth})
         assert_equal 3, resp[0].length
         assert_equal "inbox", resp.find_instances('user_tag')[0].schema[:tag].col_value
       end
@@ -143,7 +145,7 @@ class MessageTests < Test::Unit::TestCase
       end
       context "user1 instance actions" do
         setup do
-          @client.auth=['user1','asdfasdf']
+          @client.auth=@user1_auth
           @msg=@client.read({})[0].to_resource
           @client.instance_id=@msg.schema[:id].col_value
           @reply=@client.read({},{:method => 'reply'}).to_resource
@@ -174,7 +176,7 @@ class MessageTests < Test::Unit::TestCase
     end
     context "message with 2 tags" do
       setup do
-        @client.auth=['admin','asdfasdf']
+        @client.auth=@admin_auth
         @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
       end
       should "have sent tag and both specified tags for sender" do
@@ -184,10 +186,10 @@ class MessageTests < Test::Unit::TestCase
       end
       context "receiver (user1)" do
         setup do
-          @client.auth=['user1','asdfasdf']
+          @client.auth=@user1_auth
           @resp=@client.read
         end
-        should "have inbox tag and both specified tags for receiver" do
+        should "have inbox tag and both specified tags" do
           user_tags=@resp[0].find_instances('user_tag')
           assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
         end
@@ -198,9 +200,87 @@ class MessageTests < Test::Unit::TestCase
       end
       context 'user2' do
         should "have no messages" do
-          @client.auth=['user2','asdfasdf']
-          assert resp=@client.read
+          assert resp=@client.read({},{:auth => @user2_auth})
           assert_equal 0, resp.length
+        end
+      end
+    end
+    context "message with 2 tags and 2 receivers" do
+      setup do
+        @client.create({:'private_message[recipients]' => 'user1,user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'},{:auth => @admin_auth})
+      end
+      should "have sent tag and both specified for sender" do
+        resp=@client.read({},{:auth => @admin_auth})
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["sent", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
+      end
+      should "have inbox tag and both specified for 1st receiver (user1)" do
+        resp=@client.read({},{:auth => @user1_auth})
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
+      end
+      should "have inbox tag and both specified for 2st receiver (user2)" do
+        resp=@client.read({},{:auth => @user2_auth})
+        user_tags=resp[0].find_instances('user_tag')
+        assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
+      end
+    end
+    context "message listing" do
+      setup do
+        #3 messages with tag "test" for user 1
+        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test'},{:auth => @admin_auth})
+        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test'},{:auth => @admin_auth})
+        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title3',:'private_message[message]' => 'body3', :'private_message[tags]' => 'test'},{:auth => @admin_auth})
+        #2 messages with tag "test1" for user1 and user2
+        @client.create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test1'},{:auth => @admin_auth})
+        @client.create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test1'},{:auth => @admin_auth})
+      end
+      context "sender (admin) listings" do
+        setup do
+          @client.auth=@admin_auth
+        end
+        should "show 3 messages with 'test' tag" do
+          assert_equal 3, @client.read({:'private_message[tags]' => 'test'}).length
+        end
+        should "show 2 messages with 'test1' tag" do
+          assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
+        end
+        should "show 5 messages with 'sent' tag" do
+          assert_equal 5, @client.read({:'private_message[tags]' => 'sent'}).length
+        end
+      end
+      context "user1 listings" do
+        setup do
+          @client.auth=@user1_auth
+        end
+        should "show 3 messages with 'test' tag" do
+          assert_equal 3, @client.read({:'private_message[tags]' => 'test'}).length
+        end
+        should "show 2 messages with 'test1' tag" do
+          assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
+        end
+        should "show 5 messages with 'inbox' tag" do
+          assert_equal 5, @client.read({:'private_message[tags]' => 'inbox'}).length
+        end
+        should "show 5 messages with 'test' or 'test1' tags" do
+          assert_equal 5, @client.read({:'private_message[tags]' => 'test,test1'}).length
+        end
+      end
+      context "user2 listings" do
+        setup do
+          @client.auth=@user2_auth
+        end
+        should "show 0 messages with 'test' tag" do
+          assert_equal 0, @client.read({:'private_message[tags]' => 'test'}).length
+        end
+        should "show 2 messages with 'test1' tag" do
+          assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
+        end
+        should "show 2 messages with 'inbox' tag" do
+          assert_equal 2, @client.read({:'private_message[tags]' => 'inbox'}).length
+        end
+        should "show 2 messages with 'test' or 'test1' tags" do
+          assert_equal 2, @client.read({:'private_message[tags]' => 'test,test1'}).length
         end
       end
     end
