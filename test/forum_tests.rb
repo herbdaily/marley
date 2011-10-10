@@ -162,18 +162,32 @@ class MessageTests < Test::Unit::TestCase
         resp=marley_read({})
         assert_same_elements ['reply','reply_all','new_tags'], resp[0].instance_get_actions
       end
-      context "user1 requests reply form" do
+      context "user1 requests instance actions forms" do
         setup do
           authorize 'user1','asdfasdf'
-          resp=marley_read({})
-          @marley_test[:resource]="#{resp[0].url}#{resp[0].instance_get_actions[0]}"
-          @reply=marley_read({}).to_resource
+          @msg=marley_read({})[0].to_resource
         end
-        should "have author in to field and default title beginning with 're:'" do
-          assert_equal 'admin', @reply.schema.recipients
-          assert_equal 're: ', @reply.schema.title[0 .. 3]
+        context "reply form" do
+          setup do
+            @marley_test[:resource]="#{@msg.url}#{@msg.instance_get_actions[0]}"
+            @reply=marley_read({}).to_resource
+          end
+          should "have author in to field and default title beginning with 're:'" do
+            assert_equal 'admin', @reply.schema.recipients
+            assert_equal 're: ', @reply.schema.title[0 .. 3]
+          end
+        end
+        context "new tags form" do
+          setup do
+            @marley_test[:resource]="#{@msg.url}#{@msg.instance_get_actions[2]}"
+            @reply=marley_read({}).to_resource
+          end
+          should "work" do
+            true
+          end
         end
       end
+
     end
     context "message with 2 tags" do
       setup do
