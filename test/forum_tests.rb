@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'test/unit'
-require "rack/test"
 require 'shoulda'
 EXAMPLES_DIR=File.dirname(__FILE__) + '/../examples'
 
@@ -10,7 +9,6 @@ require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
 
 class BasicTests < Test::Unit::TestCase
-  include Rack::Test::Methods
   include Marley::TestHelpers
   def app
     Marley::Router.new
@@ -76,7 +74,6 @@ class BasicTests < Test::Unit::TestCase
   end
 end
 class MessageTests < Test::Unit::TestCase
-  include Rack::Test::Methods
   include Marley::TestHelpers
   def app
     Marley::Router.new
