@@ -146,11 +146,10 @@ class MessageTests < Test::Unit::TestCase
           @client.auth=['user1','asdfasdf']
           @msg=@client.read({})[0].to_resource
           @client.instance_id=@msg.schema[:id].col_value
+          @reply=@client.read({},{:method => 'reply'}).to_resource
+          @new_tags=@client.read({},:method => 'new_tags').to_resource
         end
         context "reply" do
-          setup do
-            @reply=@client.read({},{:method => 'reply'}).to_resource
-          end
           should "have author in to field and default title beginning with 're:'" do
             assert_equal 'admin', @reply.schema[:recipients].col_value
             assert_equal 're: ', @reply.schema[:title].col_value[0 .. 3]
@@ -160,9 +159,6 @@ class MessageTests < Test::Unit::TestCase
           end
         end
         context "new tags" do
-          setup do
-            @new_tags=@client.read({},:method => 'new_tags').to_resource
-          end
           should "return tag instance with name tag and same url as original message" do
             assert_equal 'tags', @new_tags.name
             assert_equal "#{@msg.url}tags", @new_tags.url
