@@ -3,9 +3,10 @@ require 'reggae'
 #shamelessly stolen from https://github.com/josephruscio/rack-test-rest and refactored with some functionality changes
 module Marley
   class TestClient
-    include Rack::Test::Methods
     CRUD2REST={'create' => 'post','read' => 'get','update' => 'put', 'delete' => 'delete'}
     DEFAULT_OPTS={:root_url => nil, :resource_name => nil, :instance_id => nil, :method => nil, :extention =>nil, :auth => nil, :code => nil, :debug => nil}
+    include Rack::Test::Methods
+    attr_reader :opts
     def app
       Marley::Router.new
     end
@@ -22,11 +23,13 @@ module Marley
       expected_code=opts[:code] || RESP_CODES[verb]
       if opts[:debug]
         p opts
-        p "#{method} to: '#{url(opts)}'" 
+        p "#{verb} to: '#{url(opts)}'" 
         p params 
         p opts[:auth]
       end
+      authorize opts[:auth][0],opts[:auth][1] if opts[:auth]
       send(verb,url(opts),params)
+      p last_response.status if opts[:debug]
       return false unless (expected_code || RESP_CODES[method])==last_response.status
       Reggae.new(JSON.parse(last_response.body)) rescue last_response.body
     end

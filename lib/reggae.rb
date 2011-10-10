@@ -67,14 +67,11 @@ module Marley
   class ReggaeValidation < ReggaeResource
   end
   class ReggaeSchema < Array
-    def [](*args)
-      ReggaeColSpec.new(super).to_resource 
-    end
-    def method_missing(meth, *args, &block)
-      if spec=ReggaeColSpec.new(find {|cs|ReggaeColSpec.new(cs).col_name==meth.to_s})
-        spec.col_value
+    def [](i)
+      if i.class==Fixnum
+        ReggaeColSpec.new(super).to_resource 
       else
-        super
+        ReggaeColSpec.new(find {|cs|ReggaeColSpec.new(cs).col_name==i.to_s})
       end
     end
   end
