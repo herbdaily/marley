@@ -105,7 +105,7 @@ module Sequel::Plugins::RestAuthorization
         when 'rest_put','rest_delete'
           false 
         when 'rest_post'
-          new($request[:post_params][resource_name.to_sym]).current_user_role=='owner' && meth.nil?
+          new($request[:post_params][resource_name.to_sym]||{}).current_user_role=='owner' && meth.nil?
         when 'rest_get'
           ['list','new'].include?(meth)
         end

@@ -61,20 +61,22 @@ class BasicTests < Test::Unit::TestCase
   end
 end
 class MessageTests < Test::Unit::TestCase
+  def setup
+    Marley::Resources::User.delete
+    @client=Marley::TestClient.new(:resource_name => 'user')
+    @client.create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+    @client.create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+    @client.create(:'user[name]' => 'admin',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+    @admin_auth=['admin','asdfasdf']
+    @user1_auth=['user1','asdfasdf']
+    @user2_auth=['user2','asdfasdf']
+    Marley::Resources::User[:name => 'admin'].update(:user_type => 'Admin')
+  end
   context "Private Messages" do
     setup do
-      Marley::Resources::User.delete
       Marley::Resources::Message.delete
       Marley::Resources::Tag.delete
       DB[:messages_tags].delete
-      @client=Marley::TestClient.new(:resource_name => 'user')
-      @client.create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-      @client.create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-      @client.create(:'user[name]' => 'admin',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-      @admin_auth=['admin','asdfasdf']
-      @user1_auth=['user1','asdfasdf']
-      @user2_auth=['user2','asdfasdf']
-      Marley::Resources::User[:name => 'admin'].update(:user_type => 'Admin')
       @client.resource_name='private_message'
     end
     context "regular user validations" do
@@ -282,6 +284,41 @@ class MessageTests < Test::Unit::TestCase
         should "show 2 messages with 'test' or 'test1' tags" do
           assert_equal 2, @client.read({:'private_message[tags]' => 'test,test1'}).length
         end
+      end
+    end
+  end
+  context "Posts" do
+    setup do
+      Marley::Resources::Message.delete
+      Marley::Resources::Tag.delete
+      DB[:messages_tags].delete
+      @client.resource_name='post'
+    end
+    context 'validation' do
+      should "get a validation error trying to post without a title or message as admin, user1, or user2" do
+        resp=@client.create({},{:code => 400,:auth => @admin_auth})
+        assert_equal "validation", resp.resource_type
+        assert_equal ["is required"], resp.properties['title']
+        assert_equal ["is required"], resp.properties['message']
+        user1_resp=@client.create({},{:code => 400,:auth => @user1_auth})
+        assert_equal user1_resp, resp
+        user2_resp=@client.create({},{:code => 400,:auth => @user2_auth})
+        assert_equal user2_resp, resp
+      end
+      should "be able to post with title and message as admin, user1, or user2" do
+        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf'},{:auth => @admin_auth})
+        assert_equal 1, @client.read.length
+        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf'},{:auth => @user1_auth})
+        assert_equal 2, @client.read.length
+        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf'},{:auth => @user2_auth})
+        assert_equal 3, @client.read.length
+      end
+    end
+    context 'post with public tags' do
+      should "be able to post with tags as any user" do
+        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'admintag1,admintag2,admintag3'},{:auth => @admin_auth})
+        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user1tag1,user1tag2,user1tag3'},{:auth => @user1_auth})
+        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user2tag1,user2tag2,user2tag3'},{:auth => @user2_auth})
       end
     end
   end
