@@ -144,36 +144,32 @@ class MessageTests < Test::Unit::TestCase
       context "user1 instance actions" do
         setup do
           @client.auth=['user1','asdfasdf']
-          @instance_client=Marley::TestClient.new(@client.opts)
-          @class_client=Marley::TestClient.new(@client.opts)
-          @msg=@instance_client.read({})[0].to_resource
-          @instance_client.instance_id=@msg.schema[:id].col_value
+          @msg=@client.read({})[0].to_resource
+          @client.instance_id=@msg.schema[:id].col_value
         end
         context "reply" do
           setup do
-            @instance_client.method='reply'
-            @reply=@instance_client.read({}).to_resource
+            @reply=@client.read({},{:method => 'reply'}).to_resource
           end
           should "have author in to field and default title beginning with 're:'" do
             assert_equal 'admin', @reply.schema[:recipients].col_value
             assert_equal 're: ', @reply.schema[:title].col_value[0 .. 3]
           end
           should "accept reply" do
-            assert @class_client.create(@reply.to_params.merge('private_message[message]' => 'asdf'))
+            assert @client.create(@reply.to_params.merge('private_message[message]' => 'asdf'),{:method => nil,:instance_id => nil})
           end
         end
         context "new tags" do
           setup do
-            @instance_client.method='new_tags'
-            @new_tags=@instance_client.read({}).to_resource
+            @new_tags=@client.read({},:method => 'new_tags').to_resource
           end
           should "return tag instance with name tag and same url as original message" do
             assert_equal 'tags', @new_tags.name
             assert_equal "#{@msg.url}tags", @new_tags.url
           end
           should "accept new tags, which should then show up with the original message" do
-            assert @instance_client.create({'private_message[tags]' => 'added_tag1, added_tag2'},{:method => 'tags'})
-            msg=@instance_client.read({},:method => nil)
+            assert @client.create({'private_message[tags]' => 'added_tag1, added_tag2'},{:method => 'tags'})
+            msg=@client.read({})
             user_tags=msg.find_instances('user_tag')
             assert_same_elements ["inbox", "added_tag1", "added_tag2"], user_tags.map{|t| t.schema[:tag].col_value}
           end
