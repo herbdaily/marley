@@ -52,6 +52,17 @@ module Marley
     def schema
       ReggaeSchema.new(self.properties["schema"])
     end
+    def to_params
+      resource_name=name
+      schema.inject({}) do |params,spec| 
+        s=ReggaeColSpec.new(spec)
+        params["#{resource_name}[#{s.col_name}]"]=s.col_value unless (s.col_restrictions & RESTRICT_RO > 0)
+        params
+      end
+    end
+    def instance_action_url(action_name)
+      "#{url}#{action_name}" if instance_get_actions.include?(action_name.to_s)
+    end
   end
   class ReggaeValidation < ReggaeResource
   end

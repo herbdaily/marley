@@ -31,7 +31,10 @@ module Marley
         end
       end
       def authorize_rest_get(meth)
-        self.class.instance_get_actions.include?(meth)
+        current_user_role && (meth.nil? || self.class.instance_get_actions.include?(meth))
+      end
+      def current_user_role
+        super || (recipients.match(/\b#{$request[:user][:name]}\b/) && "recipient")
       end
       def after_initialize
         super
@@ -51,10 +54,10 @@ module Marley
         children.length > 0 ? to_a << children.map{|m| m.thread} : to_a
       end
       def new_tags
-        [:instance,{:name => 'tag',:url => url, :new_rec => true, :schema => [['number','tag[message_id]',RESTRICT_HIDE,id],['text','tag[tags]',RESTRICT_REQ]]}]
+        [:instance,{:name => 'tags',:url => "#{url}tags", :new_rec => true, :schema => [['number','tags[message_id]',RESTRICT_HIDE,id],['text','tags[tags]',RESTRICT_REQ]]}]
       end
       def new_user_tags
-        [:instance,{:name => 'user_tag',:url => url, :new_rec => true, :schema => [['number','user_tag[message_id]',RESTRICT_HIDE,id],['text','user_tag[tags]',RESTRICT_REQ]]}]
+        [:instance,{:name => 'user_tags',:url => "#{url}user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
       end
       def add_tags(tags,user=nil)
         if respond_to?(:public_tags)
@@ -83,10 +86,13 @@ module Marley
       @instance_get_actions=['reply','reply_all']
       def write_cols;new? ? super << :recipients : super;end
       def required_cols;new? ? super << :recipients : [];end
-      def authorize_rest_put(meth); false; end
       def authorize_rest_get(meth)
         super && ($request[:user]==author || self.recipients.match(/\b#{$request[:user].name}\b/))
       end
+      def authorize_rest_post(meth)
+        meth.to_s > '' && (author_id==$request[:user][:id] || recipients.match(/\b#{$request[:user][:name]}\b/))
+      end
+      def authorize_rest_put(meth); false; end
       def self.authorize_rest_post(asdf)
         true #may need to change this, for now auth is handled in validation
       end

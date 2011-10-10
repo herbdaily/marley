@@ -9,10 +9,11 @@ module Marley
       end
       def process(method,params={})
         expected_code = params.delete(:code) if params
-        puts "#{method} to: '#{resource_uri}#{@marley_test[:extension]}'" if @marley_test[:debug]
-        puts "params: #{params}" if @marley_test[:debug]
+        p "#{method} to: '#{resource_uri}#{@marley_test[:extension]}'" if @marley_test[:debug]
+        p params if @marley_test[:debug]
         send(method,resource_uri,params)
-        assert_equal(expected_code || RESP_CODES[method],last_response.status)
+        return false unless (expected_code || RESP_CODES[method])==last_response.status
+        #assert_equal(expected_code || RESP_CODES[method],last_response.status)
         Reggae.new(JSON.parse(last_response.body)) rescue last_response.body
       end
       ['create','read','update','delete'].each do |op|

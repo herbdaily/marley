@@ -135,7 +135,7 @@ class MessageTests < Test::Unit::TestCase
          marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
     end
-    context "send message with no tags" do
+    context "message with no tags" do
       setup do
         authorize 'admin','asdfasdf'
         marley_create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
@@ -162,32 +162,44 @@ class MessageTests < Test::Unit::TestCase
         resp=marley_read({})
         assert_same_elements ['reply','reply_all','new_tags'], resp[0].instance_get_actions
       end
-      context "user1 requests instance actions forms" do
+      context "user1 instance actions" do
         setup do
           authorize 'user1','asdfasdf'
           @msg=marley_read({})[0].to_resource
         end
-        context "reply form" do
+        context "reply" do
           setup do
-            @marley_test[:resource]="#{@msg.url}#{@msg.instance_get_actions[0]}"
+            @marley_test[:resource]=@msg.instance_action_url(:reply)
             @reply=marley_read({}).to_resource
           end
           should "have author in to field and default title beginning with 're:'" do
             assert_equal 'admin', @reply.schema.recipients
             assert_equal 're: ', @reply.schema.title[0 .. 3]
           end
+          should "accept reply" do
+            @marley_test[:resource]=@reply.url
+            marley_create(@reply.to_params.merge(:'private_message[message]' => 'asdf'))
+          end
         end
-        context "new tags form" do
+        context "new tags" do
           setup do
-            @marley_test[:resource]="#{@msg.url}#{@msg.instance_get_actions[2]}"
+            @marley_test[:resource]=@msg.instance_action_url(:new_tags)
             @reply=marley_read({}).to_resource
           end
-          should "work" do
-            true
+          should "return tag instance with name tag and same url as original message" do
+            assert_equal 'tags', @reply.name
+            assert_equal "#{@msg.url}tags", @reply.url
+          end
+          should "accept new tags, which should then show up with the original message" do
+            @marley_test[:resource]=@reply.url
+            marley_create(@reply.to_params.merge(:'private_message[tags]' => 'added_tag1, added_tag2'))
+            @marley_test[:resource]=@msg.url
+            msg=marley_read({})
+            user_tags=msg.find_instances('user_tag')
+            assert_same_elements ["inbox", "added_tag1", "added_tag2"], user_tags.map{|t| t.schema.tag}
           end
         end
       end
-
     end
     context "message with 2 tags" do
       setup do
