@@ -26,7 +26,9 @@ module Marley
         schema
       end
       def rest_associations
-        [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.filter(:user_id => $request[:user][:id]) : nil].compact
+        if ! new?
+          [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_tags : nil].compact
+        end
       end
       def authorize_rest_get(meth)
         self.class.instance_get_actions.include?(meth)
@@ -101,7 +103,7 @@ module Marley
         threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
       def reply
-        self.class.new({:parent_id => self[:id],:author_id => $request[:user][:id],:recipients => author.name, :title => "re: #{title}"})
+        self.class.new({:parent_id => self[:id],:author_id => $request[:user][:id],:recipients => author.name, :title => "re: #{title}", :tags => (user_tags_dataset.current_user_tags.map{|t|t.tag} - RESERVED_PM_TAGS).join(',')})
       end
       def reply_all
         foo=reply

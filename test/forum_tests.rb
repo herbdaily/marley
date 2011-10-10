@@ -191,6 +191,13 @@ class MessageTests < Test::Unit::TestCase
         user_tags=resp[0].find_instances('user_tag')
         assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema.tag}
       end
+      should "have specified tags in reply" do
+        authorize 'user1','asdfasdf'
+        resp=marley_read({})
+        @marley_test[:resource]="#{resp[0].url}#{resp[0].instance_get_actions[0]}"
+        reply=marley_read({}).to_resource
+        assert_equal 'test,test2', reply.schema.tags
+      end
       should "have no  messages for user2" do
         authorize 'user2','asdfasdf'
         resp=marley_read({})
