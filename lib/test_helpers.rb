@@ -28,6 +28,7 @@ module Marley
         p opts[:auth]
       end
       authorize opts[:auth][0],opts[:auth][1] if opts[:auth]
+      header 'Authorization',nil unless opts[:auth]  #clear auth from previous requests
       send(verb,url(opts),params)
       p last_response.status if opts[:debug]
       return false unless (expected_code || RESP_CODES[method])==last_response.status

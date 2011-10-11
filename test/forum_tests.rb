@@ -41,9 +41,11 @@ class BasicTests < Test::Unit::TestCase
       @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
       @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
     end
-    should "not allow access to menus" do
-      @client.read({:resource_name =>'pm_menu'},{:code => 401})
-      @client.read({:resource_name =>'post_menu'},{:code => 401})
+    should "not allow access to menus, private messages, or posts" do
+      assert @client.read({:resource_name =>'pm_menu'},{:code => 401})
+      assert @client.read({:resource_name =>'post_menu'},{:code => 401})
+      assert @client.read({:resource_name =>'private_message'},{:code => 401})
+      assert @client.read({:resource_name =>'post'},{:code => 401})
     end
   end
   context "menus for logged in users" do
@@ -276,11 +278,11 @@ class MessageTests < Test::Unit::TestCase
       end
       should "be able to post with title and message as admin, user1, or user2" do
         assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf'},{:auth => @admin_auth})
-        assert_equal 1, @client.read.length
+        assert_equal 1, @client.read({},{:auth => @user1_auth}).length
         assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf'},{:auth => @user1_auth})
-        assert_equal 2, @client.read.length
+        assert_equal 2, @client.read({},{:auth => @user2_auth}).length
         assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf'},{:auth => @user2_auth})
-        assert_equal 3, @client.read.length
+        assert_equal 3, @client.read({},{:auth => @admin_auth}).length
       end
     end
     should 'list posts by public tags' do
@@ -303,10 +305,15 @@ class MessageTests < Test::Unit::TestCase
       assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @admin_auth}).length
       assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @user2_auth}).length
     end
-    should 'have reply, new_tags, and new_user_tags instance actions' do
+    should 'have usable reply, new_tags, and new_user_tags instance actions' do
       @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'admintag1,admintag2'},{:auth => @admin_auth})
+      @client.auth=@user2_auth
       posts=@client.read({})
       assert_same_elements ['reply','new_tags','new_user_tags'], posts[0].instance_get_actions
+      #reply=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'reply'}).to_resource
+      #assert_equal 're: test', reply.schema[:title].col_value
+      #assert @client.create(reply.to_params.merge('post[message]' => 'asdf'),{:method => nil,:instance_id => nil})
+      #assert @client.create(reply.to_params.merge('post[tags]' => '1,2,3'),{:method => 'tags'})
     end
   end
 end
