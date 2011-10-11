@@ -312,9 +312,14 @@ class MessageTests < Test::Unit::TestCase
       assert_same_elements ['reply','new_tags','new_user_tags'], posts[0].instance_get_actions
       reply=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'reply'}).to_resource
       tags=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'new_tags'}).to_resource
+      user_tags=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'new_user_tags'}).to_resource
       assert_equal 're: test', reply.schema[:title].col_value
       assert @client.create(reply.to_params.merge('post[message]' => 'asdf'),{:method => nil,:instance_id => nil})
       assert @client.create(tags.to_params.merge('post[tags]' => '1,2,3'),{:url => tags.url})
+      assert_same_elements ['1','2','3','admintag1','admintag2'], @client.read[0].find_instances('public_tag').map{|t| t.schema[:tag].col_value}
+      assert @client.create(user_tags.to_params.merge('post[user_tags]' => '4,5,6'),{:url => user_tags.url})
+      assert_same_elements ['4','5','6'], @client.read[0].find_instances('user_tag').map{|t| t.schema[:tag].col_value}
+      assert_equal [], @client.read({},{:auth => @user1_auth})[0].find_instances('user_tag').map{|t| t.schema[:tag].col_value}
     end
   end
 end
