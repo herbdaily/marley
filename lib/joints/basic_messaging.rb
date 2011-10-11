@@ -144,7 +144,7 @@ module Marley
       def self.list(params={})
         params||={}
         if specified_tags=params.delete(:tags)
-          tag_ids=PublicTags.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
+          tag_ids=PublicTag.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
         end
         if specified_user_tags=params.delete(:user_tags)
           user_tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)

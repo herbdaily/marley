@@ -63,6 +63,9 @@ end
 class MessageTests < Test::Unit::TestCase
   def setup
     Marley::Resources::User.delete
+    Marley::Resources::Message.delete
+    Marley::Resources::Tag.delete
+    DB[:messages_tags].delete
     @client=Marley::TestClient.new(:resource_name => 'user')
     @client.create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
     @client.create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
@@ -74,9 +77,6 @@ class MessageTests < Test::Unit::TestCase
   end
   context "Private Messages" do
     setup do
-      Marley::Resources::Message.delete
-      Marley::Resources::Tag.delete
-      DB[:messages_tags].delete
       @client.resource_name='private_message'
     end
     context "regular user validations" do
@@ -289,9 +289,6 @@ class MessageTests < Test::Unit::TestCase
   end
   context "Posts" do
     setup do
-      Marley::Resources::Message.delete
-      Marley::Resources::Tag.delete
-      DB[:messages_tags].delete
       @client.resource_name='post'
     end
     context 'validation' do
@@ -314,12 +311,25 @@ class MessageTests < Test::Unit::TestCase
         assert_equal 3, @client.read.length
       end
     end
-    context 'post with public tags' do
-      should "be able to post with tags as any user" do
-        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'admintag1,admintag2,admintag3'},{:auth => @admin_auth})
-        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user1tag1,user1tag2,user1tag3'},{:auth => @user1_auth})
-        assert @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user2tag1,user2tag2,user2tag3'},{:auth => @user2_auth})
-      end
+    should 'list posts by public tags' do
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'admintag1,admintag2'},{:auth => @admin_auth})
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'admintag1,admintag2,admintag3'},{:auth => @admin_auth})
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user1tag1'},{:auth => @user1_auth})
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user1tag1,user1tag2'},{:auth => @user1_auth})
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user1tag1,user1tag2,user1tag3'},{:auth => @user1_auth})
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user2tag1,user2tag2,user2tag3'},{:auth => @user2_auth})
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'user2tag1,user2tag2,user2tag3,user2tag4'},{:auth => @user2_auth})
+      assert_equal 7, @client.read({},{:auth => @admin_auth}).length
+      assert_equal 7, @client.read({'post[title]' => 'test'},{:auth => @admin_auth}).length
+      assert_equal 7, @client.read({'post[title]' => 'test'},{:auth => @user1_auth}).length
+      assert_equal 7, @client.read({'post[title]' => 'test'},{:auth => @user2_auth}).length
+      assert_equal 2, @client.read({'post[tags]' => 'admintag1'},{:auth => @admin_auth}).length
+      assert_equal 2, @client.read({'post[tags]' => 'admintag1'},{:auth => @user1_auth}).length
+      assert_equal 1, @client.read({'post[tags]' => 'admintag3'},{:auth => @user2_auth}).length
+      assert_equal 1, @client.read({'post[tags]' => 'admintag3'},{:auth => @admin_auth}).length
+      assert_equal 2, @client.read({'post[tags]' => 'user1tag2'},{:auth => @admin_auth}).length
+      assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @admin_auth}).length
+      assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @user2_auth}).length
     end
   end
 end
