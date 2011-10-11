@@ -75,18 +75,17 @@ class MessageTests < Test::Unit::TestCase
       should "show PM list" do
         assert @client.read({})
       end
-      should "reject a PM with only recipients" do
+      should "validate new user generate PMs properly" do
+        #reject a PM with only recipients
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
         assert_equal "validation", resp.resource_type
         assert_equal ["is required"], resp.properties['title']
         assert_equal ["is required"], resp.properties['message']
-      end
-      should "reject a PM to a non-existent user" do
+        #reject a PM to a non-existent user
         resp=@client.create({:'private_message[recipients]' => 'asdfasdfasdfasdf',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
         assert_equal "validation", resp.resource_type
         assert resp.properties['recipients']
-      end
-      should "reject a PM from user to user" do
+        #reject a PM from user to user
         resp=@client.create({:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
         assert_equal "validation", resp.resource_type
         assert resp.properties['recipients']
