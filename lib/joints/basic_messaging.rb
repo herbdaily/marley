@@ -137,8 +137,12 @@ module Marley
     class Post < Message
       def self.tagging(user_class=nil)
         attr_accessor :tags,:my_tags
-        Tag.tagging_for('Post', user_class) if user_class
+        if user_class
+          Tag.tagging_for('Post', user_class)
+          @instance_get_actions << 'new_user_tags'
+        end
         Tag.tagging_for('Post')
+        @instance_get_actions << 'new_tags'
       end
       @instance_get_actions=['reply']
       def self.list(params={})

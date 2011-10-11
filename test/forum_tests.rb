@@ -303,5 +303,10 @@ class MessageTests < Test::Unit::TestCase
       assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @admin_auth}).length
       assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @user2_auth}).length
     end
+    should 'have reply, new_tags, and new_user_tags instance actions' do
+      @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'admintag1,admintag2'},{:auth => @admin_auth})
+      posts=@client.read({})
+      assert_same_elements ['reply','new_tags','new_user_tags'], posts[0].instance_get_actions
+    end
   end
 end
