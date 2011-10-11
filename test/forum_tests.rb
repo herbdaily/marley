@@ -237,53 +237,25 @@ class MessageTests < Test::Unit::TestCase
         @client.create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test1'},{:auth => @admin_auth})
         @client.create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test1'},{:auth => @admin_auth})
       end
-      context "sender (admin) listings" do
-        setup do
-          @client.auth=@admin_auth
-        end
-        should "show 3 messages with 'test' tag" do
-          assert_equal 3, @client.read({:'private_message[tags]' => 'test'}).length
-        end
-        should "show 2 messages with 'test1' tag" do
-          assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
-        end
-        should "show 5 messages with 'sent' tag" do
-          assert_equal 5, @client.read({:'private_message[tags]' => 'sent'}).length
-        end
+      should "for sender (admin) show 3 messages with 'test' tag,2 messages with 'test1' tag, and 5 messages with 'sent' tag" do
+        @client.auth=@admin_auth
+        assert_equal 3, @client.read({:'private_message[tags]' => 'test'}).length
+        assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
+        assert_equal 5, @client.read({:'private_message[tags]' => 'sent'}).length
       end
-      context "user1 listings" do
-        setup do
-          @client.auth=@user1_auth
-        end
-        should "show 3 messages with 'test' tag" do
-          assert_equal 3, @client.read({:'private_message[tags]' => 'test'}).length
-        end
-        should "show 2 messages with 'test1' tag" do
-          assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
-        end
-        should "show 5 messages with 'inbox' tag" do
-          assert_equal 5, @client.read({:'private_message[tags]' => 'inbox'}).length
-        end
-        should "show 5 messages with 'test' or 'test1' tags" do
-          assert_equal 5, @client.read({:'private_message[tags]' => 'test,test1'}).length
-        end
+      should "for user1 show 3 messages with 'test' tag, 2 messages with 'test1' tag, 5 messages with 'inbox' tag, and 5 messages with 'test' or 'test1' tags" do
+        @client.auth=@user1_auth
+        assert_equal 3, @client.read({:'private_message[tags]' => 'test'}).length
+        assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
+        assert_equal 5, @client.read({:'private_message[tags]' => 'inbox'}).length
+        assert_equal 5, @client.read({:'private_message[tags]' => 'test,test1'}).length
       end
-      context "user2 listings" do
-        setup do
-          @client.auth=@user2_auth
-        end
-        should "show 0 messages with 'test' tag" do
-          assert_equal 0, @client.read({:'private_message[tags]' => 'test'}).length
-        end
-        should "show 2 messages with 'test1' tag" do
-          assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
-        end
-        should "show 2 messages with 'inbox' tag" do
-          assert_equal 2, @client.read({:'private_message[tags]' => 'inbox'}).length
-        end
-        should "show 2 messages with 'test' or 'test1' tags" do
-          assert_equal 2, @client.read({:'private_message[tags]' => 'test,test1'}).length
-        end
+      should "for user2 show 0 messages with 'test' tag, 2 messages with 'test1' tag, 2 messages with 'inbox' tag and 2 messages with 'test' or 'test1' tags" do
+        @client.auth=@user2_auth
+        assert_equal 0, @client.read({:'private_message[tags]' => 'test'}).length
+        assert_equal 2, @client.read({:'private_message[tags]' => 'test1'}).length
+        assert_equal 2, @client.read({:'private_message[tags]' => 'inbox'}).length
+        assert_equal 2, @client.read({:'private_message[tags]' => 'test,test1'}).length
       end
     end
   end
