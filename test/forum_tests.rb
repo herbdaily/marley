@@ -68,14 +68,14 @@ class MessageTests < Test::Unit::TestCase
     setup do
       @client.resource_name='private_message'
     end
-    context "regular user validations" do
+    context "regular user (user1) logged in" do
       setup do
         @client.auth=@user1_auth
       end
       should "show PM list" do
         assert @client.read({})
       end
-      should "validate new user generate PMs properly" do
+      should "validate new user generated PMs properly" do
         #reject a PM with only recipients
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
         assert_equal "validation", resp.resource_type
@@ -94,11 +94,11 @@ class MessageTests < Test::Unit::TestCase
          assert @client.create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
     end
-    context "admin validations" do
+    context "admin logged in" do
       setup do
         @client.auth=@admin_auth
       end
-      should "reject a PM with only recipients" do
+      should "validate new admin generated PMs properly" do
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
         assert_equal "validation", resp.resource_type
         assert_equal ["is required"], resp.properties['title']

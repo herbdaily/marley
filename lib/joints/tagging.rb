@@ -2,8 +2,48 @@
 module Marley
   module Resources
     class Tag < Sequel::Model
+      module TaggingMethods
+        def rest_associations
+          if ! new?
+            [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_tags : nil].compact
+          end
+        end
+        def new_tags
+          [:instance,{:name => 'tags',:url => "#{url}tags", :new_rec => true, :schema => [['number','message_id',RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
+        end
+        def new_user_tags
+          [:instance,{:name => 'user_tags',:url => "#{url}user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
+        end
+        def add_tags(tags,user=nil)
+          if respond_to?(:public_tags)
+            tags.to_s.split(',').each {|tag| add_public_tag(PublicTag.find_or_create(:tag => tag))}
+          else
+            add_user_tags(tags,user)
+          end
+        end
+        def add_user_tags(tags,user=nil) #does not conflict with add_user_tag
+          user||=$request[:user][:id]
+          if user.class==String
+            user.split(',').each {|u| add_user_tags(tags,User[:name => u][:id])}
+          elsif user.class==Array
+            user.each {|u| add_user_tags(tags,u)}
+          elsif user.class==Fixnum
+            tags.to_s.split(',').each {|tag| add_user_tag(UserTag.find_or_create(:user_id => user, :tag => tag))}
+          end
+        end
+      end
+      module PublicTaggingMethods
+      end
+      module UserTaggingMethods
+      def after_create
+        if respond_to?(:user_tags)
+          add_user_tags("inbox,#{tags}",recipients)
+          add_user_tags("sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}",author_id)
+        end
+      end
+      end
       def self.tagging_for(klass, user_class=nil,join_table=nil)
-        foo=Module.new do
+        current_user_tags=Module.new do
             def current_user_tags
               filter(:tags__user_id => $request[:user][:id])
             end
@@ -14,8 +54,8 @@ module Marley
         tag_key=:tag_id
         attr_accessor klass_key
         if user_class
-          UserTag.many_to_many klass.to_sym, :join_table => join_table,:left_key => tag_key,:right_key => klass_key,:extend => foo
-          tagged_class.many_to_many :user_tags,:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => foo
+          UserTag.many_to_many klass.to_sym, :join_table => join_table,:left_key => tag_key,:right_key => klass_key,:extend => current_user_tags
+          tagged_class.many_to_many :user_tags,:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => current_user_tags
           Resources.const_get(user_class).one_to_many :user_tags
           UserTag.many_to_one Resources.const_get(user_class).name.underscore.to_sym
         else

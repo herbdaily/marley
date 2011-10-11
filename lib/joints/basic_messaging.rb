@@ -9,9 +9,7 @@ module Marley
       def self.tagging(user_class=nil)
         Post.tagging(user_class)
         PrivateMessage.tagging(user_class)
-      end
-      def add_public_tags(tags)
-        tags.to_s.split(',').each {|tag| add_public_tag(PublicTag.find_or_create(:tag => tag))}
+        include Tag::TaggingMethods
       end
       @owner_col=:author_id
       def write_cols; new? ?  [:message,:title,:parent_id] : []; end
@@ -24,11 +22,6 @@ module Marley
           schema << [:text, :my_tags, 0,my_tags] if respond_to?(:my_tags)
         end
         schema
-      end
-      def rest_associations
-        if ! new?
-          [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_tags : nil].compact
-        end
       end
       def authorize_rest_get(meth)
         current_user_role && (meth.nil? || self.class.instance_get_actions.include?(meth))
@@ -50,35 +43,13 @@ module Marley
       def thread
         children.length > 0 ? to_a << children.map{|m| m.thread} : to_a
       end
-      def new_tags
-        [:instance,{:name => 'tags',:url => "#{url}tags", :new_rec => true, :schema => [['number','message_id',RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
-      end
-      def new_user_tags
-        [:instance,{:name => 'user_tags',:url => "#{url}user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
-      end
-      def add_tags(tags,user=nil)
-        if respond_to?(:public_tags)
-          tags.to_s.split(',').each {|tag| add_public_tag(PublicTag.find_or_create(:tag => tag))}
-        else
-          add_user_tags(tags,user)
-        end
-      end
-      def add_user_tags(tags,user=nil) #does not conflict with add_user_tag
-        user||=$request[:user][:id]
-        if user.class==String
-          user.split(',').each {|u| add_user_tags(tags,User[:name => u][:id])}
-        elsif user.class==Array
-          user.each {|u| add_user_tags(tags,u)}
-        elsif user.class==Fixnum
-          tags.to_s.split(',').each {|tag| add_user_tag(UserTag.find_or_create(:user_id => user, :tag => tag))}
-        end
-      end
     end
     class PrivateMessage < Message
       def self.tagging(user_class)
         attr_accessor :tags
         @instance_get_actions << 'new_tags'
         Tag.tagging_for('PrivateMessage', user_class)
+        include Tag::UserTaggingMethods
       end
       @instance_get_actions=['reply','reply_all']
       def write_cols;new? ? super << :recipients : super;end
@@ -143,6 +114,8 @@ module Marley
         end
         Tag.tagging_for('Post')
         @instance_get_actions << 'new_tags'
+        include Tag::PublicTaggingMethods
+        include Tag::UserTaggingMethods
       end
       @instance_get_actions=['reply']
       def current_user_role
