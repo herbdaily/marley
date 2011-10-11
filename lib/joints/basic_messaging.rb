@@ -53,7 +53,6 @@ module Marley
       end
       @instance_get_actions=['reply','reply_all']
       def write_cols;new? ? super << :recipients : super;end
-      def required_cols;new? ? super << :recipients : [];end
       def current_user_role
         super || (recipients.match(/\b#{$request[:user][:name]}\b/) && "recipient")
       end
