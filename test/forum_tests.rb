@@ -9,57 +9,44 @@ require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
 
 class BasicTests < Test::Unit::TestCase
-  context "no user" do
-    setup do
-      Marley::Resources::User.delete
-      @client=Marley::TestClient.new(:resource_name => 'user',:code => 400)
-    end
-    should "return login form with no params" do
-      assert @client.read({},{:resource_name => '',:code => 200})
-    end
-    should "return an error when trying to create a user with no params" do
-      assert resp=@client.create
-      assert_equal "validation", resp.resource_type
-      assert_equal ["is required"], resp.properties['name']
-    end
-    should "return an error when trying to create a user with only a name" do
-      resp=@client.create({:'user[name]' => 'asdf'})
-      assert_equal "validation", resp.resource_type
-    end
-    should "return an error when password is too short" do
-      resp=@client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdfaf'})
-      assert_equal "validation", resp.resource_type
-      assert_equal ["Password must contain at least 8 characters"], resp.properties['password']
-    end
-    should "return an error when trying to create a user with only a name and password" do
-      resp=@client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf')
-      assert_equal "validation", resp.resource_type
-      assert_equal ["Passwords do not match"], resp.properties['confirm_password']
-    end
-    should "allow creation of a new user and disallow user with the same name" do
-      @client.code=200
-      @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-      @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    end
-    should "not allow access to menus, private messages, or posts" do
-      assert @client.read({:resource_name =>'pm_menu'},{:code => 401})
-      assert @client.read({:resource_name =>'post_menu'},{:code => 401})
-      assert @client.read({:resource_name =>'private_message'},{:code => 401})
-      assert @client.read({:resource_name =>'post'},{:code => 401})
-    end
+  def setup
+    Marley::Resources::User.delete
+    @client=Marley::TestClient.new(:resource_name => 'user',:code => 400)
   end
-  context "menus for logged in users" do
-    setup do
-      Marley::Resources::User.delete
-      @client=Marley::TestClient.new(:resource_name => 'user')
-      @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-      @client.auth=['asdf','asdfasdf']
-    end
-    should "show main menu, PM menu and Posts menu" do
-      assert @client.read({},:resource_name => '')
-      assert @client.read({},:resource_name => 'pm_menu')
-      assert @client.read({},:resource_name => 'post_menu')
-    end
+  should "return login form with no params" do
+    assert @client.read({},{:resource_name => '',:code => 200})
+  end
+  should "not allow access to menus, private messages, or posts" do
+    assert @client.read({:resource_name =>'pm_menu'},{:code => 401})
+    assert @client.read({:resource_name =>'post_menu'},{:code => 401})
+    assert @client.read({:resource_name =>'private_message'},{:code => 401})
+    assert @client.read({:resource_name =>'post'},{:code => 401})
+  end
+  should "validate new user properly" do
+    assert resp=@client.create
+    assert_equal "validation", resp.resource_type
+    assert_equal ["is required"], resp.properties['name']
+    resp=@client.create({:'user[name]' => 'asdf'})
+    assert_equal "validation", resp.resource_type
+    resp=@client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdfaf'})
+    assert_equal "validation", resp.resource_type
+    assert_equal ["Password must contain at least 8 characters"], resp.properties['password']
+    resp=@client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf')
+    assert_equal "validation", resp.resource_type
+    assert_equal ["Passwords do not match"], resp.properties['confirm_password']
+  end
+  should "allow creation of a new user and disallow user with the same name" do
+    @client.code=200
+    @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+    @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+  end
+  should "show menus for logged in user" do
+    @client.code=200
+    @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+    @client.auth=['asdf','asdfasdf']
+    assert @client.read({},:resource_name => '')
+    assert @client.read({},:resource_name => 'pm_menu')
+    assert @client.read({},:resource_name => 'post_menu')
   end
 end
 class MessageTests < Test::Unit::TestCase
