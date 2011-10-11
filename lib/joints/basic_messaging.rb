@@ -51,7 +51,7 @@ module Marley
         children.length > 0 ? to_a << children.map{|m| m.thread} : to_a
       end
       def new_tags
-        [:instance,{:name => 'tags',:url => "#{url}tags", :new_rec => true, :schema => [['number','tags[message_id]',RESTRICT_HIDE,id],['text','tags[tags]',RESTRICT_REQ]]}]
+        [:instance,{:name => 'tags',:url => "#{url}tags", :new_rec => true, :schema => [['number','message_id',RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
       end
       def new_user_tags
         [:instance,{:name => 'user_tags',:url => "#{url}user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
@@ -145,6 +145,10 @@ module Marley
         @instance_get_actions << 'new_tags'
       end
       @instance_get_actions=['reply']
+      def current_user_role
+        super || 'reader'
+      end
+      def authorize_rest_post(meth);true;end
       def self.list(params={})
         params||={}
         if specified_tags=params.delete(:tags)
