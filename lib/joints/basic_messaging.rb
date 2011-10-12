@@ -10,9 +10,11 @@ module Marley
         Post.tagging(user_class)
         PrivateMessage.tagging(user_class)
         include Tag::TaggingMethods
+        extend Tag::TaggingClassMethods
       end
       @owner_col=:author_id
-      def write_cols; new? ?  [:message,:title,:parent_id] : []; end
+      def rest_cols; [:id,:author_id,:message,:title,:parent_id]; end
+      def write_cols; new? ?  rest_cols - [:id] : []; end
       def required_cols; write_cols - [:parent_id]; end
       def rest_schema
         schema=super
@@ -26,6 +28,7 @@ module Marley
       def authorize_rest_get(meth)
         current_user_role && (meth.nil? || self.class.instance_get_actions.include?(meth))
       end
+      def authorize_rest_put(meth); false; end
       def after_initialize
         super
         if new?
@@ -52,7 +55,7 @@ module Marley
         include Tag::UserTaggingMethods
       end
       @instance_get_actions=['reply','reply_all']
-      def write_cols;new? ? super << :recipients : super;end
+      def rest_cols; super << :recipients; end
       def current_user_role
         super || (recipients.match(/\b#{$request[:user][:name]}\b/) && "recipient")
       end
@@ -62,21 +65,8 @@ module Marley
       def authorize_rest_post(meth)
         meth.to_s > '' && (author_id==$request[:user][:id] || recipients.match(/\b#{$request[:user][:name]}\b/))
       end
-      def authorize_rest_put(meth); false; end
       def self.authorize_rest_post(asdf)
         true #may need to change this, for now auth is handled in validation
-      end
-      def self.list(params={})
-        params||={}
-        if specified_tags=params.delete(:tags)
-          tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
-        end
-        threads=filter("author_id=#{$request[:user][:id]} or recipients like('%#{$request[:user][:name]}%')".lit)
-        threads=threads.filter(params)
-        if specified_tags
-          threads=threads.join(:messages_tags,:message_id => :id).filter(:tag_id => tag_ids)
-        end
-        threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|PrivateMessage[:parent_id => nil, :thread_id => t[:thread_id]].thread}
       end
       def reply
         self.class.new({:parent_id => self[:id],:author_id => $request[:user][:id],:recipients => author.name, :title => "re: #{title}", :tags => (user_tags_dataset.current_user_tags.map{|t|t.tag} - RESERVED_PM_TAGS).join(',')})
@@ -121,25 +111,6 @@ module Marley
         super || 'reader'
       end
       def authorize_rest_post(meth);true;end
-      def self.list(params={})
-        params||={}
-        if specified_tags=params.delete(:tags)
-          tag_ids=PublicTag.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
-        end
-        if specified_user_tags=params.delete(:user_tags)
-          user_tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id)
-        end
-        threads=filter(params)
-        if specified_tags
-          threads=threads.join(:messages_tags,:message_id => :id).filter(:tag_id => tag_ids)
-          if specified_user_tags
-            threads=threads.or(:tag_id => user_tag_ids)
-          end
-        elsif specified_user_tags
-          threads=threads.join(:messages_tags,:message_id => :id).filter(:tag_id => user_tag_ids)
-        end
-        threads.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|Post[:parent_id => nil, :thread_id => t[:thread_id]].thread}
-      end
       def after_create
         add_tags(tags) if respond_to?(:public_tags) && tags
         add_user_tags(my_tags) if respond_to?(:user_tags) && my_tags
