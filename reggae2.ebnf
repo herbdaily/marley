@@ -1,0 +1,57 @@
+
+
+reggae ::= '[' resource (',' resource)* ']'
+
+resource ::= '[' resource_type ',' '{' properties '}' (',' resource)* ']'  
+
+resource_type ::= (('instance' | 'link' )(_list)?) | 'msg' | 'error'
+
+properties ::= '{' ((instance_property | link_property | instance_list_property | link_list_property |  msg_property | error_property) ':' value)+ '}'
+
+instance_property ::= 'name' | 'url' | 'new_rec' | 'search' | 'schema' | 'instance_get_actions'
+
+link_property ::= 'title' | 'description' | 'url'
+
+instance_list_property ::='title' | 'description' | 'schema' | 'instance_get_actions' | 'items'
+
+link_list_property ::= 'title' | 'description' | 'items'
+
+msg_property ::= 'title' | 'msg'
+
+instance_list_items_value ::= '[' '[' col_value (',' col_value)* ']' (',' '[' col_value (',' col_value)* ']')* ']'
+
+link_list_items_value ::= '[' link (',' link)* ']'
+
+error_property ::= error_type | msg | details
+
+title_value ::= string_literal
+
+description_value ::= string_literal
+
+msg_value ::= string_literal
+
+name_value ::= string_literal
+
+new_rec_value ::= boolean_value
+
+search_value ::= boolean_value
+
+schema_value ::= '[' col_spec (',' colspec)? ']'
+
+instance_get_actions ::= '[' action (',' action)*']'
+
+action ::= string_value
+
+col_spec ::= '[' col_type ',' col_name ',' col_restrictions (',' col_value)?  ']'
+
+col_type ::= 'text' | 'clob' | 'integer' | 'decimal' | 'image' 
+
+col_name ::= string_literal
+
+col_restrictions ::= [1-7]
+
+col_value ::= string_literal
+
+error_type_values ::= 'validation'
+
+error_details_values ::= '{' col_name ':' msg '}'
