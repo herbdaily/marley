@@ -1,11 +1,12 @@
 
+- tests for put/delete
 
-- nail down and document protocol - Reggae
-- rdoc
-- test scripts
+- nail down Reggae 2
+  ??? ditch menus in favor of "get resource/search"
+
+- server detection - steal from e.g. Sinatra
 - better logging
-
-??? ditch menus in favor of "get resource/search"
+- rdoc
 
 - hints for resources/columns
 - better filtering options for posts

@@ -8,7 +8,7 @@ ARGV[0]='test'
 require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
 
-class BasicTests < Test::Unit::TestCase
+class UserTests < Test::Unit::TestCase
   def setup
     Marley::Resources::User.delete
     @client=Marley::TestClient.new(:resource_name => 'user',:code => 400)
@@ -38,7 +38,7 @@ class BasicTests < Test::Unit::TestCase
   should "allow creation of a new user and disallow user with the same name" do
     @client.code=200
     @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+    assert @client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf'},{:code => 400})
   end
   should "show menus for logged in user" do
     @client.code=200

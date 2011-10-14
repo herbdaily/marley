@@ -6,7 +6,9 @@ resource ::= '[' resource_type ',' '{' properties '}' (',' resource)* ']'
 
 resource_type ::= (('instance' | 'link' )(_list)?) | 'msg' | 'error'
 
-properties ::= '{' ((instance_property | link_property | instance_list_property | link_list_property |  msg_property | error_property) ':' value)+ '}'
+properties ::= '{' (property ':' value)+ '}'
+
+property ::= (instance_property | link_property | instance_list_property | link_list_property |  msg_property | error_property)
 
 instance_property ::= 'name' | 'url' | 'new_rec' | 'search' | 'schema' | 'instance_get_actions'
 
