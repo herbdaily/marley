@@ -193,6 +193,8 @@ class MessageTests < Test::Unit::TestCase
         user_tags=resp[0].find_instances('user_tag')
         assert_same_elements ["sent", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
       end
+      should "allow sender to remove his own tags, but not others'" do
+      end
       context "receiver (user1)" do
         setup do
           @client.auth=@user1_auth
