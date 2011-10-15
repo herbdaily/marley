@@ -4,7 +4,6 @@ require 'shoulda'
 EXAMPLES_DIR=File.dirname(__FILE__) + '/../examples'
 
 `cp #{EXAMPLES_DIR}/empty.sqlite3 #{EXAMPLES_DIR}/forum_test.sqlite3`
-ARGV[0]='test'
 require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
 
@@ -40,13 +39,33 @@ class UserTests < Test::Unit::TestCase
     @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
     assert @client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf'},{:code => 400})
   end
-  should "show menus for logged in user" do
-    @client.code=200
-    @client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    @client.auth=['asdf','asdfasdf']
-    assert @client.read({},:resource_name => '')
-    assert @client.read({},:resource_name => 'pm_menu')
-    assert @client.read({},:resource_name => 'post_menu')
+  context "existing user logged in" do
+    setup do
+      @client.code=201
+      assert @client.create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+      assert @client.create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+      @client.code=200
+      @client.auth=['user1','asdfasdf']
+    end
+    should "show menus" do
+      assert @client.read({},:resource_name => '')
+      assert @client.read({},:resource_name => 'pm_menu')
+      assert @client.read({},:resource_name => 'post_menu')
+    end
+    should "allow viewing and changing of user columns with proper validation" do
+      @client.instance_id=1
+      assert user=@client.read({})
+      params=user.to_resource.to_params
+      assert @client.update(params,{:code => 204})
+      assert err=@client.update(params.update('user[password]' => 'zxcvzxcv'),{:code => 400})
+      assert_equal "validation", err.resource_type
+      assert @client.update(params.update('user[password]' => 'zxcvzxcv','user[confirm_password]' => 'zxcvzxcv', 'user[old_password]' => 'asdfasdf'),:code => 204)
+      assert @client.read({},:code => 401)
+      @client.auth=['user1','zxcvzxcv']
+      assert @client.read({})
+      @client.instance_id=2
+      assert @client.update(params.update('user[password]' => 'zxcvzxcv','user[confirm_password]' => 'zxcvzxcv', 'user[old_password]' => 'asdfasdf'),:code => 403)
+    end
   end
 end
 class MessageTests < Test::Unit::TestCase

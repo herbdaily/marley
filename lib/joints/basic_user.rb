@@ -7,6 +7,7 @@ module Marley
       plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| name.sub(/BasicUser/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
       attr_reader :menus
       attr_accessor :old_password,:password, :confirm_password
+      def write_cols;[:name,:email,:password,:confirm_password,:old_password];end
       def rest_schema
         schema=super.delete_if {|c| c[NAME_INDEX]==:pw_hash || c[NAME_INDEX]==:description}
         schema.push([:old_password,:password,0]) unless new?

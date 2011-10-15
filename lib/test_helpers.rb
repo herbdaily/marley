@@ -31,6 +31,7 @@ module Marley
       header 'Authorization',nil unless opts[:auth]  #clear auth from previous requests
       send(verb,make_url(opts),params)
       p last_response.status if opts[:debug]
+      p expected_code if opts[:debug]
       return false unless (expected_code || RESP_CODES[method])==last_response.status
       Reggae.new(JSON.parse(last_response.body)) rescue last_response.body
     end

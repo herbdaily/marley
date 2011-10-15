@@ -42,7 +42,7 @@ module Marley
         else
           @title = 'Forum Main Menu'
           @description="Welcome to #{$request[:opts][:app_name]}, #{$request[:user].name}"
-          @items=[ [:uri,{:url => '/pm_menu',:title => 'Private Messages'}], [:uri,{:url => '/post_menu',:title => 'Posts'}] ]
+          @items=[ [:uri,{:url => $request[:user].url,:title => 'Account'}],[:uri,{:url => '/pm_menu',:title => 'Private Messages'}], [:uri,{:url => '/post_menu',:title => 'Posts'}] ]
         end
       end
     end
