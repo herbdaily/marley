@@ -188,29 +188,37 @@ class MessageTests < Test::Unit::TestCase
         @client.auth=@admin_auth
         @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
       end
-      should "have sent tag and both specified tags for sender" do
-        resp=@client.read({})
-        user_tags=resp[0].find_instances('user_tag')
-        assert_same_elements ["sent", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
-      end
-      should "allow sender to remove his own tags, but not others'" do
-        msg=@client.read[0].to_resource
-        tags=msg.find_instances('user_tag')
-        assert_equal 'remove_parent', tags[0].instance_delete_action
-        assert @client.del({},{:url => tags[0].url+msg.url})
+      context "sender (admin) logged in" do
+        setup do
+          @msg=@client.read[0].to_resource
+          @tags=@msg.find_instances('user_tag')
+        end
+        should "have sent tag and both specified tags for sender" do
+          assert_same_elements ["sent", "test", "test2"], @tags.map{|t| t.schema[:tag].col_value}
+        end
+        should "allow sender to remove his own tags'" do
+          assert_equal 'remove_parent', @tags[0].instance_delete_action
+          assert @client.del({},{:url => @tags[0].url+@msg.url})
+          assert_equal 2, @client.read[0].to_resource.find_instances('user_tag').length
+        end
       end
       context "receiver (user1)" do
         setup do
           @client.auth=@user1_auth
-          @resp=@client.read
+          @msg=@client.read[0].to_resource
+          @tags=@msg.find_instances('user_tag')
         end
         should "have inbox tag and both specified tags" do
-          user_tags=@resp[0].find_instances('user_tag')
-          assert_same_elements ["inbox", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
+          assert_same_elements ["inbox", "test", "test2"], @tags.map{|t| t.schema[:tag].col_value}
         end
         should "have specified tags in reply" do
-          reply=@client.read({},{:instance_id => @resp[0].schema[:id].col_value,:method => 'reply'}).to_resource
+          reply=@client.read({},{:instance_id => @msg.schema[:id].col_value,:method => 'reply'}).to_resource
           assert_equal 'test,test2', reply.schema[:tags].col_value
+        end
+        should "allow receiver to remove his own tags'" do
+          assert_equal 'remove_parent', @tags[0].instance_delete_action
+          assert @client.del({},{:url => @tags[0].url+@msg.url})
+          assert_equal 2, @client.read[0].to_resource.find_instances('user_tag').length
         end
       end
       context 'user2' do
