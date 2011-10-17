@@ -3,7 +3,7 @@ require 'reggae'
 #shamelessly stolen from https://github.com/josephruscio/rack-test-rest and refactored with some functionality changes
 module Marley
   class TestClient
-    CRUD2REST={'create' => 'post','read' => 'get','update' => 'put', 'delete' => 'delete'}
+    CRUD2REST={'create' => 'post','read' => 'get','update' => 'put', 'del' => 'delete'}
     DEFAULT_OPTS={:url => nil,:root_url => nil, :resource_name => nil, :instance_id => nil, :method => nil, :extention =>nil, :auth => nil, :code => nil, :debug => nil}
     include Rack::Test::Methods
     attr_reader :opts
@@ -35,7 +35,7 @@ module Marley
       return false unless (expected_code || RESP_CODES[method])==last_response.status
       Reggae.new(JSON.parse(last_response.body)) rescue last_response.body
     end
-    ['create','read','update','delete'].each do |op|
+    ['create','read','update','del'].each do |op|
       define_method op.to_sym, Proc.new { |params,opts| 
         process(CRUD2REST[op],params,opts)
       }

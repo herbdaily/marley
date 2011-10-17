@@ -194,6 +194,10 @@ class MessageTests < Test::Unit::TestCase
         assert_same_elements ["sent", "test", "test2"], user_tags.map{|t| t.schema[:tag].col_value}
       end
       should "allow sender to remove his own tags, but not others'" do
+        msg=@client.read[0].to_resource
+        tags=msg.find_instances('user_tag')
+        assert_equal 'remove_parent', tags[0].instance_delete_action
+        assert @client.del({},{:url => tags[0].url+msg.url})
       end
       context "receiver (user1)" do
         setup do

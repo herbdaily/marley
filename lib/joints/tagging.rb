@@ -70,15 +70,21 @@ module Marley
         join_table||=:"#{tagged_class.table_name}_tags"
         klass_key=:"#{tagged_class.table_name.to_s.singularize}_id"
         tag_key=:tag_id
+        attr_accessor klass_key
         if user_class
-          UserTag.many_to_many klass.to_sym, :join_table => join_table,:left_key => tag_key,:right_key => klass_key,:extend => current_user_tags
+          UserTag.many_to_many klass.underscore.to_sym, :join_table => join_table,:left_key => tag_key,:right_key => klass_key,:extend => current_user_tags
           tagged_class.many_to_many :user_tags,:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => current_user_tags
           Resources.const_get(user_class).one_to_many :user_tags
-          UserTag.many_to_one Resources.const_get(user_class).name.underscore.to_sym
+          UserTag.many_to_one user_class.underscore.to_sym
         else
-          PublicTag.many_to_many klass.to_sym, :join_table => join_table,:left_key => tag_key,:right_key => klass_key
+          PublicTag.many_to_many klass.underscore.to_sym, :join_table => join_table,:left_key => tag_key,:right_key => klass_key
           tagged_class.many_to_many :public_tags,:join_table => join_table,:left_key => klass_key,:right_key => tag_key
         end
+      end
+      def to_a
+        a=super
+        a[1][:instance_delete_action]='remove_parent'
+        a
       end
       def validate
         validates_presence :tag
@@ -103,6 +109,7 @@ module Marley
       set_dataset DB[:tags].filter(:user_id => nil)
     end
     class UserTag < Tag
+      set_dataset DB[:tags].filter(~{:user_id => nil})
     end
   end
 end

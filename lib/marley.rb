@@ -60,7 +60,7 @@ module Marley
           $request[:user]=Resources.const_get(@opts[:default_user_class]).new
         end
       end
-      $request[:path]=request.path.split('/')[1..-1]
+      $request[:path]=request.path.sub(/\/\/+/,'/').split('/')[1..-1]
       verb=request.request_method.downcase
       verb=$request[:post_params].delete(:_method).match(/^(put|delete)$/i)[1] rescue verb 
       $request[:verb]="rest_#{verb}"

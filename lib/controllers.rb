@@ -21,11 +21,13 @@ module Marley
         raise AuthorizationError unless a.authorize(@method_name)
       end
       if @method && $request[:verb] != 'rest_post'
-        @instances=if p=$request[:get_params][@model.resource_name.to_sym]
-          @method.call(p) 
-        else 
-          @method.call
-        end 
+        @instances=if p=$request[:get_params][@model.resource_name.to_sym] 
+                     @method.call(p) 
+                   elsif i=$request[:path][3]
+                     @method.call[i.to_i]
+                   else 
+                     @method.call
+                   end 
       end
     end
     def rest_get; @instances || @instance; end
@@ -53,7 +55,15 @@ module Marley
     end
     def rest_delete
       raise RoutingError(@model) unless @instance
-      (@instances || [@instance]).each {|i| i.destroy}
+      if @instances
+        @instances.each do |instance|
+          meth="remove_#{instance.class}"
+          raise RoutingError(@instance) unless @instance.respond_to?(meth)
+          @instance.send(meth,instance)
+        end
+      else
+        @instance.destroy
+      end
     end
   end
 end
