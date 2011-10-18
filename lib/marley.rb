@@ -16,7 +16,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 module Marley
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
-  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'MainMenu'}
+  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'MainMenu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   module Resources
   end
@@ -35,7 +35,7 @@ module Marley
     def run(opts={})
       @marley_opts||=DEFAULT_OPTS
       marley_opts=@marley_opts.merge!(opts)
-      Rack::Handler::Thin.run(Rack::Builder.new {
+      Rack::Handler.get(marley_ops[:server]).run(Rack::Builder.new {
         use Rack::Reloader,0
         use Rack::Static, :urls => [opts[:image_path]] if opts[:image_path]
         run(Marley::Router.new(marley_opts))
