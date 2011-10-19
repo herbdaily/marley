@@ -14,11 +14,13 @@ Sequel.extension :inflector
 log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
-module Marley
+
+module Marley #The main Marley namespace.
   JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'MainMenu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
-  module Resources
+  
+  module Resources #All objects in the Resources namespace are exposed by the server.
   end
   module MainMethods #this module is included in the main object at the end of the file
     def marley_config(opts=nil)
@@ -42,7 +44,7 @@ module Marley
       }.to_app,{:Port => @marley_opts[:port]})
     end
   end
-  class Router  
+  class Router  #the default Marley router.  Creates the $request object, locates the resource requested and calls either its controller's or its own rest verb method
     def initialize(opts={},app=nil)
       @opts=DEFAULT_OPTS.merge(opts)
     end

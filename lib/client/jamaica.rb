@@ -1,14 +1,12 @@
 module Marley
-  #
-  # Here we define the Jamaica client class for Marley.  This client
-  # is a simple HTML page that is intended to be run in a browser.
-  # It will have its actual UI metadata in the global variable '_jamaica_json'
-  # and onDocumentReady, this will be turned into the client UI.
-  #
-  CLIENT_DIR=File.dirname(__FILE__)
-  LIBS = [ 'jquery-1.6.2.js', 'jquery.form.js', 'jamaica.js' ]
-  STYLES = [ 'jamaica.css' ]
   class Client
+    # Here we define the Jamaica client class for Marley.  This client
+    # is a simple HTML page that is intended to be run in a browser.
+    # It will have its actual UI metadata in the global variable '_jamaica_json'
+    # and onDocumentReady, this will be turned into the client UI.
+    CLIENT_DIR=File.dirname(__FILE__)
+    LIBS = [ 'jquery-1.6.2.js', 'jquery.form.js', 'jamaica.js' ]
+    STYLES = [ 'jamaica.css' ]
     def initialize(opts={})
       @opts={:name => 'Application',:css => '', :js => ''}.merge(opts)
     end

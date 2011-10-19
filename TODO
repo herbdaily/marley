@@ -1,4 +1,7 @@
 
+- integrate Reggae class into sequel plugins, router
+- automate sequel plugin loading in options
+- Move MainMethods into Marley namespace? - probably a good idea 
 
 - nail down Reggae 2
   ??? ditch menus in favor of "get resource/search"
