@@ -22,27 +22,25 @@ module Marley #The main Marley namespace.
   
   module Resources #All objects in the Resources namespace are exposed by the server.
   end
-  module MainMethods #this module is included in the main object at the end of the file
-    def marley_config(opts=nil)
-      @marley_opts||=DEFAULT_OPTS
-      @marley_opts.merge!(opts) if opts
-      yield @marley_opts if block_given?
-      @marley_opts
-    end
-    def joint(joint_name)
-      joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}#{joint_name}.rb") }
-      require "#{joint_d}#{joint_name}"
-      @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
-    end
-    def run(opts={})
-      @marley_opts||=DEFAULT_OPTS
-      marley_opts=@marley_opts.merge!(opts)
-      Rack::Handler.get(marley_ops[:server]).run(Rack::Builder.new {
-        use Rack::Reloader,0
-        use Rack::Static, :urls => [opts[:image_path]] if opts[:image_path]
-        run(Marley::Router.new(marley_opts))
-      }.to_app,{:Port => @marley_opts[:port]})
-    end
+  def self.config(opts=nil)
+    @marley_opts||=DEFAULT_OPTS
+    @marley_opts.merge!(opts) if opts
+    yield @marley_opts if block_given?
+    @marley_opts
+  end
+  def self.joint(joint_name)
+    joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}#{joint_name}.rb") }
+    require "#{joint_d}#{joint_name}"
+    @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
+  end
+  def self.run(opts={})
+    @marley_opts||=DEFAULT_OPTS
+    marley_opts=@marley_opts.merge!(opts)
+    Rack::Handler.get(marley_ops[:server]).run(Rack::Builder.new {
+      use Rack::Reloader,0
+      use Rack::Static, :urls => [opts[:image_path]] if opts[:image_path]
+      run(Marley::Router.new(marley_opts))
+    }.to_app,{:Port => @marley_opts[:port]})
   end
   class Router  #the default Marley router.  Creates the $request object, locates the resource requested and calls either its controller's or its own rest verb method
     def initialize(opts={},app=nil)
@@ -134,5 +132,5 @@ module Marley #The main Marley namespace.
     end
   end
 end
-include Marley::MainMethods
+#include Marley::MainMethods
 at_exit {run  if ARGV[0]=='run'}
