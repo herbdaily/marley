@@ -3,7 +3,6 @@
 - nail down Reggae 2
   ??? ditch menus in favor of "get resource/search"
 
-- server detection - steal from e.g. Sinatra
 - better logging
 - rdoc
 
