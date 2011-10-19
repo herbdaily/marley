@@ -1,6 +1,3 @@
-# @macro [new] rest_verbs
-# @returns REST verbs (#rest_put, #rest_put, or #rest_delete)
-
 =Marley
 
 Marley is a project consisting of several parts:
@@ -26,11 +23,11 @@ More about each part:
 
 ==Joints
 
-"Joints" are pre-packaged resource sets that can be included in a Marley application.  Unfortunately, for now, their behavior can only be changed by monkey patching. 
+"Joints" are pre-packaged resource sets that can be included in a Marley application.  The joints API is very much a work in progress.
 
 ==Reggae
 
-The server and client use a JSON based data representation I developed for this project and tentatively named "Reggae."  I need to nail it down and document it, but basically it's a recursive list of lists, each of which has the format ["name",{properties},[contents]].
+The server and client use a JSON based data representation I developed for this project and tentatively named "Reggae."  It is documented roughly in Reggae.ebnf.  I am considering some structural changes, which are reflected in Reggae2.ebnf.  I'd love some comments on this.
 
 ==Jamaica
 
