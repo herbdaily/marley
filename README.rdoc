@@ -2,11 +2,16 @@
 
 Marley is a project consisting of several parts:
 
-* A Sinatra-like micro-framework for returning data from model-like entities (Ruby, based on thin/rack)
+* A server side micro-framework for returning data from ORM models (currently only Sequel) and other objects (Ruby, based on rack with thin as the default web server)
 * A framework for adding reusable content to the framework ("Joints")
 * A JSON data format ("Reggae") 
 * A simple JS client ("Jamaica") which renders Reggae as HTML.
 
+The point of the whole thing is to create as many useful default behaviors as possible, while making it easy to override any or all of them.
+
+Please see the examples/forum.rb to get a basic idea of what a Marley application looks like.
+
+-----
 
 More about each part:
 
@@ -21,9 +26,19 @@ More about each part:
   * RestConvenience - Adds a default controller for standard rest routes to a model
   * RestAuthorization - Adds default authorization to a model
 
+I love Sequel and use it exclusively, but I hope someone ports these plugins to other ORM's.
+
 ==Joints
 
 "Joints" are pre-packaged resource sets that can be included in a Marley application.  The joints API is very much a work in progress.
+
+For now, there are 3 joints included in the Marley distribution:
+
+* Basic User
+* Basic Messaging
+* Tagging
+
+With a bit of configuration and a few menus, these comprise the example forum application, which is in turn the targt for the test suite.
 
 ==Reggae
 
