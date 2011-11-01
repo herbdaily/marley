@@ -8,7 +8,7 @@ APP_DIR=File.dirname(__FILE__)
 require "marley"
 require "client/jamaica"
 #need to automate the following somehow but can't think of anything that isn't ugly ATM
-DB=Sequel.sqlite("#{APP_DIR}/forum#{ARGV[0]=='test' ? '_test' : ''}.sqlite3")#,:loggers => [Logger.new($stdout)])
+DB=Sequel.sqlite("#{APP_DIR}/forum#{ENV["MARLEY_TESTING"] ? '_test' : ''}.sqlite3")#,:loggers => [Logger.new($stdout)])
 
 RESERVED_PM_TAGS=['inbox','sent']
 RESERVED_POST_TAGS=['announcement']

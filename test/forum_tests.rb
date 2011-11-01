@@ -3,6 +3,7 @@ require 'test/unit'
 require 'shoulda'
 EXAMPLES_DIR=File.dirname(__FILE__) + '/../examples'
 
+ENV['MARLEY_TESTING']='true'
 `cp #{EXAMPLES_DIR}/empty.sqlite3 #{EXAMPLES_DIR}/forum_test.sqlite3`
 require "#{EXAMPLES_DIR}/forum.rb"
 require "#{EXAMPLES_DIR}/../lib/test_helpers"
