@@ -6,14 +6,14 @@ module Marley
         @instance=@model[$request[:path][1].to_i]
         @method_name=$request[:path][2]  
         if @method_name
-          raise RoutingError.new(@model,@instance,@method_name) unless @instance.respond_to?(@method_name)
+          raise RoutingError unless @instance.respond_to?(@method_name)
           @method=@instance.method(@method_name)
         end
       else #class method -- should yield 0 or more instances of model in an array
         @method_name=$request[:path][1] 
         @method_name='list' if @method_name.nil? && $request[:verb]=='rest_get'
         if @method_name
-          raise RoutingError.new(@model,@instance,@method_name) unless @model.respond_to?(@method_name)
+          raise RoutingError unless @model.respond_to?(@method_name)
           @method=@model.method(@method_name)
         end
       end
@@ -33,7 +33,7 @@ module Marley
     def rest_get; @instances || @instance; end
     def rest_post
       if @instance
-        raise RoutingError.new(@model,@instance,@method_name) unless @method
+        raise RoutingError unless @method
         params=$request[:post_params][@model.resource_name.to_sym][@method_name.to_sym] || $request[:post_params][@method_name.to_sym] 
         raise ValidationFailed unless params
         params=[params] unless params.class==Array
@@ -47,18 +47,18 @@ module Marley
       end
     end
     def rest_put
-      raise RoutingError(@model) unless @instance
+      raise RoutingError unless @instance
       (@instances || [@instance]).map do |i|
         i.modified!
         i.update_only($request[:post_params][@model.resource_name.to_sym],i.write_cols)
       end
     end
     def rest_delete
-      raise RoutingError(@model) unless @instance
+      raise RoutingError unless @instance
       if @instances
         @instances.each do |instance|
           meth="remove_#{instance.class}"
-          raise RoutingError(@instance) unless @instance.respond_to?(meth)
+          raise RoutingError unless @instance.respond_to?(meth)
           @instance.send(meth,instance)
         end
       else

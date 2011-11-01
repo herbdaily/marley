@@ -65,7 +65,7 @@ module Marley #The main Marley namespace.
       verb=$request[:post_params].delete(:_method).match(/^(put|delete)$/i)[1] rescue verb 
       $request[:verb]="rest_#{verb}"
       rn=$request[:path] ? $request[:path][0].camelize : @opts[:default_resource]
-      raise RoutingError $request[:path] unless Resources.constants.include?(rn)
+      raise RoutingError unless Resources.constants.include?(rn)
       @resource=Resources.const_get(rn)
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
       @controller=@resource.respond_to?($request[:verb]) ? @resource : @resource.controller
@@ -110,22 +110,7 @@ module Marley #The main Marley namespace.
   end
   class AuthenticationError < StandardError; end
   class AuthorizationError < StandardError; end
-  class RoutingError < StandardError
-    def initialize(resource,instance=nil,method=nil)
-      if method
-        if instance
-          @message="Instances of model #{resource} do not respond to method #{method}"
-        else
-          @message="Model #{resource} does not respond to method #{method}"
-        end
-      else
-        @message="No resource named #{resource} exists"
-      end
-    end
-    def to_s
-      @message
-    end
-  end
+  class RoutingError < StandardError; end
   module Utils
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
