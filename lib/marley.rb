@@ -16,7 +16,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 
 module Marley #The main Marley namespace.
-  JOINT_DIRS=["lib/joints/","#{File.dirname(__FILE__)}/joints/"]
+  JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'MainMenu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
@@ -29,8 +29,8 @@ module Marley #The main Marley namespace.
     @marley_opts
   end
   def self.joint(joint_name)
-    joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}#{joint_name}.rb") }
-    require "#{joint_d}#{joint_name}"
+    joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
+    require "#{joint_d}/#{joint_name}"
     @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
   end
   def self.run(opts={})
