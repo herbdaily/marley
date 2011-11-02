@@ -60,7 +60,7 @@ module Marley
         @items=$request[:user].user_tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))
       end
     end
-    class User < BasicUser 
+    class User < BasicUser
     end
     class Admin < User 
       def self.requires_user?;true;end

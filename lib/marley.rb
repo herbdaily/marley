@@ -22,16 +22,18 @@ module Marley #The main Marley namespace.
   
   module Resources #All objects in the Resources namespace are exposed by the server.
   end
+  require 'joint' #this needs to happen after Marley::Resources is defined
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
     @marley_opts.merge!(opts) if opts
     yield @marley_opts if block_given?
     @marley_opts
   end
-  def self.joint(joint_name)
+  def self.joint(joint_name, *opts)
     joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
     require "#{joint_d}/#{joint_name}"
     @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
+    Marley::Joints.const_get(joint_name.camelize).new(*opts).add_resources
   end
   def self.run(opts={})
     @marley_opts||=DEFAULT_OPTS
