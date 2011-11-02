@@ -3,6 +3,13 @@ require 'sanitize'
 module Marley
   module Joints
     class BasicMessaging < Joint
+      def add_resources
+        super
+        if @opts[:tagging]
+          Marley.joint 'tagging'
+          Resources::Message.tagging(@opts[:tagging_user_class])
+        end
+      end
       module Resources
         class Message < Sequel::Model
           plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}

@@ -21,10 +21,8 @@ Sequel::Model.plugin :validation_helpers
 Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
 Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
 
-Marley.joint 'basic_user'
+Marley.joint 'basic_user',{:import => []}
 Marley.joint 'basic_menu_system'
-Marley.joint 'basic_messaging'
-Marley.joint 'tagging'
 module Marley
   module Resources
     class MainMenu < Menu
@@ -60,7 +58,7 @@ module Marley
         @items=$request[:user].user_tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))
       end
     end
-    class User < BasicUser
+    class User < Marley::Joints::BasicUser::Resources::User
     end
     class Admin < User 
       def self.requires_user?;true;end
@@ -68,6 +66,6 @@ module Marley
     class Moderator < User
       def self.requires_user?;true;end
     end
-    Message.tagging('User')
   end
 end
+Marley.joint 'basic_messaging',{:tagging => true, :tagging_user_class => 'User'}

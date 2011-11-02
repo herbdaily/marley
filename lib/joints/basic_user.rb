@@ -4,7 +4,7 @@ module Marley
   module Joints
     class BasicUser < Joint
       module Resources
-        class BasicUser < Sequel::Model
+        class User < Sequel::Model
           set_dataset :users
           plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
           attr_reader :menus
