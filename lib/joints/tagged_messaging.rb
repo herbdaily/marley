@@ -1,4 +1,3 @@
-
 Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
 Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
 
@@ -23,7 +22,7 @@ module Marley
             else
               specified_user_tags=params.delete(:tags)
             end
-            tag_ids=PublicTag.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id) if specified_tags
+            tag_ids=MR::PublicTag.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id) if specified_tags
             user_tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_user_tags.split(/\s*,\s*/)).select(:id) if specified_user_tags
             items=filter(params)
             #would love to make the following line more generic...
@@ -49,7 +48,7 @@ module Marley
           end
           def add_tags(tags,user=nil)
             if respond_to?(:public_tags)
-              tags.to_s.split(',').each {|tag| add_public_tag(PublicTag.find_or_create(:tag => tag))}
+              tags.to_s.split(',').each {|tag| add_public_tag(MR::PublicTag.find_or_create(:tag => tag))}
             else
               add_user_tags(tags,user)
             end

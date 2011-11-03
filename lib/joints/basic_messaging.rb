@@ -5,7 +5,7 @@ module Marley
     class BasicMessaging < Joint
       module Resources
         class Message < Sequel::Model
-          plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| name.sub(/Message/,v.to_s)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
+          plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| v ? MR.const_get(v.to_s) : ''}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
           plugin :tree
           many_to_one :author, :class => :'Marley::Resources::User'
           @owner_col=:author_id

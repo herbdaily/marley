@@ -151,7 +151,7 @@ class MessageTests < Test::Unit::TestCase
       end
       should "have reply, reply_all and new_tags instance get actions" do
         resp=@client.read({})
-        assert_same_elements ['reply','reply_all','new_tags'], resp[0].instance_get_actions
+        assert_same_elements ['reply','reply_all','new_tags'], resp[0].get_actions
       end
       context "user1 instance actions" do
         setup do
@@ -192,7 +192,6 @@ class MessageTests < Test::Unit::TestCase
       context "sender (admin) logged in" do
         setup do
           @msg=@client.read[0].to_resource
-          p @msg
           @tags=@msg.find_instances('user_tag')
         end
         should "have sent tag and both specified tags for sender" do
@@ -330,7 +329,7 @@ class MessageTests < Test::Unit::TestCase
       @client.create({'post[title]' => 'test', 'post[message]' => 'asdf','post[tags]' => 'admintag1,admintag2'},{:auth => @admin_auth})
       @client.auth=@user2_auth
       posts=@client.read({})
-      assert_same_elements ['reply','new_tags','new_user_tags'], posts[0].instance_get_actions
+      assert_same_elements ['reply','new_tags','new_user_tags'], posts[0].get_actions
       reply=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'reply'}).to_resource
       tags=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'new_tags'}).to_resource
       user_tags=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'new_user_tags'}).to_resource
