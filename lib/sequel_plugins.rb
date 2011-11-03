@@ -6,8 +6,6 @@ NAME_INDEX=1
 RESTRICTIONS_INDEX=2
 module Sequel::Plugins::RestConvenience
   module ClassMethods
-    attr_accessor :instance_get_actions 
-    @instance_get_actions=[]
     def controller
       Marley::ModelController.new(self)
     end
@@ -38,6 +36,7 @@ module Sequel::Plugins::RestConvenience
     end
   end
   module InstanceMethods
+    def get_actions; [];end
     def edit; self; end
     def rest_cols
       columns.reject do |c| 
@@ -70,7 +69,7 @@ module Sequel::Plugins::RestConvenience
       respond_to?('name') ? name : id.to_s
     end
     def to_a
-      a=[:instance, {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:instance_get_actions => self.class.instance_get_actions}]
+      a=[:instance, {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:get_actions => get_actions}]
       if respond_to?(:rest_associations) && ! new?
         a << rest_associations.map do |assoc|
           (assoc.class==Symbol ? send(assoc) : assoc).map{|instance| instance.to_a}

@@ -48,7 +48,7 @@ module Marley
     @@valid_properties=['title','description','url']
   end
   class ReggaeInstance < ReggaeResource
-    @@valid_properties=['name','new_rec','search','url','instance_get_actions','instance_delete_action']
+    @@valid_properties=['name','new_rec','search','url','get_actions','instance_delete_action']
     def schema
       ReggaeSchema.new(self.properties["schema"])
     end
@@ -61,7 +61,7 @@ module Marley
       end
     end
     def instance_action_url(action_name)
-      "#{url}#{action_name}" if instance_get_actions.include?(action_name.to_s)
+      "#{url}#{action_name}" if get_actions.include?(action_name.to_s)
     end
   end
   class ReggaeValidation < ReggaeResource

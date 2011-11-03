@@ -11,6 +11,12 @@ require 'controllers'
 require 'logger'
 Sequel.extension :inflector
 
+Sequel::Model.plugin :rest_convenience
+Sequel::Model.plugin :rest_authorization
+Sequel::Model.plugin :validation_helpers
+Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
+Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
+
 log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
@@ -33,7 +39,7 @@ module Marley #The main Marley namespace.
     joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
     require "#{joint_d}/#{joint_name}"
     @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
-    Marley::Joints.const_get(joint_name.camelize).new(*opts).add_resources
+    joint=Marley::Joints.const_get(joint_name.camelize).new(*opts).smoke
   end
   def self.run(opts={})
     @marley_opts||=DEFAULT_OPTS

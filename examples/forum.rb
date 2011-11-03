@@ -15,13 +15,8 @@ RESERVED_POST_TAGS=['announcement']
 
 Marley.config({:app_name => 'The Forum',:client => Marley::Client.new({:app_name => 'The Forum'})})
 
-Sequel::Model.plugin :rest_convenience
-Sequel::Model.plugin :rest_authorization
-Sequel::Model.plugin :validation_helpers
-Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
-Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
 
-Marley.joint 'basic_user',{:import => []}
+Marley.joint 'tagged_messaging'
 Marley.joint 'basic_menu_system'
 module Marley
   module Resources
@@ -58,14 +53,5 @@ module Marley
         @items=$request[:user].user_tags.map{|t| [:uri,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.json_uri('new'))
       end
     end
-    class User < Marley::Joints::BasicUser::Resources::User
-    end
-    class Admin < User 
-      def self.requires_user?;true;end
-    end
-    class Moderator < User
-      def self.requires_user?;true;end
-    end
   end
 end
-Marley.joint 'basic_messaging',{:tagging => true, :tagging_user_class => 'User'}
