@@ -15,7 +15,7 @@ module Marley
         }.each_pair do |mod_name, importer|
           if klass.constants.include?(mod_name.camelize)
             klass.const_get(mod_name.camelize).constants.each do |c|
-              importer.call(c) unless @opts[mod_name.to_sym] && ! @opts[mod_name.to_sym].include?(c)
+              importer.call(c) unless @opts[mod_name.to_sym] && ! @opts[mod_name.to_sym].include?(c.underscore)
             end
           end
         end

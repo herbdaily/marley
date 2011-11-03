@@ -192,6 +192,7 @@ class MessageTests < Test::Unit::TestCase
       context "sender (admin) logged in" do
         setup do
           @msg=@client.read[0].to_resource
+          p @msg
           @tags=@msg.find_instances('user_tag')
         end
         should "have sent tag and both specified tags for sender" do
