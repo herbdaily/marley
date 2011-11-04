@@ -8,8 +8,7 @@ module Marley
       end
       def smoke
         klass=self.class
-        {
-          'resources' => lambda {|c| MR.const_set(c,klass::Resources.const_get(c))},
+        { 'resources' => lambda {|c| MR.const_set(c,klass::Resources.const_get(c))},
           'class_methods' => lambda {|c| MR.const_get(c).extend klass::ClassMethods.const_get(c)},
           'instance_methods' => lambda {|c| klass::InstanceMethods.const_get(c).send :append_features, MR.const_get(c)}
         }.each_pair do |mod_name, importer|

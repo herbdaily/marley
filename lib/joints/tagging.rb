@@ -1,4 +1,3 @@
-
 module Marley
   module Joints
     class Tagging < Joint

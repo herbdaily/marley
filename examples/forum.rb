@@ -22,7 +22,7 @@ module Marley
   module Resources
     class MainMenu < Menu
       def self.requires_user?
-        $request[:path].to_a!=[]
+        $request[:path].to_a !=[]
       end
       def initialize
         @name='main'

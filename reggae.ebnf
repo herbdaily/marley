@@ -1,5 +1,4 @@
 
-
 reggae ::= '[' resource (',' resource)* ']'
 
 resource ::= '[' resource_type ',' '{' properties '}' (','  '[' resource (',' resource )* ']' )? ']'  
