@@ -17,7 +17,7 @@ module Marley
       is_resource? ? Reggae.new(self[2 .. -1]) : nil
     end
     def [](*args)
-      super.class.to_s.match(/Reggae|Array/) ?  Reggae.new(super).to_resource : super
+      super.class==Array ?  Reggae.new(super).to_resource : super
     end
     def to_resource
       is_resource? ? Marley.const_get("Reggae#{resource_type.camelize}".to_sym).new(self) : self
