@@ -12,7 +12,7 @@ module Marley
             true
           end
           def to_json
-            [:menu,{:title => @title,:description => @description,:name => @name, :items => @items}]
+            [:section,{:title => @title,:description => @description,:name => @name, :navigation => @items}]
           end
         end
       end

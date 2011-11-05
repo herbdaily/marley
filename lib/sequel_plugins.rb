@@ -12,8 +12,8 @@ module Sequel::Plugins::RestConvenience
     def resource_name
       self.name.sub(/.*::/,'').underscore
     end
-    def json_uri(action=nil)
-      [:uri,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
+    def reggae_link(action=nil)
+      [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
     end
     def list(params=nil)
       user=$request[:user]
@@ -83,8 +83,8 @@ module Sequel::Plugins::RestConvenience
     def url(action=nil)
       "/#{self.class.resource_name}/#{self[:id]}/#{action}"
     end
-    def json_uri(action=nil)
-      [:uri,{:url => url,:title => "#{action.humanize}"}]
+    def reggae_link(action=nil)
+      [:link,{:url => url,:title => "#{action.humanize}"}]
     end
   end
 end

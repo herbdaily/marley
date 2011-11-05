@@ -1,7 +1,9 @@
 
 module Marley
   class Reggae < Array
-    @@valid_properties=[]
+    class << self
+      attr_accessor :valid_properties
+    end
     def resource_type
       self[0].class==String ? self[0] : nil
     end
@@ -29,7 +31,7 @@ module Marley
       instances
     end
     def method_missing(meth, *args, &block)
-      if @@valid_properties.include?(meth.to_s)
+      if self.class.valid_properties.include?(meth.to_s)
         properties[meth.to_s]
       else
         super
@@ -40,13 +42,13 @@ module Marley
   end
   #resource_type ::= 'section' | 'link' |  'instance' |'instance_list' | 'msg' | 'error'
   class ReggaeSection < ReggaeResource
-    @@valid_properties=['title','description','navigation']
+    self.valid_properties=['title','description','navigation']
   end
   class ReggaeLink < ReggaeResource
-    @@valid_properties=['title','description','url']
+    self.valid_properties=['title','description','url']
   end
   class ReggaeInstance < ReggaeResource
-    @@valid_properties=['name','new_rec','search','url','get_actions','delete_action']
+    self.valid_properties=['name','new_rec','search','url','get_actions','delete_action']
     def schema
       ReggaeSchema.new(self.properties["schema"])
     end
@@ -62,17 +64,17 @@ module Marley
       "#{url}#{action_name}" if get_actions.include?(action_name.to_s)
     end
   end
-  class ReggaeInstance < ReggaeResource
-    @@valid_properties=['name','description','get_actions','delete_action','items']
+  class ReggaeInstanceList < ReggaeResource
+    self.valid_properties=['name','description','get_actions','delete_action','items']
     def schema
       ReggaeSchema.new(self.properties["schema"])
     end
   end
   class ReggaeMsg < ReggaeResource
-    @@valid_properties=['title','description']
+    self.valid_properties=['title','description']
   end
   class ReggaeError < ReggaeResource
-    @@valid_properties=['title','description','error_details']
+    self.valid_properties=['title','description','error_details']
   end
   class ReggaeSchema < Array
     def [](i)

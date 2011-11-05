@@ -198,7 +198,7 @@ class MessageTests < Test::Unit::TestCase
           assert_same_elements ["sent", "test", "test2"], @tags.map{|t| t.schema[:tag].col_value}
         end
         should "allow sender to remove his own tags'" do
-          assert_equal 'remove_parent', @tags[0].instance_delete_action
+          assert_equal 'remove_parent', @tags[0].delete_action
           assert @client.del({},{:url => @tags[0].url+@msg.url})
           assert_equal 2, @client.read[0].to_resource.find_instances('user_tag').length
         end
@@ -217,7 +217,7 @@ class MessageTests < Test::Unit::TestCase
           assert_equal 'test,test2', reply.schema[:tags].col_value
         end
         should "allow receiver to remove his own tags'" do
-          assert_equal 'remove_parent', @tags[0].instance_delete_action
+          assert_equal 'remove_parent', @tags[0].delete_action
           assert @client.del({},{:url => @tags[0].url+@msg.url})
           assert_equal 2, @client.read[0].to_resource.find_instances('user_tag').length
         end

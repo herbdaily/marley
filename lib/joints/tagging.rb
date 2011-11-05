@@ -26,7 +26,7 @@ module Marley
           end
           def to_a
             a=super
-            a[1][:instance_delete_action]='remove_parent'
+            a[1][:delete_action]='remove_parent'
             a
           end
           def validate
