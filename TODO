@@ -1,7 +1,7 @@
 
 
-- joints to become classes, including menu_items and config methods, add_resources
-- Marley.joint requires relevant file, instantiates class, runs add_resources method
+- Create Main menu interface, integration for resources/joints
+- Fix JS
 
 
 

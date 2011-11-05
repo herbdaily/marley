@@ -1,29 +1,35 @@
 
 reggae ::= '[' resource (',' resource)* ']'
 
-resource ::= '[' resource_type ',' '{' properties '}' (','  '[' resource (',' resource )* ']' )? ']'  
+resource ::= '[' resource_type ',' '{' properties '}' (',' resource)* ']'  
 
-resource_type ::= 'menu' | 'msg' | 'uri' | 'instance' | 'validation'
+resource_type ::= 'section' | 'link' |  'instance' |'instance_list' | 'msg' | 'error'
 
-properties ::= ('{' (menu_property | msg_property | uri_property | instance_property | validation_property) ':' value '}')+
+properties ::= '{' property ':' value (',' property ':' value)* '}'
 
-menu_property ::=  'title' | 'description' | 'name' | 'items'
+property ::= section_property | link_property |  instance_property |instance_list_property | msg_property | error_property
 
-uri_property ::= 'title' | 'description' | 'url'
+value ::= title_value | description_value | navigation_value | name_value | new_rec_value | search_value | schema_value | get_actions_value | delete_action_value | items_value | col_value | error_type_value | error_details_value | 
+
+section_property ::= 'title' | 'description' | 'navigation'
+
+link_property ::= 'title' | 'description' | 'url'
+
+instance_property ::= 'name' | 'url' | 'new_rec' | 'search' | 'schema' | 'get_actions' | 'delete_action'
+
+instance_list_property ::='title' | 'description' | 'schema' | 'get_actions' | 'delete_action' | 'items'
 
 msg_property ::= 'title' | 'description'
 
-instance_property ::= 'name' | 'uri' | 'new_rec' | 'search' | 'schema' | 'instance_get_actions' | 'instance_delete_action'
-
-validation_property ::= string_literal
+error_property ::= 'error_type' | 'description' | 'details'
 
 title_value ::= string_literal
 
 description_value ::= string_literal
 
-name_value ::= string_literal
+navigation_value ::= '[' (resource)? (',' resource)* ']'
 
-items_value ::= '[' resource (',' resource)? ']'
+name_value ::= string_literal
 
 new_rec_value ::= boolean_value
 
@@ -31,11 +37,13 @@ search_value ::= boolean_value
 
 schema_value ::= '[' col_spec (',' colspec)? ']'
 
-instance_get_actions_values ::= '[' action (',' action)*']'
+items_value ::= '[' '[' col_value (',' col_value)* ']' (',' '[' col_value (',' col_value)* ']')* ']'
 
-instance_delete_action_values ::= boolean_value | 'remove_parent'
+get_actions_value ::= '[' action (',' action)*']'
 
 action ::= string_value
+
+delete_action_value ::= 'remove_parent' | 'deactivate' | 'delete'
 
 col_spec ::= '[' col_type ',' col_name ',' col_restrictions (',' col_value)?  ']'
 
@@ -47,3 +55,6 @@ col_restrictions ::= [1-7]
 
 col_value ::= string_literal
 
+error_type_value ::= 'validation'
+
+error_details_value ::= '{' col_name ':' msg '}'
