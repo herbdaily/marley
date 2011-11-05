@@ -50,8 +50,8 @@ class UserTests < Test::Unit::TestCase
     end
     should "show menus" do
       assert @client.read({},:resource_name => '')
-      assert @client.read({},:resource_name => 'pm_menu')
-      assert @client.read({},:resource_name => 'post_menu')
+      assert @client.read({},:resource_name => 'private_message/section')
+      assert @client.read({},:resource_name => 'post/section')
     end
     should "allow viewing and changing of user columns with proper validation" do
       @client.instance_id=1

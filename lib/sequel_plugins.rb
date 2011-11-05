@@ -90,10 +90,11 @@ module Sequel::Plugins::RestConvenience
 end
 module Sequel::Plugins::RestAuthorization
   module ClassMethods
-    attr_accessor :owner_col
+    attr_accessor :owner_col, :allowed_get_methods
     def inherited(c)
       super
       c.owner_col=@owner_col
+      c.allowed_get_methods=@allowed_get_methods
     end
     def requires_user?(verb=nil,meth=nil);true;end
     def authorize(meth)
@@ -106,7 +107,7 @@ module Sequel::Plugins::RestAuthorization
         when 'rest_post'
           new($request[:post_params][resource_name.to_sym]||{}).current_user_role=='owner' && meth.nil?
         when 'rest_get'
-          ['list','new'].include?(meth)
+          (@allowed_get_methods || ['list','new']).include?(meth)
         end
       end
     end

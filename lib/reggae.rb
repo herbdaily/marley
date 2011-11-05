@@ -5,7 +5,7 @@ module Marley
       attr_accessor :valid_properties
     end
     def resource_type
-      self[0].class==String ? self[0] : nil
+      [String, Symbol].include?(self[0].class) ? self[0].to_s : nil
     end
     def is_resource?
       ! resource_type.nil?
@@ -17,7 +17,7 @@ module Marley
       is_resource? ? Reggae.new(self[2 .. -1]) : nil
     end
     def [](*args)
-      Reggae.new(super).to_resource rescue super
+      super.class.to_s.match(/Reggae|Array/) ?  Reggae.new(super).to_resource : super
     end
     def to_resource
       is_resource? ? Marley.const_get("Reggae#{resource_type.camelize}".to_sym).new(self) : self

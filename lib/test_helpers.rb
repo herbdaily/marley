@@ -1,5 +1,5 @@
 require "rack/test"
-require 'reggae3'
+require 'reggae'
 module Marley
   #simple mocking framework; could be expanded to a general use client by adding display code.
   class TestClient

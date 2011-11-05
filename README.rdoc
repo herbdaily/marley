@@ -17,16 +17,16 @@ More about each part:
 
 ==Marley
 
-* Marley looks for resources (as indicated by the first part of the URL) in the Marley::Resources namespace as constants
-  * A resource must respond either to a #controller method or to one or more of #rest_get, #rest_put, #rest_put, or #rest_delete. 
+* Marley resources are constants in the Marley::Resources namespace.
+  * A resource must respond either to a #controller method or to one or more of #rest_get, #rest_post, #rest_put, or #rest_delete. 
   * Resources implementing a #controller method should return an object that responds to one or more REST verbs from that method
-  * REST verb methods should return a string to be sent to the client
+  * REST verb methods should return an object which responds to #to_json by returning a string to be sent to the client
 
 * Marley provides 2 plugins for the Sequel ORM.
   * RestConvenience - Adds a default controller for standard rest routes to a model
   * RestAuthorization - Adds default authorization to a model
 
-I love Sequel and use it exclusively, but I hope someone ports these plugins to other ORM's.
+I use Sequel exclusively, so I've only written these plugins for it.  I imagine it would be pretty trivial to port them to other ORMs.
 
 ==Joints
 

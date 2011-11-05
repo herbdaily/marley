@@ -13,6 +13,9 @@ module Marley
         class MainMenu
           attr_accessor :title,:name,:description, :items
           def self.rest_get
+            new.to_json
+          end
+          def initialize
             if $request[:user].new?
               u=$request[:user].to_a
               u[1].merge!({:description => 'If you don\'t already have an account, please create one here:'})
@@ -20,7 +23,7 @@ module Marley
               @description='Login or signup here.'
               @items=[LOGIN_FORM,u]
             else
-              $request[:user].new?
+              $request[:user].class.sections
             end
           end
           def self.requires_user?
