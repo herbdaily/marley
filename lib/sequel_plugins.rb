@@ -81,7 +81,7 @@ module Sequel::Plugins::RestConvenience
       to_a.to_json
     end
     def url(action=nil)
-      "/#{self.class.resource_name}/#{self[:id]}/#{action}"
+      "/#{self.class.resource_name}/#{self[:id]}/#{action}".sub('//','/')
     end
     def reggae_link(action=nil)
       [:link,{:url => url,:title => "#{action.humanize}"}]

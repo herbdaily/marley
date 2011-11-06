@@ -74,7 +74,7 @@ module Marley
     self.valid_properties=['title','description']
   end
   class ReggaeError < ReggaeResource
-    self.valid_properties=['title','description','error_details']
+    self.valid_properties=['error_type','description','error_details']
   end
   class ReggaeSchema < Array
     def [](i)

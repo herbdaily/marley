@@ -11,7 +11,7 @@ module Marley
           attr_accessor :old_password,:password, :confirm_password
           def write_cols;[:name,:email,:password,:confirm_password,:old_password];end
           def rest_schema
-            schema=super.delete_if {|c| c[NAME_INDEX]==:pw_hash || c[NAME_INDEX]==:description}
+            schema=super.delete_if {|c| [:pw_hash,:description,:active].include?(c[NAME_INDEX])}
             schema.push([:old_password,:password,0]) unless new?
             schema.push([:password,:password,new? ? RESTRICT_REQ : 0],[:password,:confirm_password,new? ? RESTRICT_REQ : 0])
             schema

@@ -24,16 +24,20 @@ class UserTests < Test::Unit::TestCase
   end
   should "validate new user properly" do
     assert resp=@client.create
-    assert_equal "validation", resp.resource_type
-    assert_equal ["is required"], resp.properties['name']
+    assert_equal "error", resp.resource_type
+    assert_equal "validation", resp.to_resource.error_type
+    assert_equal ["is required"], resp.to_resource.error_details['name']
     resp=@client.create({:'user[name]' => 'asdf'})
-    assert_equal "validation", resp.resource_type
+    assert_equal "error", resp.resource_type
+    assert_equal "validation", resp.to_resource.error_type
     resp=@client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdfaf'})
-    assert_equal "validation", resp.resource_type
-    assert_equal ["Password must contain at least 8 characters"], resp.properties['password']
+    assert_equal "error", resp.resource_type
+    assert_equal "validation", resp.to_resource.error_type
+    assert_equal ["Password must contain at least 8 characters"], resp.to_resource.error_details['password']
     resp=@client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf')
-    assert_equal "validation", resp.resource_type
-    assert_equal ["Passwords do not match"], resp.properties['confirm_password']
+    assert_equal "error", resp.resource_type
+    assert_equal "validation", resp.to_resource.error_type
+    assert_equal ["Passwords do not match"], resp.to_resource.error_details['confirm_password']
   end
   should "allow creation of a new user and disallow user with the same name" do
     @client.code=200
@@ -59,7 +63,8 @@ class UserTests < Test::Unit::TestCase
       params=user.to_resource.to_params
       assert @client.update(params,{:code => 204})
       assert err=@client.update(params.update('user[password]' => 'zxcvzxcv'),{:code => 400})
-      assert_equal "validation", err.resource_type
+      assert_equal "error", err.resource_type
+      assert_equal "validation", err.to_resource.to_resource.error_type
       assert @client.update(params.update('user[password]' => 'zxcvzxcv','user[confirm_password]' => 'zxcvzxcv', 'user[old_password]' => 'asdfasdf'),:code => 204)
       assert @client.read({},:code => 401)
       @client.auth=['user1','zxcvzxcv']
@@ -98,17 +103,20 @@ class MessageTests < Test::Unit::TestCase
       should "validate new user generated PMs properly" do
         #reject a PM with only recipients
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
-        assert_equal "validation", resp.resource_type
-        assert_equal ["is required"], resp.properties['title']
-        assert_equal ["is required"], resp.properties['message']
+        assert_equal "error", resp.resource_type
+        assert_equal "validation", resp.to_resource.error_type
+        assert_equal ["is required"], resp.to_resource.error_details['title']
+        assert_equal ["is required"], resp.to_resource.error_details['message']
         #reject a PM to a non-existent user
         resp=@client.create({:'private_message[recipients]' => 'asdfasdfasdfasdf',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
-        assert_equal "validation", resp.resource_type
-        assert resp.properties['recipients']
+        assert_equal "error", resp.resource_type
+        assert_equal "validation", resp.to_resource.error_type
+        assert resp.to_resource.error_details['recipients'][0]
         #reject a PM from user to user
         resp=@client.create({:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
-        assert_equal "validation", resp.resource_type
-        assert resp.properties['recipients']
+        assert_equal "error", resp.resource_type
+        assert_equal "validation", resp.to_resource.error_type
+        assert resp.to_resource.error_details['recipients'][0]
       end
       should "accept a PM to admin" do
          assert @client.create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
@@ -120,9 +128,10 @@ class MessageTests < Test::Unit::TestCase
       end
       should "validate new admin generated PMs properly" do
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
-        assert_equal "validation", resp.resource_type
-        assert_equal ["is required"], resp.properties['title']
-        assert_equal ["is required"], resp.properties['message']
+        assert_equal "error", resp.resource_type
+        assert_equal "validation", resp.to_resource.error_type
+        assert_equal ["is required"], resp.to_resource.error_details['title']
+        assert_equal ["is required"], resp.to_resource.error_details['message']
       end
       should "accept a PM to user1" do
          assert @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
@@ -288,9 +297,10 @@ class MessageTests < Test::Unit::TestCase
     context 'validation' do
       should "get a validation error trying to post without a title or message as admin, user1, or user2" do
         resp=@client.create({},{:code => 400,:auth => @admin_auth})
-        assert_equal "validation", resp.resource_type
-        assert_equal ["is required"], resp.properties['title']
-        assert_equal ["is required"], resp.properties['message']
+        assert_equal "error", resp.resource_type
+        assert_equal "validation", resp.to_resource.error_type
+        assert_equal ["is required"], resp.to_resource.error_details['title']
+        assert_equal ["is required"], resp.to_resource.error_details['message']
         user1_resp=@client.create({},{:code => 400,:auth => @user1_auth})
         assert_equal user1_resp, resp
         user2_resp=@client.create({},{:code => 400,:auth => @user2_auth})

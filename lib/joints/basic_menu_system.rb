@@ -31,7 +31,7 @@ module Marley
             end
           end
           def to_json
-            [:section,{:title => @title,:description => @description,:name => @name, :navigation => @items}]
+            [:section,{:title => @title,:description => @description,:name => @name, :navigation => @navigation}]
           end
         end
       end

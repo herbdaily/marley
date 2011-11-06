@@ -21,7 +21,7 @@ instance_list_property ::='title' | 'description' | 'schema' | 'get_actions' | '
 
 msg_property ::= 'title' | 'description'
 
-error_property ::= 'error_type' | 'description' | 'details'
+error_property ::= 'error_type' | 'description' | 'error_details'
 
 title_value ::= string_literal
 

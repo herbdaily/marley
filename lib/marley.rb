@@ -44,7 +44,7 @@ module Marley #The main Marley namespace.
   def self.run(opts={})
     @marley_opts||=DEFAULT_OPTS
     marley_opts=@marley_opts.merge!(opts)
-    Rack::Handler.get(marley_ops[:server]).run(Rack::Builder.new {
+    Rack::Handler.get(marley_opts[:server]).run(Rack::Builder.new {
       use Rack::Reloader,0
       use Rack::Static, :urls => [opts[:image_path]] if opts[:image_path]
       run(Marley::Router.new(marley_opts))
@@ -88,24 +88,24 @@ module Marley #The main Marley namespace.
     rescue AuthorizationError
       $log.error($!.message)
       resp_code=403
-      json=[:authorization,{:message => 'Not authorized'}].to_json
+      json=[:error,{:error_type => 'authorization',:description => 'Not authorized'}].to_json
       html="<p>You are not authorized for this opteration: #{$!.message}</p>"
     rescue RoutingError
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=404
-      json=[:routing,{:message => $!.message}].to_json
+      json=[:error,{:error_type => 'routing',:description => $!.message}].to_json
       html="<p>A routing error has occurred: #{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre>"
     rescue Sequel::ValidationFailed
       $log.error($!.errors)
       resp_code=400
-      json=[:validation,$!.errors].to_json
+      json=[:error,{:error_type => 'validation',:error_details => $!.errors}].to_json
       html="<pre>#{$!.errors}</pre>"
     rescue
       p $!.message
       p $!.backtrace
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=500
-      json=[:unknown, {:message => $!.message,:backtrace => $!.backtrace}].to_json
+      json=[:error, {:error_type => 'unknown',:description => $!.message,:backtrace => $!.backtrace}].to_json
       html="<p>#{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre><pre>#{$!.inspect}</pre>"
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
@@ -126,4 +126,4 @@ module Marley #The main Marley namespace.
   end
 end
 #include Marley::MainMethods
-at_exit {run  if ARGV[0]=='run'}
+at_exit {Marley.run  if ARGV[0]=='run'}

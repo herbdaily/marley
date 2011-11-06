@@ -50,23 +50,23 @@ body {height: 100%; min-height: 100%;}
 		text-align: center;
 		text-transform: capitalize;
 	}
-	#signup__section .menuDescription {font-weight: bold;}
-	#signup__section .menuDescription,
-	#main__section > .menuDescription,
-	#signup_menu {margin: 0 20px 20px;}
-		#signup_menu li {
+	#signup__section .sectionDescription {font-weight: bold;}
+	#signup__section .sectionDescription,
+	#main__section > .sectionDescription,
+	#signup_section {margin: 0 20px 20px;}
+		#signup_section li {
 			display: inline-block;
 			vertical-align: top;
 			width: 440px;
 		}
-		#signup_menu li:first-child {margin: 0 40px 0 0;}
-			#signup_menu li > div {
+		#signup_section li:first-child {margin: 0 40px 0 0;}
+			#signup_navigation li > div {
 				border: 1px solid #398235;
 				-moz-border-radius: 8px;
 				border-radius: 8px;
 				overflow: hidden;
 			}
-			#signup_menu li .form_description {
+			#signup_navigation li .form_description {
 				background: #398235;
 				border-bottom: 1px solid #398235;
 				-moz-border-radius-topright: 8px;
@@ -80,13 +80,13 @@ body {height: 100%; min-height: 100%;}
 				margin: 0 0 1.5em;
 				text-align: center;
 			}
-			#signup_menu .colContainer {margin: 0 20px 1em;}
-			#signup_menu input {width: 240px;}
-			#signup_menu input[type=submit] {
+			#signup_section .colContainer {margin: 0 20px 1em;}
+			#signup_section input {width: 240px;}
+			#signup_section input[type=submit] {
 				margin: 0 20px 20px 0;
 				width: auto;
 			}
-		#signup_menu label {width: 150px;}
+		#signup_section label {width: 150px;}
 label {
 	color: #398235;
 	display: inline-block;
@@ -105,7 +105,7 @@ textarea {
 	width: 100%;
 }
 input[type=submit],
-#main__section .menu li a,
+#main__section .navigation li a,
 .instanceActions a {
 	background: -moz-linear-gradient(top, #c9de96 0%, #398235 100%);
 	background: linear-gradient(top, #c9de96 0%,#398235 100%);
@@ -121,7 +121,7 @@ input[type=submit],
 	width: auto;
 }
 input[type=submit]:hover,
-#main__section .menu li a:hover,
+#main__section .navigation li a:hover,
 .instanceActions a:hover {
 	background: -moz-linear-gradient(top, #398235 0%, #c9de96 100%);
 	background: linear-gradient(top, #398235 0%,#c9de96 100%);
@@ -129,26 +129,26 @@ input[type=submit]:hover,
 	cursor: pointer;
 	font-weight: bold;
 }
-#main__section #main_menu {
+#main__section #main_navigation {
 	border-bottom: 1px solid #398235;
 	margin: 0 20px 20px;
 	padding: 0 0 20px;
 	text-align: center;
 }
-#main__section #main_menu li {
+#main__section #main_navigation li {
 	display: inline-block;
 	margin: 0 10px;
 }
-	#main__section > #main_menu li a,
-	#main__section > .content > .section > .menu li a {margin: 0;}
+	#main__section > #main_navigation li a,
+	#main__section > .content > .section > .navigation li a {margin: 0;}
 #main__section > .content {margin: 20px;}
 	#main__section > .content > .section {
 		overflow: hidden;
 		padding: 0 0 0 225px;
 	}
 		#main__section > .content h1,
-		#main__section > .content .menuDescription,
-		#main__section > .content .menu {
+		#main__section > .content .sectionDescription,
+		#main__section > .content .navigation {
 			clear: left;
 			float: left;
 			margin: 0 0 0 -225px;
@@ -159,11 +159,11 @@ input[type=submit]:hover,
 			font: bold 167%/150% "Rockwell STD", Rockwell, serif;
 			text-transform: capitalize;
 		}
-		#main__section .menu li {
+		#main__section .navigation li {
 			display: block;
 			margin: 0 0 0.25em;
 		}
-		#main__section .content .menu li a {
+		#main__section .content .navigation li a {
 			display: block;
 			font-size: 77%;
 			text-transform: none;
