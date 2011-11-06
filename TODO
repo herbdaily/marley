@@ -1,14 +1,8 @@
 
 
-- Fix JS
-
-
 
 - integrate Reggae class into sequel plugins, router
 - automate sequel plugin loading in options
-
-- nail down Reggae 2
-  ??? ditch menus in favor of "get resource/search"
 
 - better logging
 
