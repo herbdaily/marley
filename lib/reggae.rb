@@ -32,7 +32,7 @@ module Marley
     end
     def method_missing(meth, *args, &block)
       if self.class.valid_properties.include?(meth.to_s)
-        properties[meth.to_s]
+        properties[meth] || properties[meth.to_s]
       else
         super
       end

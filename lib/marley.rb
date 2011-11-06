@@ -8,6 +8,7 @@ require 'rack/auth/basic'
 require 'rack/builder'
 require 'sequel_plugins'
 require 'controllers'
+require 'reggae'
 require 'logger'
 Sequel.extension :inflector
 

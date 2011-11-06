@@ -67,9 +67,9 @@ module Marley
       end
       module Resources
         class User < MJ::BasicUser::Resources::User
-          def self.section
-            Reggae.new [:section,{ :title => 'User Preferences', :description => '', :name => 'user'},self]
-          end
+          #def self.section
+          #  ReggaeSection.new([:section,{ :title => 'User Preferences', :description => '', :name => 'user'},self])
+          #end
         end
         class Admin < User 
           def self.requires_user?;true;end
@@ -81,7 +81,7 @@ module Marley
           attr_accessor :tags
           @allowed_get_methods=['list','new','section']
           def self.section
-            Reggae.new [:section,{
+            ReggaeSection.new [:section,{
               :title => 'Private Messages',
               :description => '',
               :name => 'pms',
@@ -105,7 +105,7 @@ module Marley
           attr_accessor :tags,:my_tags
           @allowed_get_methods=['list','new','section']
           def self.section
-            Reggae.new [:section,{
+            ReggaeSection.new [:section,{
               :title => 'Public Posts',
               :description => '',
               :name => 'posts',
