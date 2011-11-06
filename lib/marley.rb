@@ -102,8 +102,6 @@ module Marley #The main Marley namespace.
       json=[:error,{:error_type => 'validation',:error_details => $!.errors}].to_json
       html="<pre>#{$!.errors}</pre>"
     rescue
-      p $!.message
-      p $!.backtrace
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       resp_code=500
       json=[:error, {:error_type => 'unknown',:description => $!.message,:backtrace => $!.backtrace}].to_json
@@ -119,33 +117,42 @@ module Marley #The main Marley namespace.
   end
   class MarleyError < StandardError
     attr_accessor :resp_code,:headers,:description,:details
-    def self.to_json
+    def initialize
+      $log.fatal("#{$!.message}\n#{$!.backtrace}")
+      @resp_code=500
+      @details=self.backtrace
+    end
+    def to_json
       json=[:error,{:error_type => name.underscore.sub(/_error$/,''),:description => @description, :details => @details}]
       [@resp_code,@headers,json]
     end
-    def self.to_html
+    def to_html
       [@resp_code,@headers,html]
     end
   end
   class ValidationError < MarleyError
-    def initialize
-      @details=self.errors
+    def initialize(errors)
+      $log.error($!.errors)
+      @details=errors
     end
   end
   class AuthenticationError < MarleyError
     def initialize
+      $log.error("Authentication failed for #{@auth.credentials[0]}") if (@auth && @auth.provided? && @auth.basic? && @auth.credentials)
       @resp_code=401
       @headers={'WWW-Authenticate' => %(Basic realm="Application")}
     end
   end
   class AuthorizationError < MarleyError
     def initialize
+      $log.error("Authorizationt Error:#{self.message}")
       @resp_code=403
       @description='You are not authorized for this operation'
     end
   end
   class RoutingError < MarleyError
     def initialize
+      $log.fatal("path:#{$request[:path]}\n   msg:#{$!.message}\n   backtrace:#{$!.backtrace}")
       @resp_code=404
       @description='Not Found'
     end
