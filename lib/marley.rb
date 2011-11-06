@@ -117,14 +117,43 @@ module Marley #The main Marley namespace.
       return [resp_code,headers,content_type.match(/json/) ? json : html]
     end
   end
-  class AuthenticationError < StandardError; end
-  class AuthorizationError < StandardError; end
-  class RoutingError < StandardError; end
+  class MarleyError < StandardError
+    attr_accessor :resp_code,:headers,:description,:details
+    def self.to_json
+      json=[:error,{:error_type => name.underscore.sub(/_error$/,''),:description => @description, :details => @details}]
+      [@resp_code,@headers,json]
+    end
+    def self.to_html
+      [@resp_code,@headers,html]
+    end
+  end
+  class ValidationError < MarleyError
+    def initialize
+      @details=self.errors
+    end
+  end
+  class AuthenticationError < MarleyError
+    def initialize
+      @resp_code=401
+      @headers={'WWW-Authenticate' => %(Basic realm="Application")}
+    end
+  end
+  class AuthorizationError < MarleyError
+    def initialize
+      @resp_code=403
+      @description='You are not authorized for this operation'
+    end
+  end
+  class RoutingError < MarleyError
+    def initialize
+      @resp_code=404
+      @description='Not Found'
+    end
+  end
   module Utils
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end
   end
 end
-#include Marley::MainMethods
 at_exit {Marley.run  if ARGV[0]=='run'}
