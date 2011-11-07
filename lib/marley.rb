@@ -61,6 +61,9 @@ module Marley #The main Marley namespace.
       $request={:request => request,:opts => @opts}
       $request[:get_params]=Marley::Utils.hash_keys_to_syms(request.GET)
       $request[:post_params]=Marley::Utils.hash_keys_to_syms(request.POST)
+      $request[:content_type]=request.xhr? ? 'application/json' : env['HTTP_ACCEPT'].to_s.sub(/,.*/,'') 
+      $request[:content_type]='text/html' unless $request[:content_type] > ''
+      $request[:content_type]='application/json' if env['rack.test']==true #there has to be a better way to do this...
       if @opts[:http_auth]
         if (@auth.provided? && @auth.basic? && @auth.credentials)
           $request[:user]=Resources.const_get(@opts[:auth_class]).authenticate(@auth.credentials)
@@ -81,38 +84,14 @@ module Marley #The main Marley namespace.
       json=@controller.send($request[:verb]).to_json
       html=@opts[:client] ? @opts[:client].to_s(json) : json
       resp_code=RESP_CODES[verb]
-    rescue AuthenticationError
-      $log.error("Authentication failed for #{@auth.credentials}") if (@auth.provided? && @auth.basic? && @auth.credentials)
-      resp_code=401
-      headers={'WWW-Authenticate' => %(Basic realm="Application")}
-      json=html='You must log in'
-    rescue AuthorizationError
-      $log.error($!.message)
-      resp_code=403
-      json=[:error,{:error_type => 'authorization',:description => 'Not authorized'}].to_json
-      html="<p>You are not authorized for this opteration: #{$!.message}</p>"
-    rescue RoutingError
-      $log.fatal("#{$!.message}\n#{$!.backtrace}")
-      resp_code=404
-      json=[:error,{:error_type => 'routing',:description => $!.message}].to_json
-      html="<p>A routing error has occurred: #{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre>"
+      headers||={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}
+      [resp_code,headers,$request[:content_type].match(/json/) ? json : html]
     rescue Sequel::ValidationFailed
-      $log.error($!.errors)
-      resp_code=400
-      json=[:error,{:error_type => 'validation',:error_details => $!.errors}].to_json
-      html="<pre>#{$!.errors}</pre>"
+      ValidationError.new($!.errors).send("#{$request[:content_type].sub(/.*\//,'')}_response")
     rescue
-      $log.fatal("#{$!.message}\n#{$!.backtrace}")
-      resp_code=500
-      json=[:error, {:error_type => 'unknown',:description => $!.message,:backtrace => $!.backtrace}].to_json
-      html="<p>#{$!.message}</p><pre>#{$!.backtrace.join("\n")}</pre><pre>#{$request[:request].inspect}</pre><pre>#{$!.inspect}</pre>"
+      $!.class.new.send("#{$request[:content_type].sub(/.*\//,'')}_response")
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
-      content_type=request.xhr? ? 'application/json' : env['HTTP_ACCEPT'].to_s.sub(/,.*/,'') 
-      content_type='text/html' unless content_type > ''
-      content_type='application/json' if env['rack.test']==true #there has to be a better way to do this...
-      headers||={'Content-Type' => "#{content_type}; charset=utf-8"}
-      return [resp_code,headers,content_type.match(/json/) ? json : html]
     end
   end
   class MarleyError < StandardError
@@ -121,18 +100,23 @@ module Marley #The main Marley namespace.
       $log.fatal("#{$!.message}\n#{$!.backtrace}")
       @resp_code=500
       @details=self.backtrace
+      @headers={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}
     end
-    def to_json
-      json=[:error,{:error_type => name.underscore.sub(/_error$/,''),:description => @description, :details => @details}]
+    def json_response
+      json=[:error,{:error_type => self.class.name.underscore.sub(/_error$/,'').sub(/^marley\//,''),:description => @description, :error_details => @details}].to_json
+      @headers||={'Content-Type' => "application/json; charset=utf-8"}
       [@resp_code,@headers,json]
     end
-    def to_html
+    def html_response
+      html=[:error,{:error_type => name.underscore.sub(/_error$/,''),:description => @description, :error_details => @details}].to_json
+      @headers||={'Content-Type' => "text/html; charset=utf-8"}
       [@resp_code,@headers,html]
     end
   end
   class ValidationError < MarleyError
     def initialize(errors)
-      $log.error($!.errors)
+      $log.error(errors)
+      @resp_code=400
       @details=errors
     end
   end
