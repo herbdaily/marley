@@ -87,58 +87,59 @@ module Marley #The main Marley namespace.
       headers||={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}
       [resp_code,headers,$request[:content_type].match(/json/) ? json : html]
     rescue Sequel::ValidationFailed
-      ValidationError.new($!.errors).send("#{$request[:content_type].sub(/.*\//,'')}_response")
+      ValidationError.new($!.errors).response
     rescue
-      $!.class.new.send("#{$request[:content_type].sub(/.*\//,'')}_response")
+      $!.class.new.response
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
     end
   end
   class MarleyError < StandardError
-    attr_accessor :resp_code,:headers,:description,:details
+    class << self
+      attr_accessor :resp_code,:headers,:description,:details
+    end
+    @resp_code=500
     def initialize
-      $log.fatal("#{$!.message}\n#{$!.backtrace}")
-      @resp_code=500
-      @details=self.backtrace
-      @headers={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}
+      self.class.details=self.backtrace
     end
-    def json_response
-      json=[:error,{:error_type => self.class.name.underscore.sub(/_error$/,'').sub(/^marley\//,''),:description => @description, :error_details => @details}].to_json
-      @headers||={'Content-Type' => "application/json; charset=utf-8"}
-      [@resp_code,@headers,json]
+    def log_error
+      $log.fatal("#{self.class.message}\n#{self.class.backtrace}")
     end
-    def html_response
-      html=[:error,{:error_type => name.underscore.sub(/_error$/,''),:description => @description, :error_details => @details}].to_json
-      @headers||={'Content-Type' => "text/html; charset=utf-8"}
-      [@resp_code,@headers,html]
+    def response
+      log_error
+      json=[:error,{:error_type => self.class.name.underscore.sub(/_error$/,'').sub(/^marley\//,''),:description => self.class.description, :error_details => self.class.details}].to_json
+      self.class.headers||={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}
+      [self.class.resp_code,self.class.headers,json]
     end
   end
   class ValidationError < MarleyError
+    @resp_code=400
     def initialize(errors)
-      $log.error(errors)
-      @resp_code=400
-      @details=errors
+      self.class.details=errors
+    end
+    def log_error
+      $log.error(self.class.details)
     end
   end
   class AuthenticationError < MarleyError
-    def initialize
+    @resp_code=401
+    @headers={'WWW-Authenticate' => %(Basic realm="Application")}
+    def log_error
       $log.error("Authentication failed for #{@auth.credentials[0]}") if (@auth && @auth.provided? && @auth.basic? && @auth.credentials)
-      @resp_code=401
-      @headers={'WWW-Authenticate' => %(Basic realm="Application")}
     end
   end
   class AuthorizationError < MarleyError
-    def initialize
+    @resp_code=403
+    @description='You are not authorized for this operation'
+    def log_error
       $log.error("Authorizationt Error:#{self.message}")
-      @resp_code=403
-      @description='You are not authorized for this operation'
     end
   end
   class RoutingError < MarleyError
-    def initialize
+    @resp_code=404
+    @description='Not Found'
+    def log_error
       $log.fatal("path:#{$request[:path]}\n   msg:#{$!.message}\n   backtrace:#{$!.backtrace}")
-      @resp_code=404
-      @description='Not Found'
     end
   end
   module Utils
