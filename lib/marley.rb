@@ -89,7 +89,7 @@ module Marley #The main Marley namespace.
     rescue Sequel::ValidationFailed
       ValidationError.new($!.errors).response
     rescue
-      $!.class.new.response
+      ($!.class.new.respond_to?(:response) ?  $!.class : MarleyError).new.response
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
     end
@@ -103,7 +103,7 @@ module Marley #The main Marley namespace.
       self.class.details=self.backtrace
     end
     def log_error
-      $log.fatal("#{self.class.message}\n#{self.class.backtrace}")
+      $log.fatal("#$!.message}\n#{$!.backtrace}")
     end
     def response
       log_error

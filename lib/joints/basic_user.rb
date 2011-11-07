@@ -9,15 +9,18 @@ module Marley
           plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
           attr_reader :menus
           attr_accessor :old_password,:password, :confirm_password
+          def self.requires_user?
+            ! ($request[:verb]=='rest_post')
+          end
+          def self.section
+            ReggaeSection.new([:section, {:title => 'User Info', :name => self.to_s.underscore, :navigation => []},$request[:user]]) if $request[:user].class == self
+          end
           def write_cols;[:name,:email,:password,:confirm_password,:old_password];end
           def rest_schema
             schema=super.delete_if {|c| [:pw_hash,:description,:active].include?(c[NAME_INDEX])}
-            schema.push([:old_password,:password,0]) unless new?
-            schema.push([:password,:password,new? ? RESTRICT_REQ : 0],[:password,:confirm_password,new? ? RESTRICT_REQ : 0])
+            schema.push([:password,:old_password,0]) unless new?
+            schema.push([:password,:password ,new? ? RESTRICT_REQ : 0],[:password,:confirm_password,new? ? RESTRICT_REQ : 0])
             schema
-          end
-          def self.requires_user?
-            ! ($request[:verb]=='rest_post')
           end
           def self.authenticate(credentials)
             u=find(:name => credentials[0], :pw_hash => Digest::SHA1.hexdigest(credentials[1]))

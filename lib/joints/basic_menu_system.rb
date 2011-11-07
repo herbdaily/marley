@@ -23,8 +23,7 @@ module Marley
               @title = "#{$request[:opts][:app_name]} Main Menu"
               @description="Welcome to #{$request[:opts][:app_name]}, #{$request[:user].name}"
               @navigation=MR.constants.map do |rn|
-                if (resource=MR.const_get(rn)).respond_to?(:section)
-                  s=resource.section
+                if (resource=MR.const_get(rn)).respond_to?(:section) && (s=resource.section)
                   [:link,{:title => s.title, :description =>s.description, :url => "#{resource.resource_name}/section" }]
                 end
               end.compact
