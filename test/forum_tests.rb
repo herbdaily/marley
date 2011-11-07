@@ -26,18 +26,18 @@ class UserTests < Test::Unit::TestCase
     assert resp=@client.create
     assert_equal "error", resp.resource_type
     assert_equal "validation", resp.to_resource.error_type
-    assert_equal ["is required"], resp.to_resource.error_details['name']
+    assert_equal ["is required"], resp.to_resource.error_details[:name]
     resp=@client.create({:'user[name]' => 'asdf'})
     assert_equal "error", resp.resource_type
     assert_equal "validation", resp.to_resource.error_type
     resp=@client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdfaf'})
     assert_equal "error", resp.resource_type
     assert_equal "validation", resp.to_resource.error_type
-    assert_equal ["Password must contain at least 8 characters"], resp.to_resource.error_details['password']
+    assert_equal ["Password must contain at least 8 characters"], resp.to_resource.error_details[:password]
     resp=@client.create(:'user[name]' => 'asdf',:'user[password]' => 'asdfasdf')
     assert_equal "error", resp.resource_type
     assert_equal "validation", resp.to_resource.error_type
-    assert_equal ["Passwords do not match"], resp.to_resource.error_details['confirm_password']
+    assert_equal ["Passwords do not match"], resp.to_resource.error_details[:confirm_password]
   end
   should "allow creation of a new user and disallow user with the same name" do
     @client.code=200
@@ -105,18 +105,18 @@ class MessageTests < Test::Unit::TestCase
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
         assert_equal "error", resp.resource_type
         assert_equal "validation", resp.to_resource.error_type
-        assert_equal ["is required"], resp.to_resource.error_details['title']
-        assert_equal ["is required"], resp.to_resource.error_details['message']
+        assert_equal ["is required"], resp.to_resource.error_details[:title]
+        assert_equal ["is required"], resp.to_resource.error_details[:message]
         #reject a PM to a non-existent user
         resp=@client.create({:'private_message[recipients]' => 'asdfasdfasdfasdf',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
         assert_equal "error", resp.resource_type
         assert_equal "validation", resp.to_resource.error_type
-        assert resp.to_resource.error_details['recipients'][0]
+        assert resp.to_resource.error_details[:recipients][0]
         #reject a PM from user to user
         resp=@client.create({:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
         assert_equal "error", resp.resource_type
         assert_equal "validation", resp.to_resource.error_type
-        assert resp.to_resource.error_details['recipients'][0]
+        assert resp.to_resource.error_details[:recipients][0]
       end
       should "accept a PM to admin" do
          assert @client.create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
@@ -130,8 +130,8 @@ class MessageTests < Test::Unit::TestCase
         resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
         assert_equal "error", resp.resource_type
         assert_equal "validation", resp.to_resource.error_type
-        assert_equal ["is required"], resp.to_resource.error_details['title']
-        assert_equal ["is required"], resp.to_resource.error_details['message']
+        assert_equal ["is required"], resp.to_resource.error_details[:title]
+        assert_equal ["is required"], resp.to_resource.error_details[:message]
       end
       should "accept a PM to user1" do
          assert @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
@@ -299,8 +299,8 @@ class MessageTests < Test::Unit::TestCase
         resp=@client.create({},{:code => 400,:auth => @admin_auth})
         assert_equal "error", resp.resource_type
         assert_equal "validation", resp.to_resource.error_type
-        assert_equal ["is required"], resp.to_resource.error_details['title']
-        assert_equal ["is required"], resp.to_resource.error_details['message']
+        assert_equal ["is required"], resp.to_resource.error_details[:title]
+        assert_equal ["is required"], resp.to_resource.error_details[:message]
         user1_resp=@client.create({},{:code => 400,:auth => @user1_auth})
         assert_equal user1_resp, resp
         user2_resp=@client.create({},{:code => 400,:auth => @user2_auth})

@@ -1,5 +1,7 @@
 
 
+- improve testing coverage
+- improve documentation
 
 - integrate Reggae class into sequel plugins, router
 - automate sequel plugin loading in options

@@ -4,6 +4,9 @@ module Marley
     class BasicMenuSystem < Joint
       module Resources
         class Menu
+          class <<self
+            attr_accessor :sections
+          end
           attr_accessor :title,:name,:description, :navigation
           def self.rest_get
             new.to_json
@@ -22,7 +25,7 @@ module Marley
             else
               @title = "#{$request[:opts][:app_name]} Main Menu"
               @description="Welcome to #{$request[:opts][:app_name]}, #{$request[:user].name}"
-              @navigation=MR.constants.map do |rn|
+              @navigation=(self.class.sections || MR.constants).map do |rn|
                 if (resource=MR.const_get(rn)).respond_to?(:section) && (s=resource.section)
                   [:link,{:title => s.title, :description =>s.description, :url => "#{resource.resource_name}/section" }]
                 end
