@@ -3,6 +3,17 @@ module Marley
   class Reggae < Array
     class << self
       attr_accessor :valid_properties
+      def mk_prop_methods
+        @valid_properties && @valid_properties.each do |meth|
+          define_method(meth) {properties[meth]} 
+          define_method(:"#{meth}=") {|val|properties[meth]=val} 
+        end
+      end
+    end
+    def initialize(*args)
+      super
+      self.class.mk_prop_methods
+      self
     end
     def resource_type
       [String, Symbol].include?(self[0].class) ? self[0].to_s : nil
@@ -30,17 +41,9 @@ module Marley
       end
       instances
     end
-    def method_missing(meth, *args, &block)
-      if self.class.valid_properties.include?(meth.to_sym)
-        properties[meth.to_sym] 
-      else
-        super
-      end
-    end
   end
   class ReggaeResource < Reggae
   end
-  #resource_type ::= 'section' | 'link' |  'instance' |'instance_list' | 'msg' | 'error'
   class ReggaeSection < ReggaeResource
     self.valid_properties=[:title,:description,:navigation]
   end
@@ -88,6 +91,7 @@ module Marley
   class ReggaeColSpec < Array
     ['col_type','col_name','col_restrictions', 'col_value'].each_with_index do |prop_name, i|
       define_method(prop_name.to_sym) {self[i]} 
+      define_method(:"#{prop_name}=") {|val|self[i]=val} 
     end
   end
 end
