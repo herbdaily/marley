@@ -51,7 +51,10 @@ module Marley
   class ReggaeResource < Reggae
   end
   class ReggaeSection < ReggaeResource
-    self.valid_properties=[:title,:description,:navigation]
+    self.valid_properties=[:title,:description]
+    def navigation
+      properties[:navigation].map{|n|Reggae.get_resource(n)}
+    end
   end
   class ReggaeLink < ReggaeResource
     self.valid_properties=[:title,:description,:url]
