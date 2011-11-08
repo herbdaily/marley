@@ -5,7 +5,7 @@ module Marley
       attr_accessor :valid_properties
       def mk_prop_methods
         @valid_properties && @valid_properties.each do |meth|
-          define_method(meth) {properties[meth]} 
+          define_method(meth) {properties[meth].respond_to?(:to_resource) ? properties[meth].to_resource : properties[meth]} 
           define_method(:"#{meth}=") {|val|properties[meth]=val} 
         end
       end
@@ -13,7 +13,6 @@ module Marley
     def initialize(*args)
       super
       self.class.mk_prop_methods
-      self
     end
     def resource_type
       [String, Symbol].include?(self[0].class) ? self[0].to_s : nil
@@ -26,6 +25,10 @@ module Marley
     end
     def contents
       is_resource? ? Reggae.new(self[2 .. -1]) : nil
+    end
+    def contents=(*args)
+      self[2]=*args
+      while length>3;delete_at -1;end
     end
     def [](*args)
       super.class==Array ?  Reggae.new(super).to_resource : super
@@ -82,9 +85,9 @@ module Marley
   class ReggaeSchema < Array
     def [](i)
       if i.class==Fixnum
-        ReggaeColSpec.new(super).to_resource 
+        ReggaeColSpec.new(super)
       else
-        ReggaeColSpec.new(find {|cs|ReggaeColSpec.new(cs).col_name==i.to_s})
+        self[find_index {|cs|ReggaeColSpec.new(cs).col_name==i.to_s}]
       end
     end
   end
