@@ -76,12 +76,10 @@ module Marley
         end
         class PrivateMessage < MJ::BasicMessaging::Resources::PrivateMessage
           attr_accessor :tags
-          def self.section
-            ReggaeSection.new [:section,{
-              :title => 'Private Messages',
-              :description => '',
-              :name => 'pms',
-              :navigation => $request[:user].user_tags.map{|t| [:link,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.reggae_link('new'))}]
+          @section_title='Private Messages'
+          @section_name='pms'
+          def self.section_navigation
+            $request[:user].user_tags.map{|t| [:link,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.reggae_link('new'))
           end
           def get_actions; super << 'new_tags';end
           def rest_schema
@@ -99,12 +97,10 @@ module Marley
         end
         class Post < MJ::BasicMessaging::Resources::Post
           attr_accessor :tags,:my_tags
-          def self.section
-            ReggaeSection.new [:section,{
-              :title => 'Public Posts',
-              :description => '',
-              :name => 'posts',
-              :navigation => MR::Tag.filter(:user_id => nil).map{|t| [:link,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:link,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.reggae_link('new'))}]
+          @section_title='Public Posts'
+          @section_name='posts'
+          def self.section_navigation
+            MR::Tag.filter(:user_id => nil).map{|t| [:link,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:link,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.reggae_link('new'))
           end
           def get_actions;(super << 'new_user_tags') << 'new_tags';end
           def rest_schema

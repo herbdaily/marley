@@ -1,4 +1,16 @@
 
+module Sequel::Plugins::RestSection
+  SECTION_PROPS='name','title','description','navigation'
+  module ClassMethods
+    SECTION_PROPS.each {|p| attr_accessor :"section_#{p}"}
+    def section
+      if SECTION_PROPS.find {|p| send(:"section_#{p}").to_s > ''}
+        Marley::ReggaeSection.new [:section,SECTION_PROPS.inject({}) {|props,p| props[p.to_sym]=send(:"section_#{p}");props }]
+      end
+    end
+  end
+end
+Sequel::Model.plugin :rest_section
 module Marley
   module Joints
     class BasicMenuSystem < Joint
