@@ -33,7 +33,7 @@ module Marley
       p last_response.status if opts[:debug]
       p expected_code if opts[:debug]
       return false unless (expected_code || RESP_CODES[method])==last_response.status
-      Reggae.new(JSON.parse(last_response.body)).to_resource rescue last_response.body
+      Reggae.get_resource(JSON.parse(last_response.body)) rescue last_response.body
     end
     ['create','read','update','del'].each do |op|
       define_method op.to_sym, Proc.new { |params,opts| 

@@ -9,6 +9,9 @@ module Marley
           define_method(:"#{meth}=") {|val|properties[meth]=val} 
         end
       end
+      def get_resource(*args)
+        self.new(*args).to_resource
+      end
     end
     def initialize(*args)
       super
