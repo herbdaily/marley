@@ -49,6 +49,10 @@ module Marley
     end
   end
   class ReggaeResource < Reggae
+    def initialize(*args)
+      super
+      unshift self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym unless is_resource?
+    end
   end
   class ReggaeSection < ReggaeResource
     self.valid_properties=[:title,:description]

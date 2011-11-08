@@ -13,7 +13,7 @@ module Marley
             ! ($request[:verb]=='rest_post')
           end
           def self.section
-            ReggaeSection.new([:section, {:title => 'User Info', :name => self.to_s.underscore, :navigation => []},$request[:user]]) if $request[:user].class == self
+            ReggaeSection.new([ {:title => 'User Info', :name => self.to_s.underscore, :navigation => []},$request[:user]]) if $request[:user].class == self
           end
           def write_cols;[:name,:email,:password,:confirm_password,:old_password];end
           def rest_schema

@@ -69,7 +69,7 @@ module Sequel::Plugins::RestConvenience
       respond_to?('name') ? name : id.to_s
     end
     def to_a
-      a=Marley::ReggaeInstance.new([:instance, {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:get_actions => get_actions}])
+      a=Marley::ReggaeInstance.new([ {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:get_actions => get_actions}])
       if respond_to?(:rest_associations) && ! new?
         a.contents=rest_associations.map do |assoc|
           (assoc.class==Symbol ? send(assoc) : assoc).map{|instance| instance.to_a}
