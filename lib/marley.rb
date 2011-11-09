@@ -3,9 +3,11 @@ require 'json/ext'
 require 'rack'
 require 'rack/auth/basic'
 require 'rack/builder'
-require 'sequel_plugins'
-require 'controllers'
-require 'reggae'
+require 'sequel/plugins/rest_convenience'
+require 'sequel/plugins/rest_auth'
+#require 'sequel_plugins'
+require 'marley/controllers'
+require 'marley/reggae'
 require 'logger'
 Sequel.extension :inflector
 
@@ -26,7 +28,7 @@ module Marley #The main Marley namespace.
   
   module Resources #All objects in the Resources namespace are exposed by the server.
   end
-  require 'joint' #this needs to happen after Marley::Resources is defined
+  require 'marley/joint' #this needs to happen after Marley::Resources is defined
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
     @marley_opts.merge!(opts) if opts
