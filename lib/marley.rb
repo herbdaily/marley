@@ -1,8 +1,5 @@
 #!/usr/bin/ruby
-$: << File.dirname(__FILE__)
-require 'rubygems'
 require 'json/ext'
-require 'thin'
 require 'rack'
 require 'rack/auth/basic'
 require 'rack/builder'

@@ -54,7 +54,7 @@ class UserTests < Test::Unit::TestCase
     end
     should "show menus" do
       menu= @client.read({},:resource_name => '')
-      assert_equal ["User Info", "Private Messages", "Public Posts"], menu.navigation.map{|n| n.title}
+      assert_same_elements ["User Info", "Private Messages", "Public Posts"], menu.navigation.map{|n| n.title}
       assert @client.read({},:resource_name => 'private_message/section')
       assert @client.read({},:resource_name => 'post/section')
     end
