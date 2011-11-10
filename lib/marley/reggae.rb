@@ -49,15 +49,16 @@ module Marley
     end
   end
   class ReggaeResource < Reggae
-    def self.from_props_hash(props)
-      new 
-    end
     def resource_type
       self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym
     end
     def initialize(*args)
-      super
-      unshift resource_type if self[0].class==Hash
+      if args[0].class==Hash
+        initialize [args[0]]
+      else
+        super
+        unshift resource_type if self[0].class==Hash
+      end
     end
   end
   class ReggaeSection < ReggaeResource

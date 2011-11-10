@@ -5,7 +5,7 @@ module Sequel::Plugins::RestSection
     SECTION_PROPS.each {|p| attr_accessor :"section_#{p}"}
     def section
       if SECTION_PROPS.find {|p| send(:"section_#{p}").to_s > ''}
-        Marley::ReggaeSection.new [SECTION_PROPS.inject({}) {|props,p| props[p.to_sym]=send(:"section_#{p}");props }]
+        Marley::ReggaeSection.new SECTION_PROPS.inject({}) {|props,p| props[p.to_sym]=send(:"section_#{p}");props }
       end
     end
   end
@@ -48,7 +48,7 @@ module Marley
             end
           end
           def to_json
-            [:section,{:title => @title,:description => @description,:name => @name, :navigation => @navigation}]
+            Marley::ReggaeSection.new({:title => @title,:description => @description,:name => @name, :navigation => @navigation})
           end
         end
       end
