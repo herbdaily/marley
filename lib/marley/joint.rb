@@ -1,7 +1,5 @@
 module Marley
   module Joints
-    MR=Marley::Resources
-    MJ=Marley::Joints
     class Joint
       def initialize(opts={})
         config(opts)

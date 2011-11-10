@@ -27,6 +27,10 @@ module Marley #The main Marley namespace.
   
   module Resources #All objects in the Resources namespace are exposed by the server.
   end
+  module Joints
+  end
+  MR=Marley::Resources
+  MJ=Marley::Joints
   require 'marley/joint' #this needs to happen after Marley::Resources is defined
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS

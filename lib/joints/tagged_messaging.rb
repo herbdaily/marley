@@ -9,9 +9,11 @@ module Marley
     class TaggedMessaging < Joint
       def smoke
         super
-        MR::Tag.tagging_for('PrivateMessage', 'User')
-        MR::Tag.tagging_for('Post', 'User')
-        MR::Tag.tagging_for('Post')
+        MR::Tag.tagging_for('PrivateMessage', 'User') if MR.constants.include?('PrivateMessage')
+        if MR.constants.include?('Post')
+          MR::Tag.tagging_for('Post', 'User')
+          MR::Tag.tagging_for('Post')
+        end
       end
       module ClassMethods
         module Message

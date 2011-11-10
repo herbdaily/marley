@@ -38,6 +38,11 @@ The parser also traps various errors and returns the appropriate error message t
 
 Marley activates both of them for Sequel::Model.  This will soon change to an option.
 
+==The Default Model Controller
+
+One of the things that the RestConvenience Sequel plugin does is add a #controller method to affected models.  This method instantiates and returns a ModelController object for the model in question.  At initialization, the Controller parses the request path to determine the model instances to which the request refers.  
+
+
 ==Joints
 
 "Joints" are pre-packaged resource sets that can be included in a Marley application.  A joint can be added to the current Resources by running Marley.joint('_joint_name_').  The Marley.joint method will then do the following:
