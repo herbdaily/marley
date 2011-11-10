@@ -18,6 +18,7 @@ Marley.joint 'basic_menu_system'
 module Marley
   module Resources
     class Author < User
+      def self.requires_user?;true;end
     end
     class Post < MJ::TaggedMessaging::Resources::Post
     end

@@ -18,7 +18,7 @@ module Marley
       self.class.mk_prop_methods
     end
     def resource_type
-      [String, Symbol].include?(self[0].class) ? self[0].to_s : nil
+      [String, Symbol].include?(self[0].class) ? self[0].to_sym : nil
     end
     def is_resource?
       ! resource_type.nil?
@@ -37,7 +37,7 @@ module Marley
       super.class==Array ?  Reggae.new(super).to_resource : super
     end
     def to_resource
-      is_resource? ? Marley.const_get("Reggae#{resource_type.camelize}".to_sym).new(self) : self
+      is_resource? ? Marley.const_get("Reggae#{resource_type.to_s.camelize}".to_sym).new(self) : self
     end
     def find_instances(rn,instances=Reggae.new([]))
       if self.class==ReggaeInstance && self.name.to_s==rn 
@@ -49,9 +49,15 @@ module Marley
     end
   end
   class ReggaeResource < Reggae
+    def self.from_props_hash(props)
+      new 
+    end
+    def resource_type
+      self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym
+    end
     def initialize(*args)
       super
-      unshift self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym unless is_resource?
+      unshift resource_type if self[0].class==Hash
     end
   end
   class ReggaeSection < ReggaeResource
