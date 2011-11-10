@@ -10,10 +10,13 @@ module Sequel::Plugins::RestSection
     end
   end
 end
-Sequel::Model.plugin :rest_section
 module Marley
   module Joints
     class BasicMenuSystem < Joint
+      def smoke
+        super
+        Sequel::Model.plugin :rest_section
+      end
       module Resources
         class Menu
           class <<self
