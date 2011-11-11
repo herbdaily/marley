@@ -11,3 +11,5 @@ require 'marley/test_helpers'
 DB=Sequel.sqlite("test/test.sqlite3")
 
 require 'test/user_tests'
+require 'test/menu_tests'
+require 'test/tagged_messaging_tests'
