@@ -41,7 +41,7 @@ module Marley #The main Marley namespace.
   def self.joint(joint_name, *opts)
     joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
     require "#{joint_d}/#{joint_name}"
-    @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
+    @marley_opts && @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
     joint=Marley::Joints.const_get(joint_name.camelize).new(*opts).smoke
   end
   def self.run(opts={})
