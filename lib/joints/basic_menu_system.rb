@@ -5,7 +5,11 @@ module Sequel::Plugins::RestSection
     SECTION_PROPS.each {|p| attr_accessor :"section_#{p}"}
     def section
       if SECTION_PROPS.find {|p| send(:"section_#{p}").to_s > ''}
-        Marley::ReggaeSection.new SECTION_PROPS.inject({}) {|props,p| props[p.to_sym]=send(:"section_#{p}");props }
+        Marley::ReggaeSection.new(SECTION_PROPS.inject({}) do |props,p| 
+          prop=send(:"section_#{p}")
+          props[p.to_sym]=prop.class==Hash ? prop[$request[:user].class] : prop
+          props 
+        end)
       end
     end
   end
