@@ -45,7 +45,7 @@ module Marley
               @section_title = "#{$request[:opts][:app_name]} Main Menu"
               @section_description="Welcome to #{$request[:opts][:app_name]}, #{$request[:user].name}"
               @section_navigation=(self.class.sections || (MR.constants - [self.class.to_s.sub(/.*::/,'').to_sym])).map do |rn|
-                if (resource=MR.const_get(rn)).respond_to?(:section) && (s=resource.section)
+                if (resource=MR.const_get(rn)).respond_to?(:section) && (s=resource.section) && s.title
                   [:link,{:title => s.title, :description =>s.description, :url => "#{resource.resource_name}/section" }]
                 end
               end.compact
