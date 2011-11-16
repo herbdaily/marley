@@ -1,7 +1,4 @@
 
-Marley.joint 'basic_user'
-Marley.joint 'basic_menu_system'
-
 class UserTests < Test::Unit::TestCase
   def setup
     Marley::Resources::User.delete
@@ -46,9 +43,9 @@ class UserTests < Test::Unit::TestCase
       @client.code=200
       @client.auth=['user1','asdfasdf']
     end
-    should "show sinlge menu item" do
+    should "show correct menu items" do
       menu= @client.read({},:resource_name => '')
-      assert_equal ["User Info"], menu.navigation.map{|n| n.title}
+      assert_same_elements ["User Info","Private Messages","Public Posts"], menu.navigation.map{|n| n.title}
     end
     should "allow viewing and changing of user columns with proper validation" do
       @client.instance_id=1

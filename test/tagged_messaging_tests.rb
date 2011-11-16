@@ -1,9 +1,4 @@
 
-RESERVED_PM_TAGS=['inbox','sent']
-RESERVED_POST_TAGS=['announcement']
-
-Marley.joint 'tagged_messaging'
-Marley.joint 'basic_menu_system'
 class MessageTests < Test::Unit::TestCase
   def setup
     Marley::Resources::User.delete

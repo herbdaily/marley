@@ -86,6 +86,14 @@ module Marley
     def instance_action_url(action_name)
       "#{url}#{action_name}" if get_actions.include?(action_name.to_s)
     end
+    def col_value(col_name,col_value=nil)
+      col=schema[col_name]
+      col.col_value=col_value if col_value
+      col.col_value
+    end
+    def set_values(col_hash)
+      col_hash.each_pair {|k,v| col_value(k,v)}
+    end
   end
   class ReggaeInstanceList < ReggaeResource
     self.valid_properties=[:name,:description,:get_actions,:delete_action,:items]
