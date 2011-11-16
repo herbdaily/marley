@@ -21,7 +21,7 @@ module Sequel::Plugins::RestConvenience
       if user.respond_to?(otm=self.resource_name.pluralize)
         if user.method(otm).arity==0  
           if (relationship=user.send(otm)).respond_to?(:filter)
-            relationship.filter($request[:get_params][resource_name.to_sym])
+            relationship.filter($request[:get_params][resource_name.to_sym] || {}).all
           else
             user.send(otm)
           end
