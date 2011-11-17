@@ -20,11 +20,11 @@ class MessageTests < Test::Unit::TestCase
   context "Private Messages" do
     setup do
       @client.resource_name='private_message'
+      @pm=MR::PrivateMessage.new.to_a
     end
     context "regular user (user1) logged in" do
       setup do
         @client.auth=@user1_auth
-        @pm=MR::PrivateMessage.new.to_a
       end
       should "show PM list and new PM form" do
         assert @client.read({})
@@ -60,20 +60,20 @@ class MessageTests < Test::Unit::TestCase
         @client.auth=@admin_auth
       end
       should "validate new admin generated PMs properly" do
-        resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
+        resp=@client.create(@pm.set_values(:recipients => 'user2'),{:code => 400})
         assert_equal :error, resp.resource_type
         assert_equal "validation", resp.error_type
         assert_equal ["is required"], resp.error_details[:title]
         assert_equal ["is required"], resp.error_details[:message]
       end
       should "accept a PM to user1" do
-         assert @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+         assert @client.create(@pm.set_values(:'recipients' => 'user1',:'title' => 'asdf',:'message' => 'asdf'))
       end
     end
     context "message with no tags" do
       setup do
         @client.auth=@admin_auth
-        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+        @client.create(@pm.set_values({:'recipients' => 'user1',:'title' => 'asdf',:'message' => 'asdf'}))
       end
       should "show up in PM list of sender and receiver" do
         resp=@client.read({})
@@ -109,7 +109,7 @@ class MessageTests < Test::Unit::TestCase
             assert_equal 're: ', @reply.schema[:title].col_value[0 .. 3]
           end
           should "accept reply" do
-            assert @client.create(@reply.to_params.merge('private_message[message]' => 'asdf'),{:method => nil,:instance_id => nil})
+            assert @client.create(@reply.set_values('message' => 'asdf'),{:method => nil,:instance_id => nil})
           end
         end
         context "new tags" do
@@ -129,7 +129,7 @@ class MessageTests < Test::Unit::TestCase
     context "message with 2 tags" do
       setup do
         @client.auth=@admin_auth
-        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'})
+        @client.create(MR::PrivateMessage.new(:recipients => 'user1', :title => 'asdf', :message => 'asdf', :tags => 'test,test2').to_a)
       end
       context "sender (admin) logged in" do
         setup do

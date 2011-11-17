@@ -6,6 +6,7 @@ module Marley
       module Resources
         class Message < Sequel::Model
           plugin :single_table_inheritance, :message_type, :model_map => lambda{|v| v ? MR.const_get(v.to_s) : ''}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
+          # CHANGE NEEDED:tree is unnecessary, instead, select by thread_id, order by parent_id, inject [] for nesting.  Should be much faster.
           plugin :tree
           many_to_one :author, :class => :'Marley::Resources::User'
           @owner_col=:author_id
@@ -22,7 +23,6 @@ module Marley
           def after_initialize
             super
             if new?
-              self.author_id=$request[:user][:id]
               self.thread_id=parent ? parent.thread_id : Message.select(:max.sql_function(:thread_id).as(:tid)).all[0][:tid].to_i + 1
             end
           end
