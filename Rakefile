@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'rake/testtask'
 
-task :default => [:test,:user_test]
+task :default => [:test]
 
 Rake::TestTask.new(:test) do |t|
   t.ruby_opts=['-r test/test_include']

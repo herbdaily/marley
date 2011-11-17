@@ -15,16 +15,17 @@ module Marley
     end
     def initialize(*args)
       super
+      self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash
       self.class.mk_prop_methods
+    end
+    def properties
+      self[1] || nil
     end
     def resource_type
       [String, Symbol].include?(self[0].class) ? self[0].to_sym : nil
     end
     def is_resource?
       ! resource_type.nil?
-    end
-    def properties
-      self[1].class==Hash ? Utils.hash_keys_to_syms(self[1]) : nil
     end
     def contents
       is_resource? ? Reggae.new(self[2 .. -1]) : nil
@@ -54,10 +55,9 @@ module Marley
     end
     def initialize(*args)
       if args[0].class==Hash
-        initialize [args[0]]
+        initialize [resource_type,args[0]]
       else
         super
-        unshift resource_type if self[0].class==Hash
       end
     end
   end
@@ -71,15 +71,14 @@ module Marley
     self.valid_properties=[:title,:description,:url]
   end
   class ReggaeInstance < ReggaeResource
-    self.valid_properties=[:name,:new_rec,:search,:url,:get_actions,:delete_action]
-    def schema
-      ReggaeSchema.new(self.properties[:schema])
+    self.valid_properties=[:name,:new_rec,:schema,:search,:url,:get_actions,:delete_action]
+    def initialize(*args)
+      super
+      self.schema=ReggaeSchema.new(self.schema)
     end
     def to_params
-      resource_name=name
       schema.inject({}) do |params,spec| 
-        s=ReggaeColSpec.new(spec)
-        params["#{resource_name}[#{s.col_name}]"]=s.col_value unless (s.col_restrictions & RESTRICT_RO > 0)
+        params["#{name}[#{spec.col_name}]"]=spec.col_value unless (spec.col_restrictions & RESTRICT_RO > 0)
         params
       end
     end
@@ -97,9 +96,7 @@ module Marley
   end
   class ReggaeInstanceList < ReggaeResource
     self.valid_properties=[:name,:description,:get_actions,:delete_action,:items]
-    def schema
-      ReggaeSchema.new(self.properties[:schema])
-    end
+    #not implemented yet
   end
   class ReggaeMsg < ReggaeResource
     self.valid_properties=[:title,:description]
@@ -108,11 +105,15 @@ module Marley
     self.valid_properties=[:error_type,:description,:error_details]
   end
   class ReggaeSchema < Array
+    def initialize(*args)
+      super
+      replace(map{|spec| ReggaeColSpec.new(spec)})
+    end
     def [](i)
       if i.class==Fixnum
-        ReggaeColSpec.new(super)
+        super
       else
-        self[find_index {|cs|ReggaeColSpec.new(cs).col_name==i.to_s}]
+        find {|cs|cs.col_name.to_s==i.to_s}
       end
     end
   end
