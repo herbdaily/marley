@@ -129,7 +129,7 @@ class MessageTests < Test::Unit::TestCase
     context "message with 2 tags" do
       setup do
         @client.auth=@admin_auth
-        @client.create(MR::PrivateMessage.new(:recipients => 'user1', :title => 'asdf', :message => 'asdf', :tags => 'test,test2').to_a)
+        @client.create(@pm.set_values(:recipients => 'user1', :title => 'asdf', :message => 'asdf', :tags => 'test,test2'))
       end
       context "sender (admin) logged in" do
         setup do
@@ -173,7 +173,7 @@ class MessageTests < Test::Unit::TestCase
     end
     context "message with 2 tags and 2 receivers" do
       setup do
-        @client.create({:'private_message[recipients]' => 'user1,user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf', :'private_message[tags]' => 'test,test2'},{:auth => @admin_auth})
+        @client.create(@pm.set_values(:recipients => 'user1,user2',:title => 'asdf',:message => 'asdf', :tags => 'test,test2'),{:auth => @admin_auth})
       end
       should "have sent tag and both specified for sender" do
         resp=@client.read({},{:auth => @admin_auth})
@@ -194,12 +194,12 @@ class MessageTests < Test::Unit::TestCase
     context "message listing" do
       setup do
         #3 messages with tag "test" for user 1
-        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test'},{:auth => @admin_auth})
-        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test'},{:auth => @admin_auth})
-        @client.create({:'private_message[recipients]' => 'user1',:'private_message[title]' => 'title3',:'private_message[message]' => 'body3', :'private_message[tags]' => 'test'},{:auth => @admin_auth})
+        @client.create(@pm.set_values(:'recipients' => 'user1',:'title' => 'title1',:'message' => 'body1', :'tags' => 'test'),{:auth => @admin_auth})
+        @client.create(@pm.set_values(:'recipients' => 'user1',:'title' => 'title2',:'message' => 'body2', :'tags' => 'test'),{:auth => @admin_auth})
+        @client.create(@pm.set_values(:'recipients' => 'user1',:'title' => 'title3',:'message' => 'body3', :'tags' => 'test'),{:auth => @admin_auth})
         #2 messages with tag "test1" for user1 and user2
-        @client.create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title1',:'private_message[message]' => 'body1', :'private_message[tags]' => 'test1'},{:auth => @admin_auth})
-        @client.create({:'private_message[recipients]' => 'user2,user1',:'private_message[title]' => 'title2',:'private_message[message]' => 'body2', :'private_message[tags]' => 'test1'},{:auth => @admin_auth})
+        @client.create(@pm.set_values(:'recipients' => 'user2,user1',:'title' => 'title1',:'message' => 'body1', :'tags' => 'test1'),{:auth => @admin_auth})
+        @client.create(@pm.set_values(:'recipients' => 'user2,user1',:'title' => 'title2',:'message' => 'body2', :'tags' => 'test1'),{:auth => @admin_auth})
       end
       should "for sender (admin) show 3 messages with 'test' tag,2 messages with 'test1' tag, and 5 messages with 'sent' tag" do
         @client.auth=@admin_auth
@@ -226,6 +226,7 @@ class MessageTests < Test::Unit::TestCase
   context "Posts" do
     setup do
       @client.resource_name='post'
+      @post=MR::Post.new.to_a
     end
     context 'validation' do
       should "get a validation error trying to post without a title or message as admin, user1, or user2" do
