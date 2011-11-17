@@ -18,9 +18,11 @@ module Marley
       opts[:url] || '/' + [:root_url, :resource_name, :instance_id, :method].map {|k| opts[k]}.compact.join('/') + opts[:extention].to_s
     end
     def process(verb,params={},opts={})
+      #p 'params:',params,'opts:',opts,"-------------" if opts
       opts||={}
       opts=@opts.merge(opts)
       expected_code=opts[:code] || RESP_CODES[verb]
+      params=params.to_params if params.respond_to?(:to_params)
       if opts[:debug]
         p opts
         p "#{verb} to: '#{make_url(opts)}'" 
@@ -38,8 +40,8 @@ module Marley
       Reggae.get_resource(JSON.parse(last_response.body)) rescue last_response.body
     end
     ['create','read','update','del'].each do |op|
-      define_method op.to_sym, Proc.new { |params,opts| 
-        process(CRUD2REST[op],params,opts)
+      define_method op.to_sym, Proc.new { |*args| 
+        process(CRUD2REST[op],args[0],args[1])
       }
     end
     DEFAULT_OPTS.keys.each do |opt|
