@@ -1,9 +1,9 @@
 
 class MessageTests < Test::Unit::TestCase
   def setup
-    Marley::Resources::User.delete
-    Marley::Resources::Message.delete
-    Marley::Resources::Tag.delete
+    MR::User.delete
+    MR::Message.delete
+    MR::Tag.delete
     DB[:messages_tags].delete
     @client=Marley::TestClient.new(:resource_name => 'user')
     @client.create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
@@ -12,7 +12,7 @@ class MessageTests < Test::Unit::TestCase
     @admin_auth=['admin','asdfasdf']
     @user1_auth=['user1','asdfasdf']
     @user2_auth=['user2','asdfasdf']
-    Marley::Resources::User[:name => 'admin'].update(:user_type => 'Admin')
+    MR::User[:name => 'admin'].update(:user_type => 'Admin')
   end
   context "Private Messages" do
     setup do
@@ -21,13 +21,16 @@ class MessageTests < Test::Unit::TestCase
     context "regular user (user1) logged in" do
       setup do
         @client.auth=@user1_auth
+        @pm=MR::PrivateMessage.new.to_a
       end
-      should "show PM list" do
+      should "show PM list and new PM form" do
         assert @client.read({})
+        assert @client.read({}, :method => 'new')
       end
       should "validate new user generated PMs properly" do
         #reject a PM with only recipients
-        resp=@client.create({:'private_message[recipients]' => 'user2'},{:code => 400})
+        @pm.col_value(:recipients, 'user2')
+        resp=@client.create(@pm,{:code => 400})
         assert_equal :error, resp.resource_type
         assert_equal "validation", resp.error_type
         assert_equal ["is required"], resp.error_details[:title]

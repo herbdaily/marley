@@ -1,7 +1,7 @@
 
 class UserTests < Test::Unit::TestCase
   def setup
-    Marley::Resources::User.delete
+    MR::User.delete
     @client=Marley::TestClient.new(:resource_name => 'user',:code => 200)
     @user=@client.read({},:resource_name => '',:code => 200).navigation[1]
   end
