@@ -92,6 +92,7 @@ module Marley
     end
     def set_values(col_hash)
       col_hash.each_pair {|k,v| col_value(k,v)}
+      self
     end
   end
   class ReggaeInstanceList < ReggaeResource

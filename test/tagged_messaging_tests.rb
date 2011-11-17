@@ -1,18 +1,21 @@
 
 class MessageTests < Test::Unit::TestCase
-  def setup
+  def initialize(*args)
+    super
     MR::User.delete
-    MR::Message.delete
-    MR::Tag.delete
-    DB[:messages_tags].delete
     @client=Marley::TestClient.new(:resource_name => 'user')
-    @client.create(:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    @client.create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
-    @client.create(:'user[name]' => 'admin',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+    ['user1','user2','admin'].each do |un|
+      MR::User.new(:name => un,:password => 'asdfasdf', :confirm_password => 'asdfasdf').save
+    end
+    MR::User[:name => 'admin'].update(:user_type => 'Admin')
     @admin_auth=['admin','asdfasdf']
     @user1_auth=['user1','asdfasdf']
     @user2_auth=['user2','asdfasdf']
-    MR::User[:name => 'admin'].update(:user_type => 'Admin')
+  end
+  def setup
+    MR::Message.delete
+    MR::Tag.delete
+    DB[:messages_tags].delete
   end
   context "Private Messages" do
     setup do
@@ -35,19 +38,21 @@ class MessageTests < Test::Unit::TestCase
         assert_equal "validation", resp.error_type
         assert_equal ["is required"], resp.error_details[:title]
         assert_equal ["is required"], resp.error_details[:message]
-        #reject a PM to a non-existent user
-        resp=@client.create({:'private_message[recipients]' => 'asdfasdfasdfasdf',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
-        assert_equal :error, resp.resource_type
-        assert_equal "validation", resp.error_type
-        assert resp.error_details[:recipients][0]
         #reject a PM from user to user
-        resp=@client.create({:'private_message[recipients]' => 'user2',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'},{:code => 400})
+        @pm.set_values({:title => 'asdf', :message => 'asdf'})
+        resp=@client.create(@pm,{:code => 400})
         assert_equal :error, resp.resource_type
         assert_equal "validation", resp.error_type
         assert resp.error_details[:recipients][0]
-      end
-      should "accept a PM to admin" do
-         assert @client.create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
+        #reject a PM to a non-existent user
+        @pm.col_value(:recipients, 'asdfasdfasdf')
+        resp=@client.create(@pm,{:code => 400})
+        assert_equal :error, resp.resource_type
+        assert_equal "validation", resp.error_type
+        assert resp.error_details[:recipients][0]
+        #accept a PM to admin
+        @pm.col_value(:recipients, 'admin')
+        assert @client.create({:'private_message[recipients]' => 'admin',:'private_message[title]' => 'asdf',:'private_message[message]' => 'asdf'})
       end
     end
     context "admin logged in" do
