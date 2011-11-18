@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{marley}
-  s.version = "0.1.0"
+  s.version = "0.2.0"
   s.summary = %q{Irie default restful routes for your models and other objects}
   s.description = %q{Marley implements a web services microframework on top of Rack and Sequel on the server side and Jquery on the client side.}
   s.authors     = ["Herb Daily"]
