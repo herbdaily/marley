@@ -20,39 +20,37 @@ Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_upd
 log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
-#Public: This is the main Marley namespace3
+# This is the main Marley namespace
 module Marley 
-  # Public: Where to find joints.
   JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
-  # Public: default marley options
+  # (see #self.config)
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
-  # Public: All objects in the Resources namespace are exposed by the server.
-  module Resources 
+  module Resources # All objects in the Resources namespace are exposed by the server.
   end
-  # Public: The default namespace for Joints
-  module Joints
+  module Joints# The default namespace for Joints
   end
   require 'marley/joint' #this needs to happen after Marley::Resources is defined
-  # Public: Override default Marley configuration
-  #
-  # opts - A hash containing Marley configuration options
-  #   :http_auth - Whether or not to use http authentication
-  #   :app_name - Currently used by Jamaica to set page title
-  #   :port - port on which to run the server
-  #   :default_user_class - The default class of the new user assigned to $request[:user] if no actual user is authenticated
-  #   :auth_class - The class used to authenticate requests.  MUST respond to #authenticate
-  #   :default_resource - The resource called in response to a request to '/'
-  #   :server - the Rack web server to be used.
+  
+  # Override default Marley configuration
+  # @param [Hash] opts A hash containing Marley configuration options
+  # @option opts [Boolean] :http_auth Whether or not to use http authentication
+  # @option opts [String] :app_name Currently used by Jamaica to set page title
+  # @option opts [Number] :port Port on which to run the server
+  # @option opts [Object] :default_user_class The default class of the new user assigned to $request[:user] if no actual user is authenticated
+  # @option opts [Object] :auth_class The class used to authenticate requests.  MUST respond to #authenticate
+  # @option opts [Object] :default_resource The resource called in response to a request to '/'
+  # @option opts [String] :server  the Rack web server to be used.
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
     @marley_opts.merge!(opts) if opts
     yield @marley_opts if block_given?
     @marley_opts
   end
-  # Public: loads a joint and and calls its #smoke method
-  #
+  
+  # Loads a joint and and calls its #smoke method
+  # @param [String] joint_name The name of the joint to load and smoke - additional paramters passed through to the joint itself
   def self.joint(joint_name, *opts)
     joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
     require "#{joint_d}/#{joint_name}"
