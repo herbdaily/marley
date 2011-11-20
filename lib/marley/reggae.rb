@@ -1,5 +1,6 @@
 
 module Marley
+  # @see file:reggae.ebnf for raggae sytax
   class Reggae < Array
     class << self
       attr_accessor :valid_properties
@@ -13,6 +14,7 @@ module Marley
         self.new(*args).to_resource
       end
     end
+    # @param [Array] args an array in Reggae syntax
     def initialize(*args)
       super
       self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash

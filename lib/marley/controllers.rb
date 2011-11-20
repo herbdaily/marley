@@ -1,4 +1,5 @@
 module Marley
+  # Translates REST URL's into ORM calls to the model class with which it is initialized.
   class ModelController
     def initialize(model)
       @model=model
