@@ -1,11 +1,15 @@
 
 module Marley
-  # @see file:reggae.ebnf for raggae sytax
+  # @see file:reggae.ebnf for Raggae sytax
   class Reggae < Array
     class << self
-      attr_accessor :valid_properties
+      attr_accessor :properties
+      def properties(*args)
+        @properties=args if args
+        @properties
+      end
       def mk_prop_methods
-        @valid_properties && @valid_properties.each do |meth|
+        @properties && @properties.each do |meth|
           define_method(meth) {properties[meth].respond_to?(:to_resource) ? properties[meth].to_resource : properties[meth]} 
           define_method(:"#{meth}=") {|val|properties[meth]=val} 
         end
@@ -20,6 +24,7 @@ module Marley
       self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash
       self.class.mk_prop_methods
     end
+    # @retun [Hash] hash of resources properties
     def properties
       self[1] || nil
     end
@@ -64,16 +69,16 @@ module Marley
     end
   end
   class ReggaeSection < ReggaeResource
-    self.valid_properties=[:title,:description]
+    properties :title,:description
     def navigation
       properties[:navigation].map{|n|Reggae.get_resource(n)}
     end
   end
   class ReggaeLink < ReggaeResource
-    self.valid_properties=[:title,:description,:url]
+    properties :title,:description,:url
   end
   class ReggaeInstance < ReggaeResource
-    self.valid_properties=[:name,:new_rec,:schema,:search,:url,:get_actions,:delete_action]
+    properties :name,:new_rec,:schema,:search,:url,:get_actions,:delete_action
     def initialize(*args)
       super
       self.schema=ReggaeSchema.new(self.schema)
@@ -98,14 +103,14 @@ module Marley
     end
   end
   class ReggaeInstanceList < ReggaeResource
-    self.valid_properties=[:name,:description,:get_actions,:delete_action,:items]
+    properties :name,:description,:get_actions,:delete_action,:items
     #not implemented yet
   end
   class ReggaeMsg < ReggaeResource
-    self.valid_properties=[:title,:description]
+    properties :title,:description
   end
   class ReggaeError < ReggaeResource
-    self.valid_properties=[:error_type,:description,:error_details]
+    properties :error_type,:description,:error_details
   end
   class ReggaeSchema < Array
     def initialize(*args)
