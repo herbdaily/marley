@@ -1,5 +1,14 @@
 module Marley
   module Joints
+    # A suggested base class for joints.
+    #
+    # Joints which are subclasses should have at least one of the following modules:
+    #
+    # Resources - All constansts in this method will be imported into Marley::Resources
+    #
+    # ClassMethods - Modules within this module will exten any constant in Marley::Resources with the same name.
+    #
+    # InstanceMethods - Modules within this module will append their features to any constant in Marley::Resources with the same name. 
     class Joint
       def initialize(opts={})
         config(opts)

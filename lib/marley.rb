@@ -27,9 +27,15 @@ module Marley
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
-  module Resources # All objects in the Resources namespace are exposed by the server.
+  # All constants in the Resources namespace should refer to public resources accessible to clients, subject, of course, to authentication/authorization.
+  #
+  # Resources MUST respond to one or more of #controller, #rest_get, #rest_post, #rest_put, #rest_delete
+  #
+  # If a Resource implements a #controller method, the method MUST return an object which responds to one or more of #rest_get, #rest_post, #rest_put, #rest_delete
+  module Resources 
   end
-  module Joints# The default namespace for Joints
+  # The default namespace for Joints. Joints MUST implement a #smoke method
+  module Joints
   end
   require 'marley/joint' #this needs to happen after Marley::Resources is defined
   
@@ -57,6 +63,9 @@ module Marley
     @marley_opts && @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
     joint=Marley::Joints.const_get(joint_name.camelize).new(*opts).smoke
   end
+
+  # Runs the server
+  # @param (see #config)
   def self.run(opts={})
     @marley_opts||=DEFAULT_OPTS
     marley_opts=@marley_opts.merge!(opts)
