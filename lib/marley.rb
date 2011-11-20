@@ -23,7 +23,7 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 # This is the main Marley namespace
 module Marley 
   JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
-  # (see #self.config)
+  # @see config
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
