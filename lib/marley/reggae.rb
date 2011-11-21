@@ -18,31 +18,28 @@ module Marley
         self.new(*args).to_resource
       end
     end
-    # @param [Array] args an array in Reggae syntax
+    attr_reader :resource_type
+    attr_accessor :properties,:contents
+    # @param [Array] *args an array in Reggae syntax
     def initialize(*args)
       super
-      self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash
-      self.class.mk_prop_methods
-    end
-    # @retun [Hash] hash of resources properties
-    def properties
-      self[1] || nil
-    end
-    def resource_type
-      [String, Symbol].include?(self[0].class) ? self[0].to_sym : nil
+      if is_resource?
+        self[0]=self[0].to_sym
+        @resource_type=self[0]
+        self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash
+        @properties=self[1]
+        @contents=self[2 .. -1]
+        self.class.mk_prop_methods
+      else
+        replace(map {|r| Reggae.new(r).to_resource})
+      end
     end
     def is_resource?
-      ! resource_type.nil?
-    end
-    def contents
-      is_resource? ? Reggae.new(self[2 .. -1]) : nil
+      [String, Symbol].include?(self[0].class) && self[1].class==Hash
     end
     def contents=(*args)
       self[2]=*args
       while length>3;delete_at -1;end
-    end
-    def [](*args)
-      super.class==Array ?  Reggae.new(super).to_resource : super
     end
     def to_resource
       is_resource? ? Marley.const_get("Reggae#{resource_type.to_s.camelize}".to_sym).new(self) : self
@@ -57,12 +54,10 @@ module Marley
     end
   end
   class ReggaeResource < Reggae
-    def resource_type
-      self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym
-    end
     def initialize(*args)
+      @resource_type=self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym
       if args[0].class==Hash
-        initialize [resource_type,args[0]]
+        initialize [@resource_type,args[0]]
       else
         super
       end
@@ -79,12 +74,14 @@ module Marley
   end
   class ReggaeInstance < ReggaeResource
     properties :name,:new_rec,:schema,:search,:url,:get_actions,:delete_action
+    attr_accessor :schema
     def initialize(*args)
       super
-      self.schema=ReggaeSchema.new(self.schema)
+      @properties[:schema]=ReggaeSchema.new(self.schema)
+      @schema=ReggaeSchema.new(self.schema)
     end
     def to_params
-      schema.inject({}) do |params,spec| 
+      @schema.inject({}) do |params,spec| 
         params["#{name}[#{spec.col_name}]"]=spec.col_value unless (spec.col_restrictions & RESTRICT_RO > 0)
         params
       end
@@ -93,7 +90,7 @@ module Marley
       "#{url}#{action_name}" if get_actions.include?(action_name.to_s)
     end
     def col_value(col_name,col_value=nil)
-      col=schema[col_name]
+      col=@schema[col_name]
       col.col_value=col_value if col_value
       col.col_value
     end
