@@ -55,7 +55,7 @@ module Marley
     def initialize(*args)
       @resource_type=self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym
       if args[0].class==Hash
-        initialize [@resource_type,args[0]]
+        initialize [@resource_type,args[0],args[1 .. -1]]
       else
         super
       end
