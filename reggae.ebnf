@@ -15,9 +15,9 @@ section_property ::= 'title' | 'description' | 'navigation'
 
 link_property ::= 'title' | 'description' | 'url'
 
-instance_property ::= 'name' | 'url' | 'new_rec' | 'search' | 'schema' | 'get_actions' | 'delete_action'
+instance_property ::= 'name' | 'url' | 'new_rec' | 'search' | 'schema' | 'actions' 
 
-instance_list_property ::='title' | 'description' | 'schema' | 'get_actions' | 'delete_action' | 'items'
+instance_list_property ::='title' | 'description' | 'schema' | 'actions' | 'items'
 
 msg_property ::= 'title' | 'description'
 
@@ -39,11 +39,17 @@ schema_value ::= '[' col_spec (',' colspec)? ']'
 
 items_value ::= '[' '[' col_value (',' col_value)* ']' (',' '[' col_value (',' col_value)* ']')* ']'
 
-get_actions_value ::= '[' action (',' action)*']'
+actions_value ::= '{' '"' ('get' | 'post' | 'put' | 'delete') '"' ':' methods (',' '"' ('get' | 'post' | 'put' | 'delete') '"' ':' methods )* '}'
 
-action ::= string_value
+methods::= '[' ( get_method (',' get_method)* | post_method (',' post_method)* | put_method (',' put_method)* | delete_method (',' delete_method)* ) ']'
 
-delete_action_value ::= 'remove_parent' | 'deactivate' | 'delete'
+get_action ::= string_literal
+
+post_action ::= resource
+
+put_action ::= resource
+
+delete_method ::= 'remove_parent' | 'deactivate' | 'delete'
 
 col_spec ::= '[' col_type ',' col_name ',' col_restrictions (',' col_value)?  ']'
 
