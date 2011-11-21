@@ -3,7 +3,6 @@ module Marley
   # @see file:reggae.ebnf for Raggae sytax
   class Reggae < Array
     class << self
-      attr_accessor :properties
       def properties(*args)
         @properties=args if args
         @properties
@@ -24,8 +23,7 @@ module Marley
     def initialize(*args)
       super
       if is_resource?
-        self[0]=self[0].to_sym
-        @resource_type=self[0]
+        @resource_type=self[0]=self[0].to_sym
         self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash
         @properties=self[1]
         @contents=self[2 .. -1]
@@ -78,7 +76,7 @@ module Marley
     def initialize(*args)
       super
       @properties[:schema]=ReggaeSchema.new(self.schema)
-      @schema=ReggaeSchema.new(self.schema)
+      @schema=@properties[:schema]
     end
     def to_params
       @schema.inject({}) do |params,spec| 
@@ -115,11 +113,7 @@ module Marley
       replace(map{|spec| ReggaeColSpec.new(spec)})
     end
     def [](i)
-      if i.class==Fixnum
-        super
-      else
-        find {|cs|cs.col_name.to_s==i.to_s}
-      end
+      i.class==Fixnum ?  super : find {|cs|cs.col_name.to_s==i.to_s}
     end
   end
   class ReggaeColSpec < Array
