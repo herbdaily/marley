@@ -1,17 +1,23 @@
 
+1.0
 
+ - ditch get_actions, delete_action in favor of actions hash.  
+   - Will requre a change to Reggae
+   - Should be implemented by a wrapper for associate (rest_associate probably)
+- look into class methods for sequel rest properties
+- genericize per-user class/instance properties, move to User joint
+  - authenticate/authorize as well???
 - improve testing coverage
+  - switch to cutest/capybara???
 - improve documentation - esp API
-
 - ditch Sequel dependency
+  - automate sequel plugin loading in options
 
-- automate sequel plugin loading in options
+-----------------
 
-- better logging
-
-- hints for resources/columns
 - better filtering options for posts
-
-??? expose validation reflections to views
+- better logging
+- implement instance_list
+- expose validation reflections to views
 ??? caching protocol for autocompleters/validation options
 
