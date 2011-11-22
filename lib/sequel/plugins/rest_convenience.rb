@@ -1,12 +1,11 @@
 
-RESTRICT_HIDE=1
-RESTRICT_RO=2
-RESTRICT_REQ=4
-TYPE_INDEX=0
-NAME_INDEX=1
-RESTRICTIONS_INDEX=2
 module Sequel::Plugins::RestConvenience
   module ClassMethods
+    REST_ACTIONS=[:rest_actions,:get_actions,:post_actions,:put_actions,:delete_actions]
+    attr_accessor *REST_ACTIONS
+    module RestAssociationActions
+      attr_accessor *REST_ACTIONS
+    end
     def controller
       Marley::ModelController.new(self)
     end
@@ -37,7 +36,7 @@ module Sequel::Plugins::RestConvenience
     end
   end
   module InstanceMethods
-    def get_actions; [];end
+    #def get_actions; [];end
     def edit; self; end
     def rest_cols
       columns.reject do |c| 
@@ -73,7 +72,7 @@ module Sequel::Plugins::RestConvenience
       respond_to?('name') ? name : id.to_s
     end
     def to_a
-      a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:get_actions => get_actions.class==Hash ? get_actions[$request[:user].class] : get_actions})
+      a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:get_actions => self.class.get_actions.class==Hash ? get_actions[$request[:user].class] : self.class.get_actions})
       a.contents=rest_associations.map do |assoc|
         (assoc.class==Symbol ? send(assoc) : assoc).map{|instance| instance.to_a}
       end unless new?

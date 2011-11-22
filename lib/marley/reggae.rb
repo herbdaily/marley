@@ -1,4 +1,10 @@
 
+RESTRICT_HIDE=1
+RESTRICT_RO=2
+RESTRICT_REQ=4
+TYPE_INDEX=0
+NAME_INDEX=1
+RESTRICTIONS_INDEX=2
 module Marley
   # @see file:reggae.ebnf for Raggae sytax
   class Reggae < Array

@@ -78,12 +78,12 @@ module Marley
         end
         class PrivateMessage < MJ::BasicMessaging::Resources::PrivateMessage
           attr_accessor :tags
+          @get_actions= superclass.get_actions << 'new_tags'
           @section_title='Private Messages'
           @section_name='pms'
           def self.section_navigation
             $request[:user].user_tags.map{|t| [:link,{:url => "/private_message?private_message[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift(PrivateMessage.reggae_link('new'))
           end
-          def get_actions; super << 'new_tags';end
           def rest_schema
             super << [:text, :tags, 0,tags]
           end
@@ -104,7 +104,7 @@ module Marley
           def self.section_navigation
             MR::Tag.filter(:user_id => nil).map{|t| [:link,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:link,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.reggae_link('new'))
           end
-          def get_actions;(super << 'new_user_tags') << 'new_tags';end
+          @get_actions=(superclass.get_actions << 'new_user_tags') << 'new_tags'
           def rest_schema
             (super << [:text, :tags, 0,tags] ) << [:text, :my_tags, 0,my_tags] 
           end
