@@ -5,7 +5,7 @@ module Marley
         class Tag < Sequel::Model
           def self.tagging_for(klass, user_class=nil,join_table=nil)
             current_user_tags=Module.new do
-                def current_user_tags
+                def current_user_dataset
                   filter(:tags__user_id => $request[:user][:id])
                 end
               end

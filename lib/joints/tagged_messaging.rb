@@ -39,7 +39,7 @@ module Marley
         module Message
           def rest_associations
             if ! new?
-              [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_tags : nil].compact
+              [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_dataset : nil].compact
             end
           end
           def new_tags
@@ -89,7 +89,7 @@ module Marley
           end
           def reply
             r=super
-            r.tags=(user_tags_dataset.current_user_tags.map{|t|t.tag} - RESERVED_PM_TAGS).join(',')
+            r.tags=(user_tags_dataset.current_user_dataset.map{|t|t.tag} - RESERVED_PM_TAGS).join(',')
             r
           end
           def after_create
