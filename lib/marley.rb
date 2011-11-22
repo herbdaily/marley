@@ -1,13 +1,13 @@
 #!/usr/bin/ruby
 require 'json/ext'
 require 'json/add/core'
+require 'marley/reggae'
 require 'rack'
 require 'rack/auth/basic'
 require 'rack/builder'
 require 'sequel/plugins/rest_convenience'
 require 'sequel/plugins/rest_auth'
 require 'marley/controllers'
-require 'marley/reggae'
 require 'logger'
 Sequel.extension :inflector
 

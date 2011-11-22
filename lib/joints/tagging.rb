@@ -13,15 +13,14 @@ module Marley
             join_table||=:"#{tagged_class.table_name}_tags"
             klass_key=:"#{tagged_class.table_name.to_s.singularize}_id"
             tag_key=:tag_id
-            attr_accessor klass_key
             if user_class
               UserTag.many_to_many klass.underscore.to_sym,:class => "Marley::Resources::#{klass}", :join_table => join_table,:left_key => tag_key,:right_key => klass_key,:extend => current_user_tags
-              tagged_class.many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => current_user_tags
+              tagged_class.many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => [current_user_tags,Sequel::RestAssociationActions]
               Marley::Resources.const_get(user_class).one_to_many :user_tags, :class => 'Marley::Resources::UserTag'
               UserTag.many_to_one user_class.underscore.to_sym,:class => "Marley::Resources::#{user_class}"
             else
               PublicTag.many_to_many klass.underscore.to_sym,:class => "Marley::Resources::#{klass}", :join_table => join_table,:left_key => tag_key,:right_key => klass_key
-              tagged_class.many_to_many :public_tags,:class => "Marley::Resources::PublicTag",:join_table => join_table,:left_key => klass_key,:right_key => tag_key
+              tagged_class.many_to_many :public_tags,:class => "Marley::Resources::PublicTag",:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => Sequel::RestAssociationActions
             end
           end
           def to_a

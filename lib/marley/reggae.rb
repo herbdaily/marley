@@ -1,4 +1,5 @@
 
+REST_ACTIONS=[:rest_actions,:get_actions,:post_actions,:put_actions,:delete_actions]
 RESTRICT_HIDE=1
 RESTRICT_RO=2
 RESTRICT_REQ=4
