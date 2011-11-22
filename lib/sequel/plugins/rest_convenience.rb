@@ -1,19 +1,8 @@
 
 module Sequel
-  module RestActions
-    attr_accessor *REST_ACTIONS
-    attr_accessor :klass
-    def rest_actions
-      ['get','post','put','delete'].inject({}) do |h,verb|
-        i=send("#{verb}_actions")
-        h[verb.to_sym]=i.class==Hash ? i[$request[:user].class] : i
-        h
-      end
-    end
-  end
   module Plugins::RestConvenience
     module ClassMethods
-      include Sequel::RestActions
+      include Marley::Orm::RestActions
       def controller
         Marley::ModelController.new(self)
       end
@@ -44,6 +33,7 @@ module Sequel
       end
     end
     module InstanceMethods
+      include Marley::Orm::RestActions
       def edit; self; end
       def rest_cols
         columns.reject do |c| 

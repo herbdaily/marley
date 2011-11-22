@@ -2,6 +2,7 @@
 require 'json/ext'
 require 'json/add/core'
 require 'marley/reggae'
+require 'marley/orm'
 require 'rack'
 require 'rack/auth/basic'
 require 'rack/builder'
@@ -111,9 +112,9 @@ module Marley
       headers||={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}
       [resp_code,headers,$request[:content_type].match(/json/) ? json : html]
     rescue Sequel::ValidationFailed
-      ValidationError.new($!.errors).response
+      ValidationError.new($!.errors).to_a
     rescue
-      ($!.class.new.respond_to?(:response) ?  $!.class : MarleyError).new.response
+      ($!.class.new.respond_to?(:to_a) ?  $!.class : MarleyError).new.to_a
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
     end
@@ -129,7 +130,7 @@ module Marley
     def log_error
       $log.fatal("#$!.message}\n#{$!.backtrace}")
     end
-    def response
+    def to_a
       log_error
       json=[:error,{:error_type => self.class.name.underscore.sub(/_error$/,'').sub(/^marley\//,''),:description => self.class.description, :error_details => self.class.details}].to_json
       self.class.headers||={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}

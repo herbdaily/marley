@@ -1,11 +1,11 @@
 
 1.0
 
- - ditch get_actions, delete_action in favor of actions hash.  
-   - Will requre a change to Reggae
-   - Should be implemented by a wrapper for associate (rest_associate probably)
-- look into class methods for sequel rest properties
+- ORM as a Joint??
+- joint dependencies
 - genericize per-user class/instance properties, move to User joint
+- move actions for associations to associations dataset
+- look into class methods for sequel rest properties
   - authenticate/authorize as well???
 - improve testing coverage
   - switch to minitest???
