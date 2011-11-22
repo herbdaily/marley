@@ -2,6 +2,7 @@
 require 'json/ext'
 require 'json/add/core'
 require 'marley/reggae'
+require 'marley/utils'
 require 'marley/orm'
 require 'rack'
 require 'rack/auth/basic'
@@ -165,11 +166,6 @@ module Marley
     @description='Not Found'
     def log_error
       $log.fatal("path:#{$request[:path]}\n   msg:#{$!.message}\n   backtrace:#{$!.backtrace}")
-    end
-  end
-  module Utils
-    def self.hash_keys_to_syms(hsh)
-      hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end
   end
 end

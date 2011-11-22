@@ -1,32 +1,27 @@
 
-module Sequel::Plugins::RestSection
-  SECTION_PROPS='name','title','description','navigation'
-  module ClassMethods
+module Marley
+  module Orm::RestSection
+    include Orm::ReggaeHash
+    SECTION_PROPS='name','title','description','navigation'
     SECTION_PROPS.each {|p| attr_accessor :"section_#{p}"}
     def section
       if SECTION_PROPS.find {|p| send(:"section_#{p}").to_s > ''}
-        Marley::ReggaeSection.new(SECTION_PROPS.inject({}) do |props,p| 
-          prop=send(:"section_#{p}")
-          props[p.to_sym]=prop.class==Hash ? prop[$request[:user].class] : prop
-          props 
-        end)
+        Marley::ReggaeSection.new(reggae_hash(SECTION_PROPS, lambda {$request[:user].class},'section'))
       end
     end
   end
-end
-module Marley
   module Joints
     class BasicMenuSystem < Joint
       def smoke
         super
-        Sequel::Model.plugin :rest_section
+        Sequel::Model.extend Orm::RestSection
       end
       module Resources
         class Menu
           class <<self
             attr_accessor :sections
           end
-          include Sequel::Plugins::RestSection::ClassMethods
+          include Orm::RestSection
           def self.rest_get
             new.section
           end
