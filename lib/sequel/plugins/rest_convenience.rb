@@ -1,12 +1,19 @@
 
 module Sequel
-  module RestAssociationActions
+  module RestActions
     attr_accessor *REST_ACTIONS
     attr_accessor :klass
+    def rest_actions
+      ['get','post','put','delete'].inject({}) do |h,verb|
+        i=send("#{verb}_actions")
+        h[verb.to_sym]=i.class==Hash ? i[$request[:user].class] : i
+        h
+      end
+    end
   end
   module Plugins::RestConvenience
     module ClassMethods
-      attr_accessor *REST_ACTIONS
+      include Sequel::RestActions
       def controller
         Marley::ModelController.new(self)
       end
@@ -37,7 +44,6 @@ module Sequel
       end
     end
     module InstanceMethods
-      #def get_actions; [];end
       def edit; self; end
       def rest_cols
         columns.reject do |c| 
@@ -70,7 +76,7 @@ module Sequel
         respond_to?('name') ? name : id.to_s
       end
       def to_a
-        a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:get_actions => self.class.get_actions.class==Hash ? get_actions[$request[:user].class] : self.class.get_actions})
+        a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:actions => self.class.rest_actions})
         a.contents=self.class.associations.map do |assoc|
           assoc=send("#{assoc}_dataset")
           (assoc.respond_to?(:current_user_dataset) ? assoc.current_user_dataset : assoc).map{|instance| instance.to_a} if assoc.respond_to?(:rest_actions)

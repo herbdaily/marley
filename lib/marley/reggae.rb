@@ -1,5 +1,5 @@
 
-REST_ACTIONS=[:rest_actions,:get_actions,:post_actions,:put_actions,:delete_actions]
+REST_ACTIONS=[:get_actions,:post_actions,:put_actions,:delete_actions]
 RESTRICT_HIDE=1
 RESTRICT_RO=2
 RESTRICT_REQ=4
@@ -78,7 +78,7 @@ module Marley
     properties :title,:description,:url
   end
   class ReggaeInstance < ReggaeResource
-    properties :name,:new_rec,:schema,:search,:url,:get_actions,:delete_action
+    properties :name,:new_rec,:schema,:search,:url,:actions
     attr_accessor :schema
     def initialize(*args)
       super
@@ -91,9 +91,6 @@ module Marley
         params
       end
     end
-    def instance_action_url(action_name)
-      "#{url}#{action_name}" if get_actions.include?(action_name.to_s)
-    end
     def col_value(col_name,col_value=nil)
       col=@schema[col_name]
       col.col_value=col_value if col_value
@@ -105,7 +102,7 @@ module Marley
     end
   end
   class ReggaeInstanceList < ReggaeResource
-    properties :name,:description,:get_actions,:delete_action,:items
+    properties :name,:description,:actions,:items
     #not implemented yet
   end
   class ReggaeMsg < ReggaeResource

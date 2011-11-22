@@ -8,7 +8,8 @@
 - genericize per-user class/instance properties, move to User joint
   - authenticate/authorize as well???
 - improve testing coverage
-  - switch to cutest/capybara???
+  - switch to minitest???
+- fix JS
 - improve documentation - esp API
 - ditch Sequel dependency
   - automate sequel plugin loading in options

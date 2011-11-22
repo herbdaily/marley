@@ -15,17 +15,17 @@ module Marley
             tag_key=:tag_id
             if user_class
               UserTag.many_to_many klass.underscore.to_sym,:class => "Marley::Resources::#{klass}", :join_table => join_table,:left_key => tag_key,:right_key => klass_key,:extend => current_user_tags
-              tagged_class.many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => [current_user_tags,Sequel::RestAssociationActions]
+              tagged_class.many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => [current_user_tags,Sequel::RestActions]
               Marley::Resources.const_get(user_class).one_to_many :user_tags, :class => 'Marley::Resources::UserTag'
               UserTag.many_to_one user_class.underscore.to_sym,:class => "Marley::Resources::#{user_class}"
             else
               PublicTag.many_to_many klass.underscore.to_sym,:class => "Marley::Resources::#{klass}", :join_table => join_table,:left_key => tag_key,:right_key => klass_key
-              tagged_class.many_to_many :public_tags,:class => "Marley::Resources::PublicTag",:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => Sequel::RestAssociationActions
+              tagged_class.many_to_many :public_tags,:class => "Marley::Resources::PublicTag",:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => Sequel::RestActions
             end
           end
           def to_a
             a=super
-            a[1][:delete_action]='remove_parent'
+            a.actions[:delete]='remove_parent'
             a
           end
           def validate
