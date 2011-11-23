@@ -17,7 +17,7 @@ module Marley
             super << [:text,:author,RESTRICT_RO,author.to_s]
           end
           def authorize_rest_get(meth)
-            current_user_role && (meth.nil? || self.class.get_actions.include?(meth))
+            current_user_role && (meth.nil? || self.class.actions_get.include?(meth))
           end
           def authorize_rest_put(meth); false; end
           def after_initialize
@@ -38,7 +38,7 @@ module Marley
           end
         end
         class PrivateMessage < Message
-          @get_actions=['reply','reply_all']
+          @actions_get=['reply','reply_all']
           def rest_cols; super << :recipients; end
           def current_user_role
             super || (recipients.match(/\b#{$request[:user][:name]}\b/) && "recipient")
@@ -73,7 +73,7 @@ module Marley
           end
         end
         class Post < Message
-          @get_actions=['reply']
+          @actions_get=['reply']
           def current_user_role
             super || 'reader'
           end

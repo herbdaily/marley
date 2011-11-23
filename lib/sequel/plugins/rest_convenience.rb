@@ -35,7 +35,7 @@ module Sequel
     module InstanceMethods
       include Marley::Orm::RestActions
       def edit; self; end
-      def rest_cols
+      def rest_cols 
         columns.reject do |c| 
           if new?
             c.to_s.match(/(^id$)|(_type$)|(date_(created|updated))/)
