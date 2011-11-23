@@ -2,13 +2,14 @@
 module Marley
   module Joints
     class BasicMenuSystem < Joint
+      RestSection=Marley::Utils.rest_opts_mod('section',['name','title','description','navigation'],lambda {$request[:user].class})
       def smoke
         super
-        Sequel::Model.extend Orm::RestSection
+        Sequel::Model.extend RestSection
       end
       module Resources
         class Menu
-          include Orm::RestSection
+          include RestSection
           def self.rest_get
             new.rest_section
           end

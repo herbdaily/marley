@@ -2,7 +2,7 @@
 module Sequel
   module Plugins::RestConvenience
     module ClassMethods
-      include Marley::Orm::RestActions
+      include Marley::RestActions
       def controller
         Marley::ModelController.new(self)
       end
@@ -33,7 +33,7 @@ module Sequel
       end
     end
     module InstanceMethods
-      include Marley::Orm::RestActions
+      include Marley::RestActions
       def edit; self; end
       def rest_cols 
         columns.reject do |c| 
