@@ -23,11 +23,6 @@ module Marley
               tagged_class.many_to_many :public_tags,:class => "Marley::Resources::PublicTag",:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => Marley::Orm::RestActions
             end
           end
-          def to_a
-            a=super
-            a.actions[:delete]='remove_parent'
-            a
-          end
           def validate
             validates_presence :tag
             validates_unique [:tag,:user_id]
@@ -49,9 +44,11 @@ module Marley
         end
         class PublicTag < Tag
           set_dataset DB[:tags].filter(:user_id => nil)
+          @actions_delete='remove_parent'
         end
         class UserTag < Tag
           set_dataset DB[:tags].filter(~{:user_id => nil})
+          @actions_delete='remove_parent'
         end
       end
     end
