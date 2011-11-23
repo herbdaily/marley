@@ -1,29 +1,32 @@
 module Marley
   module Orm
     module ReggaeHash
-      def reggae_hash(keys,sub_key,prefix='',postfix='')
+      attr_accessor :reggae_dynamic_key
+      def reggae_hash(keys,prefix='',postfix='')
         keys.inject({}) do |h,k|
           i=send("#{prefix}_#{k}_#{postfix}".sub(/^_/,'').sub(/_$/,''))
-          h[k.to_sym]=i.class==Hash ? i[subkey.call] : i
+          h[k.to_sym]=i.class==Hash ? i[@reggae_dynamic_key.call] : i
           h
         end
       end
     end
     module RestActions
       include ReggaeHash
-      REST_ACTIONS=[:get_actions,:post_actions,:put_actions,:delete_actions]
-      attr_accessor *REST_ACTIONS
+      @reggae_dynamic_key=lambda {$request[:user].class}
+      REST_ACTIONS=['get','post','put','delete']
+      REST_ACTIONS.each {|p| attr_accessor :"#{p}_actions"}
       def rest_actions
-        reggae_hash(['get','post','put','delete'],lambda {$request[:user].class},'','actions')
+        reggae_hash(REST_ACTIONS,'','actions')
       end
     end
     module RestSection
       include ReggaeHash
-      SECTION_PROPS='name','title','description','navigation'
+      @reggae_dynamic_key=lambda {$request[:user].class}
+      SECTION_PROPS=['name','title','description','navigation']
       SECTION_PROPS.each {|p| attr_accessor :"section_#{p}"}
       def rest_section
         if SECTION_PROPS.find {|p| send(:"section_#{p}").to_s > ''}
-          Marley::ReggaeSection.new(reggae_hash(SECTION_PROPS, lambda {$request[:user].class},'section'))
+          Marley::ReggaeSection.new(reggae_hash(SECTION_PROPS,'section'))
         end
       end
     end

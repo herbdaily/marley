@@ -1,6 +1,8 @@
 
 1.0
 
+- extend reggae_hash type functionality to rest_cols,write_cols
+    - impelement #rest method in a module?
 - ORM as a Joint??
 - joint dependencies
 - genericize per-user class/instance properties, move to User joint
