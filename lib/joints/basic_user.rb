@@ -12,7 +12,7 @@ module Marley
           def self.requires_user?
             ! ($request[:verb]=='rest_post')
           end
-          def self.section
+          def self.rest_section
             ReggaeSection.new( {:title => 'User Info', :name => self.to_s.sub(/.*::/,'').underscore, :navigation => []}) if $request[:user].class == self
           end
           def write_cols;[:name,:email,:password,:confirm_password,:old_password];end

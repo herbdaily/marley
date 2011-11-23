@@ -17,5 +17,15 @@ module Marley
         reggae_hash(['get','post','put','delete'],lambda {$request[:user].class},'','actions')
       end
     end
+    module RestSection
+      include ReggaeHash
+      SECTION_PROPS='name','title','description','navigation'
+      SECTION_PROPS.each {|p| attr_accessor :"section_#{p}"}
+      def rest_section
+        if SECTION_PROPS.find {|p| send(:"section_#{p}").to_s > ''}
+          Marley::ReggaeSection.new(reggae_hash(SECTION_PROPS, lambda {$request[:user].class},'section'))
+        end
+      end
+    end
   end
 end
