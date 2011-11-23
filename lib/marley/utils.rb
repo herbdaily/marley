@@ -5,14 +5,18 @@ module Marley
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end
   # @todo:  make options inheritable?
-    def self.rest_opts_mod(name,opts,dynamic_key)
+    def self.rest_opts_mod(name,opts,key_proc)
       Module.new do |m|
+        @create_opts=[name,opts,key_proc]
+        def self.create_opts
+          @create_opts
+        end
         opts.each {|opt| attr_accessor "#{name}_#{opt}"}
         define_method "rest_#{name}" do
           if opts.find {|opt| send(:"#{name}_#{opt}").to_s > ""}
             foo=opts.inject({}) do |h,k|
               i=send("#{name}_#{k}".sub(/^_/,''))
-              h[k.to_sym]=i.class==Hash ? i[dynamic_key.call] : i
+              h[k.to_sym]=i.class==Hash ? i[key_proc.call] : i
               h
             end
             if Marley.constants.include?("Reggae#{name.camelcase}")

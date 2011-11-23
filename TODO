@@ -1,6 +1,8 @@
 
 1.0
 
+- rename client to sth like output
+ - move all output there
 - ORM as a Joint??
 - joint dependencies
 - genericize per-user class/instance properties, move to User joint
