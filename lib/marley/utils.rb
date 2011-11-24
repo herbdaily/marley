@@ -4,12 +4,15 @@ module Marley
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end
-  # @todo:  make options inheritable?
+    # @todo:  make options inheritable?
     def self.rest_opts_mod(name,opts,key_proc)
       Module.new do |m|
         @create_opts=[name,opts,key_proc]
         def self.create_opts
           @create_opts
+        end
+        def self.new(name=nil,opts=nil,key_proc=nil)
+          Marley::Utils.rest_opts_mod(*@create_opts)
         end
         opts.each {|opt| attr_accessor "#{name}_#{opt}"}
         define_method "rest_#{name}" do

@@ -1,12 +1,10 @@
 
 1.0
 
-- rename client to sth like output
- - move all output there
-- ORM as a Joint??
 - joint dependencies
-- genericize per-user class/instance properties, move to User joint
-- move actions for associations to associations dataset
+- ORM as a Joint??
+- rename client to sth like output
+  - move all output there
 - look into class methods for sequel rest properties
   - authenticate/authorize as well???
 - improve testing coverage
