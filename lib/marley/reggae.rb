@@ -5,6 +5,8 @@ RESTRICT_REQ=4
 TYPE_INDEX=0
 NAME_INDEX=1
 RESTRICTIONS_INDEX=2
+require 'sequel'
+Sequel.extension :inflector
 module Marley
   # @see file:reggae.ebnf for Raggae sytax
   class Reggae < Array

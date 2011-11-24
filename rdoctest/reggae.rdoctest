@@ -15,7 +15,9 @@ doctest:  non-Reggae arrays left as is
 >> Reggae.new(['asdf','ssss']).class
 => Marley::Reggae
 
-
 doctest:  simple Reggae array
+>> Reggae.new(['asdf',{}]).to_resource
+NameError: uninitialized constant Marley::ReggaeAsdf
 
+!!!
 
