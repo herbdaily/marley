@@ -1,17 +1,14 @@
 
 1.0
 
+- complete switchover to rubydoctest
 - joint dependencies
-- ORM as a Joint??
 - rename client to sth like output
   - move all output there
-- look into class methods for sequel rest properties
-  - authenticate/authorize as well???
-- improve testing coverage
-  - switch to minitest???
 - fix JS
 - improve documentation - esp API
 - ditch Sequel dependency
+  - ORM as a Joint??
   - automate sequel plugin loading in options
 
 -----------------

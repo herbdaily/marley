@@ -35,7 +35,7 @@ module Marley
         @contents=self[2 .. -1]
         self.class.mk_prop_methods
       else
-        replace(map {|r| Reggae.new(r).to_resource})
+        replace(map {|r| r.class==Array ? Reggae.new(r).to_resource : r})
       end
     end
     def is_resource?

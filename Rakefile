@@ -9,3 +9,6 @@ Rake::TestTask.new(:test) do |t|
   t.test_files=FileList['test/*_tests.rb']
 end
 
+Rake::TestTask.new(:unit) do |t|
+  t.test_files=FileList['test/*_unit.rb']
+end
