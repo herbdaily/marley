@@ -1,7 +1,7 @@
 
 1.0
 
-- complete switchover to rubydoctest
+- complete switchover to tdoc
 - joint dependencies
 - rename client to sth like output
   - move all output there

@@ -1,0 +1,19 @@
+
+The Reggae class generates and parses Reggae JSON arrays.  See reggae.ebnf for the syntax
+
+tdoc_require: marley/utils
+tdoc_require: marley/reggae
+
+examples:non-Reggae arrays left as is
+
+>> Marley::Reggae.new []
+=> []
+
+Parsing works as follows:
+
+tdoc_context:"reggae/parse.tdoc"
+
+
+Generation works as follows:
+
+#doc_context:"reggae/generate.tdoc"

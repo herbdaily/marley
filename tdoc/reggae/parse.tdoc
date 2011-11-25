@@ -1,0 +1,20 @@
+
+examples:non-Reggae arrays left as is
+
+>> include Marley
+=> Object
+>> Reggae.new []
+=> []
+>> Reggae.new ['asdf','ssss']
+=> ["asdf", "ssss"]
+>> Reggae.new(['asdf','ssss']).class
+=> Marley::Reggae
+>> Reggae.new(['asdf',{}]).to_resource
+=> ["asdf", {}]
+>> Reggae.new(['asdf',{}]).to_resource.class
+=> Marley::Reggae
+
+examples:simple Reggae Resource
+
+>> Reggae.new(['resource',{}]).to_resource.class
+=> Marley::ReggaeResource
