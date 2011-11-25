@@ -4,10 +4,27 @@ The Reggae class generates and parses Reggae JSON arrays.  See reggae.ebnf for t
 tdoc_require: marley/utils
 tdoc_require: marley/reggae
 
-examples:non-Reggae arrays left as is
+examples: leave non-Reggae arrays as is
 
->> Marley::Reggae.new []
+>> Reggae=Marley::Reggae #haven't figure out how to allow includes in tests yet...
+=> Marley::Reggae
+>> Reggae.new []
 => []
+>> Reggae.new []
+=> []
+>> Reggae.new ['asdf','ssss']
+=> ["asdf", "ssss"]
+>> Reggae.new(['asdf','ssss']).class
+=> Marley::Reggae
+>> Reggae.new(['asdf',{}]).to_resource
+=> ["asdf", {}]
+>> Reggae.new(['asdf',{}]).to_resource.class
+=> Marley::Reggae
+
+examples: parse a simple Reggae Resource
+
+>> Reggae.new(['resource',{}]).to_resource.class
+=> Marley::ReggaeResource
 
 Parsing works as follows:
 
@@ -16,4 +33,4 @@ tdoc_context:"reggae/parse.tdoc"
 
 Generation works as follows:
 
-#doc_context:"reggae/generate.tdoc"
+tdoc_context:"reggae/generate.tdoc"

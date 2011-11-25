@@ -1,8 +1,6 @@
 
 examples:non-Reggae arrays left as is
 
->> include Marley
-=> Object
 >> Reggae.new []
 => []
 >> Reggae.new ['asdf','ssss']
