@@ -1,18 +1,29 @@
 
 examples:non-Reggae arrays left as is
 
->> Reggae.new []
+>> Marley::Reggae.new []
 => []
->> Reggae.new ['asdf','ssss']
+>> Marley::Reggae.new ['asdf','ssss']
 => ["asdf", "ssss"]
->> Reggae.new(['asdf','ssss']).class
+>> Marley::Reggae.new(['asdf','ssss']).class
 => Marley::Reggae
->> Reggae.new(['asdf',{}]).to_resource
+>> Marley::Reggae.new(['asdf',{}]).to_resource
 => ["asdf", {}]
->> Reggae.new(['asdf',{}]).to_resource.class
+>> Marley::Reggae.new(['asdf',{}]).to_resource.class
 => Marley::Reggae
 
 examples:simple Reggae Resource
 
->> Reggae.new(['resource',{}]).to_resource.class
-=> Marley::ReggaeResource
+    >> Marley::Reggae.new(['resource',{}]).to_resource.class
+    => Marley::ReggaeResource
+
+    This also works:
+
+    >> Marley::Reggae.get_resource(['resource',{}]).class
+    => Marley::ReggaeResource
+
+examples: parse a ReggaeSection
+
+    >> Marley::Reggae.new([:section, {}]).to_resource.class
+    => Marley::ReggaeSection
+
