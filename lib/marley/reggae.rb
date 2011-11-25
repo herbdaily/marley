@@ -41,7 +41,7 @@ module Marley
       end
     end
     def is_resource?
-      [String, Symbol].include?(self[0].class) && self[1].class==Hash
+      [String, Symbol].include?(self[0].class) && Marley.constants.include?("reggae_#{self[0]}".camelcase)
     end
     def contents=(*args)
       self[2]=*args

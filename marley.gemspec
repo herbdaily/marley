@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 1.0.0") if s.respond_to? :required_rubygems_version=
   s.add_runtime_dependency 'sequel', '~>3.27'
   s.add_runtime_dependency 'rack', '~>1.2.2'
+  # add rubydoctest dependency
   s.add_runtime_dependency 'json', '~>1.1.7'
   s.files = Dir.glob(["*","lib/**/*","examples/**/*","test/**/*"])
 end
