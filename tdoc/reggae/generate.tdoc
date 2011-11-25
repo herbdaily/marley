@@ -1,0 +1,5 @@
+examples:  generate an instance
+
+>> @instance=Marley::ReggaeInstance.new({:name => 'foo',:schema => []})
+=> [:instance, {:schema=>[], :name=>"foo"}, []]
+

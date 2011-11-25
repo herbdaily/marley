@@ -1,18 +1,18 @@
 
-examples:non-Reggae arrays left as is
+examples: leave non-Reggae arrays as is
 
->> Marley::Reggae.new []
-=> []
->> Marley::Reggae.new ['asdf','ssss']
-=> ["asdf", "ssss"]
->> Marley::Reggae.new(['asdf','ssss']).class
-=> Marley::Reggae
->> Marley::Reggae.new(['asdf',{}]).to_resource
-=> ["asdf", {}]
->> Marley::Reggae.new(['asdf',{}]).to_resource.class
-=> Marley::Reggae
+    >> Marley::Reggae.new []
+    => []
+    >> Marley::Reggae.new ['asdf','ssss']
+    => ["asdf", "ssss"]
+    >> Marley::Reggae.new(['asdf','ssss']).class
+    => Marley::Reggae
+    >> Marley::Reggae.new(['asdf',{}]).to_resource
+    => ["asdf", {}]
+    >> Marley::Reggae.new(['asdf',{}]).to_resource.class
+    => Marley::Reggae
 
-examples:simple Reggae Resource
+examples: a simple Reggae Resource
 
     >> Marley::Reggae.new(['resource',{}]).to_resource.class
     => Marley::ReggaeResource
@@ -24,6 +24,19 @@ examples:simple Reggae Resource
 
 examples: parse a ReggaeSection
 
-    >> Marley::Reggae.new([:section, {}]).to_resource.class
-    => Marley::ReggaeSection
+    >> @section=Marley::Reggae.new([:section, {}]).to_resource
+    => [:section, {}]
+    >> @section.properties
+    => {}
+
+examples: parse a ReggaeSection with a title
+
+    >> @section=Marley::Reggae.new([:section, {:title => 'asdf'}]).to_resource
+    => [:section, {:title=>"asdf"}]
+    >> @section.title
+    => "asdf"
+    >> @section.properties
+    => {:title=>"asdf"}
+
+
 
