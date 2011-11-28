@@ -1,9 +1,9 @@
 
 examples: leave non-Reggae arrays as is
 
-    >> Marley::Reggae.new []
+    >> Marley::Reggae.new([])
     => []
-    >> Marley::Reggae.new ['asdf','ssss']
+    >> Marley::Reggae.new(['asdf','ssss'])
     => ["asdf", "ssss"]
     >> Marley::Reggae.new(['asdf','ssss']).class
     => Marley::Reggae

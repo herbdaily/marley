@@ -75,4 +75,4 @@ The server and client use a JSON based data representation format "Reggae."  Reg
 
 The default Marley client is "Jamaica", which consists of JS/CSS for browsers.  It sucks right now and I'm hoping somebody takes it over as a sub-project, but it does work - at least on FF.
 
-
+:include:rdoc/reggae.rdoc

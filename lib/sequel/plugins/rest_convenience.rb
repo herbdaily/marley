@@ -73,7 +73,7 @@ module Sequel
         end.compact unless new?
         a
       end
-      def to_json
+      def to_json(*args)
         to_a.to_json
       end
       def url(action=nil)

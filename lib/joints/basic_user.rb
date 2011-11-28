@@ -10,7 +10,7 @@ module Marley
           attr_reader :menus
           attr_accessor :old_password,:password, :confirm_password
           def self.requires_user?
-            ! ($request[:verb]=='rest_post')
+            ! ($request[:verb]=='rest_post' || ($request[:verb]=='rest_get' && $request[:path][1]=='new'))
           end
           def self.rest_section
             ReggaeSection.new( {:title => 'User Info', :name => self.to_s.sub(/.*::/,'').underscore, :navigation => []}) if $request[:user].class == self

@@ -29,7 +29,7 @@ module Marley
     attr_accessor :properties,:contents
     # @param [Array] *args an array in Reggae syntax
     def initialize(*args)
-      super
+      super 
       if is_resource?
         @resource_type=self[0]=self[0].to_sym
         self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash
@@ -114,7 +114,7 @@ module Marley
   end
   class ReggaeSchema < Array
     def initialize(*args)
-      super
+      super 
       replace(map{|spec| ReggaeColSpec.new(spec)})
     end
     def [](i)

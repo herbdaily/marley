@@ -22,34 +22,17 @@ Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_upd
 log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
-# This is the main Marley namespace
 module Marley 
   JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
-  # @see config
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
-  # All constants in the Resources namespace should refer to public resources accessible to clients, subject, of course, to authentication/authorization.
-  #
-  # Resources MUST respond to one or more of #controller, #rest_get, #rest_post, #rest_put, #rest_delete
-  #
-  # If a Resource implements a #controller method, the method MUST return an object which responds to one or more of #rest_get, #rest_post, #rest_put, #rest_delete
   module Resources 
   end
-  # The default namespace for Joints. Joints MUST implement a #smoke method
   module Joints
   end
   require 'marley/joint' #this needs to happen after Marley::Resources is defined
   
-  # Override default Marley configuration
-  # @param [Hash] opts A hash containing Marley configuration options
-  # @option opts [Boolean] :http_auth Whether or not to use http authentication
-  # @option opts [String] :app_name Currently used by Jamaica to set page title
-  # @option opts [Number] :port Port on which to run the server
-  # @option opts [Object] :default_user_class The default class of the new user assigned to $request[:user] if no actual user is authenticated
-  # @option opts [Object] :auth_class The class used to authenticate requests.  MUST respond to #authenticate
-  # @option opts [Object] :default_resource The resource called in response to a request to '/'
-  # @option opts [String] :server  the Rack web server to be used.
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
     @marley_opts.merge!(opts) if opts
@@ -57,8 +40,6 @@ module Marley
     @marley_opts
   end
   
-  # Loads a joint and and calls its #smoke method
-  # @param [String] joint_name The name of the joint to load and smoke - additional paramters passed through to the joint itself
   def self.joint(joint_name, *opts)
     joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
     require "#{joint_d}/#{joint_name}"
@@ -66,8 +47,6 @@ module Marley
     joint=Marley::Joints.const_get(joint_name.camelize).new(*opts).smoke
   end
 
-  # Runs the server
-  # @param (see #config)
   def self.run(opts={})
     @marley_opts||=DEFAULT_OPTS
     marley_opts=@marley_opts.merge!(opts)
@@ -77,7 +56,7 @@ module Marley
       run(Marley::Router.new(marley_opts))
     }.to_app,{:Port => @marley_opts[:port]})
   end
-  class Router  #the default Marley router.  Creates the $request object, locates the resource requested and calls either its controller's or its own rest verb method
+  class Router  
     def initialize(opts={},app=nil)
       @opts=DEFAULT_OPTS.merge(opts)
     end
@@ -115,7 +94,11 @@ module Marley
     rescue Sequel::ValidationFailed
       ValidationError.new($!.errors).to_a
     rescue
-      ($!.class.new.respond_to?(:to_a) ?  $!.class : MarleyError).new.to_a
+      if $!.class.superclass==MarleyError
+        $!.to_a
+      else
+        p $!,$!.backtrace
+      end
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
     end

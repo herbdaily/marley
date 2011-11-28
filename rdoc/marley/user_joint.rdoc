@@ -1,0 +1,28 @@
+
+== The User Joint
+
+    :include: user_joint.rb
+
+setup
+    @client=Marley::TestClient.new(:resource_name => 'user')
+    @user=MR::User.new.to_a
+end
+
+example:  
+
+  >> @client.read({},:code => 401)
+  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+
+  >> @client.read({},:method => 'new')
+  => [:instance, {:new_rec=>true, :actions=>nil, :schema=>[["text", :name, 0, nil], [:password, :password, 4], [:password, :confirm_password, 4]], :name=>"user", :url=>"/user/"}, []]
+
+  >> @client.create({}, :code => 400)
+  => [:error, {:error_type=>"validation", :error_details=>{:name=>["is required"], :password=>["Password must contain at least 8 characters"]}, :description=>nil}]
+
+  >> @client.create(@user.set_values(:name => 'asdf', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
+  => [[:msg, {:title=>"Success!"}, "Your login, 'asdf', has been sucessfully created. You can now log in."]]
+
+  >> @client.create(@user.set_values(:name => 'asdf', :password => 'asdfasdf',:confirm_password => 'asdfasdf'),:code => 400)
+  => [:error, {:error_type=>"validation", :error_details=>{:name=>["is already taken"]}, :description=>nil}]
+
+

@@ -1,0 +1,14 @@
+
+=Marley Basics
+
+:include: hello.rb
+
+setup
+   @client=Marley::TestClient.new({:resource_name => 'hello'}) 
+end
+
+example:
+
+    >> @client.read
+    => "\"Hello World!\""
+    

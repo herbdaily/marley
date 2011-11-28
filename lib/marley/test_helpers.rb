@@ -1,7 +1,6 @@
 require "rack/test"
 require 'marley/reggae'
 module Marley
-  #simple mocking framework; could be expanded to a general use client by adding display code.
   class TestClient
     CRUD2REST={'create' => 'post','read' => 'get','update' => 'put', 'del' => 'delete'}
     DEFAULT_OPTS={:url => nil,:root_url => nil, :resource_name => nil, :instance_id => nil, :method => nil, :extention =>nil, :auth => nil, :code => nil, :debug => nil}
