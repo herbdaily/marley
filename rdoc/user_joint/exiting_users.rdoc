@@ -1,0 +1,9 @@
+
+  setup
+    @client.create(@user.set_values(:name => 'user1', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
+    @client.create(@user.set_values(:name => 'user2', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
+  end
+
+  examples: 2 users exist
+
+    assert_equal 2, MR::User.count
