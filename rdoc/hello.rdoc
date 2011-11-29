@@ -7,7 +7,7 @@ setup
    @client=Marley::TestClient.new({:resource_name => 'hello'}) 
 end
 
-example:
+example: return hello world
 
     >> @client.read
     => "\"Hello World!\""

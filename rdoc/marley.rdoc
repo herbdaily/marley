@@ -1,6 +1,0 @@
-
-=Marley 
-
-:include: marley/hello.rb
-
-    
