@@ -2,8 +2,41 @@
   setup
     @client.create(@user.set_values(:name => 'user1', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
     @client.create(@user.set_values(:name => 'user2', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
+    @client.auth=['user1','asdfasdf']
   end
 
   examples: 2 users exist
 
     assert_equal 2, MR::User.count
+
+  example: allow viewing and changing of user columns with proper validation
+
+    >> @client.instance_id=1
+    => 1
+
+    >> user=@client.read({})
+    => [:instance, {:schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :new_rec=>false, :actions=>nil, :name=>"user", :url=>"/user/1/"}, []]
+
+    >> @client.update(user)
+    => [[:instance, {:schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :new_rec=>false, :actions=>nil, :name=>"user", :url=>"/user/1/"}, []]]
+
+    >> user.col_value(:password, 'zxcvzxcv')
+    => "zxcvzxcv"
+
+    >> err=@client.update(user,{:code => 400})
+    => [:error, {:description=>nil, :error_type=>"validation", :error_details=>{:old_password=>["Old Password Incorrect"], :confirm_password=>["Passwords do not match"]}}]
+
+    >> @client.update(user.set_values(:confirm_password => 'zxcvzxcv',:old_password => 'asdfasdf'))
+    => [[:instance, {:schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :new_rec=>false, :actions=>nil, :name=>"user", :url=>"/user/1/"}, []]]
+
+    >> @client.read({})
+    => false
+
+    >> @client.read({},:auth => ['user1', 'zxcvzxcv'])
+    => [:instance, {:schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :new_rec=>false, :actions=>nil, :name=>"user", :url=>"/user/1/"}, []]
+
+    >> @client.read({},:instance_id =>2,:auth => ['user1', 'zxcvzxcv'])
+    => false
+
+    >> @client.read({},:instance_id =>2,:auth => ['user1', 'zxcvzxcv'],:code => 403)
+    => [:error, {:description=>"You are not authorized for this operation", :error_type=>"authorization", :error_details=>nil}]
