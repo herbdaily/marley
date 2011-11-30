@@ -87,7 +87,10 @@ module Marley
       raise RoutingError unless Resources.constants.include?(rn)
       @resource=Resources.const_get(rn)
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
-      @controller=@resource.respond_to?($request[:verb]) ? @resource : @resource.controller
+      @controller=nil
+      @controller=@resource.controller if @resource.respond_to?(:controller)
+      @controller=@resource if @resource.respond_to?($request[:verb]) 
+      raise RoutingError unless @controller
       json=@controller.send($request[:verb]).to_json
       html=@opts[:client] ? @opts[:client].to_s(json) : json
       resp_code=RESP_CODES[verb]

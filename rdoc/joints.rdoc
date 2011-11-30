@@ -24,9 +24,38 @@ For now, there are 5 joints included in the Marley distribution:
 
 With a bit of configuration, these comprise the example forum application.
 
-:include: hello.rb
+:include: rdoc/hello.rb
 
-:include: example_joint.rb
+:include: rdoc/example_joint.rb
 
-examples:
+    setup
+        @client=Marley::TestClient.new(:resource_name => 'hello')
+    end
+
+example: without the joint, then with the joint
+
+    >> MR.constants
+    => ["Hello"]
+    >> @client.read
+    => "\"Hello World!\""
+    >> @client.read({}, :resource_name => 'goodbye',:code => 404)
+    => [:error, {:description=>"Not Found", :error_type=>"routing", :error_details=>nil}]
+    >> @client.create({}, :code => 404)
+    => [:error, {:description=>"Not Found", :error_type=>"routing", :error_details=>nil}]
+
+
+    >> Marley.joint('example_joint').class
+    => Marley::Joints::ExampleJoint
+    >> MR.constants.sort
+    => ["GoodBye", "Hello"]
+    >> @client.read({}, :resource_name => 'goodbye')
+    => false
+    >> @client.read({}, :resource_name => 'good_bye')
+    => "\"goodbye\""
+    >> @client.create({})
+    => " world"
+    >> @client.create({},:method => 'howdy')
+    => "howdy world"
+
+
 

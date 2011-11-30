@@ -20,6 +20,7 @@ module Marley
             end
           end
         end
+        self
       end
       def config(opts)
         @opts=(@opts || {}).merge(opts)

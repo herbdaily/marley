@@ -6,7 +6,7 @@ module Marley
     class ExampleJoint < Joint
       module ClassMethods
         module Hello
-          def self.rest_post
+          def rest_post
             new($request[:path][1])
           end
         end
@@ -14,7 +14,10 @@ module Marley
       module InstanceMethods
         module Hello
           def initialize(greeting)
-            "#{greeting} world"
+            @greeting=greeting
+          end
+          def to_json
+            "#{@greeting} world"
           end
         end
       end
