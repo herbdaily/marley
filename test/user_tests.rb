@@ -41,8 +41,10 @@ class UserTests < Test::Unit::TestCase
   end
   context "existing user logged in" do
     setup do
+      @client.code=201
       assert @client.create({:'user[name]' => 'user1',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf'})
       assert @client.create(:'user[name]' => 'user2',:'user[password]' => 'asdfasdf',:'user[confirm_password]' => 'asdfasdf')
+      @client.code=200
       @client.auth=['user1','asdfasdf']
     end
     should "show correct menu items" do
