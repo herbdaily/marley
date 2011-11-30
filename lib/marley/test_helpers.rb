@@ -9,7 +9,7 @@ module Marley
     def app
       Marley::Router.new
     end
-    def initialize(opts)
+    def initialize(opts={})
       @opts=DEFAULT_OPTS.merge(opts)
     end
     def make_url(opts=nil)

@@ -67,12 +67,9 @@ For now, there are 5 joints included in the Marley distribution:
 
 With a bit of configuration, these comprise the example forum application, which is in turn the targt for the test suite.
 
-==Reggae
-
-The server and client use a JSON based data representation format "Reggae."  Reggae.ebnf describes the format in canonical form, and reggae.rb contains a Reggae parser and generator.  
+:include: rdoc/reggae.rdoc
 
 ==Jamaica
 
 The default Marley client is "Jamaica", which consists of JS/CSS for browsers.  It sucks right now and I'm hoping somebody takes it over as a sub-project, but it does work - at least on FF.
 
-:include:rdoc/reggae.rdoc

@@ -1,13 +1,8 @@
 
 == The User Joint
 
-    :include: user_joint.rb
-
   setup
       @client=Marley::TestClient.new(:resource_name => 'user')
       @user=MR::User.new.to_a
   end
 
-:include: user_joint/no_auth_provided.rdoc
-
-:include: user_joint/exising_users.rdoc

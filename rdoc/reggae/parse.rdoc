@@ -1,4 +1,6 @@
 
+===Reggae Parser
+
 examples: leave non-Reggae arrays as is
 
     >> Marley::Reggae.new([])

@@ -1,0 +1,11 @@
+
+==Basic Messaging
+
+  setup
+    MR::Message.delete
+    @client=Marley::TestClient.new
+  end
+
+  example: work
+
+    assert_equal 0,0

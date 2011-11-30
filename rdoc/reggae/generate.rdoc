@@ -1,5 +1,8 @@
+
+===Reggae Generator
+
 examples:  generate an instance
 
->> @instance=Marley::ReggaeInstance.new({:name => 'foo',:schema => []})
-=> [:instance, {:schema=>[], :name=>"foo"}, []]
+  >> @instance=Marley::ReggaeInstance.new({:name => 'foo',:schema => []})
+  => [:instance, {:schema=>[], :name=>"foo"}, []]
 
