@@ -1,12 +1,10 @@
 
-1.0
 
 - complete switchover to tdoc
 - joint dependencies
 - rename client to sth like output
   - move all output there
 - fix JS
-- improve documentation - esp API
 - ditch Sequel dependency
   - ORM as a Joint??
   - automate sequel plugin loading in options

@@ -1,0 +1,32 @@
+
+==Joints
+
+
+"Joints" are pre-packaged resource sets that can be included in a Marley application.  A joint can be added to the current Resources by running Marley.joint('_joint_name_').  The Marley.joint method will then do the following:
+
+* Find a file named '_joint_name_' in the 'joints/' directory.
+* Require that file.
+* run its #smoke method.
+
+The Joint#smoke method looks for 3 modules inside the joint's namespace:  Resources, ClassMethods, and InstanceMethods.  
+
+* if the Resources module exists, Joint#smoke will copy all of its constants to Marley::Resources.
+* If the ClassMethods module exists, Joint#smoke will cycle through the modules within it, and extend objects in Marley::Resources with the same name.
+* If the InstanceMethods module exists, Joint#smoke will cycle through the modules within it, and call their #append_features with the corresponding objects in Marley::Resources with the same name.
+
+For now, there are 5 joints included in the Marley distribution:
+
+* Basic User
+* Basic Messaging
+* Basic Menu System
+* Tagging
+* Tagged Messaging
+
+With a bit of configuration, these comprise the example forum application.
+
+:include: hello.rb
+
+:include: example_joint.rb
+
+examples:
+

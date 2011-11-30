@@ -1,2 +1,10 @@
 
 === Private Messages
+
+  setup
+    @client.resource_name='private_message'
+    @pm=MR::PrivateMessage.new.to_a
+  end
+
+examples:
+  
