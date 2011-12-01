@@ -15,7 +15,7 @@ module Marley
       end
       def smoke
         self.class::Resources.constants.each do |resource_name|
-          MR.const_set(resource_name, self.class::Resources.const_get(resource_name))
+          MR.const_set(resource_name, self.class::Resources.const_get(resource_name)) unless (@opts[:resources] && ! @opts[:resources].include?(resource_name))
         end
         self.class.constants.grep(/.+Plugin$/).each do |plugin_name|
           plugin=self.class.const_get(plugin_name)
