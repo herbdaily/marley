@@ -2,9 +2,10 @@
 
 Gem::Specification.new do |s|
   s.name = %q{marley}
-  s.version = "0.3.0"
+  s.version = "0.4.0"
   s.summary = %q{Irie default restful routes for your models and other objects}
-  s.description = %q{Marley implements a web services microframework on top of Rack and Sequel on the server side and Jquery on the client side.}
+  s.description = %q{Marley implements a web services microframework on top of Rack and Sequel on the server side and Jquery on the client side.  After 0.4.0 the joints framework will be redone.  However, I'm releasing this because I still think it's worth playing with and the joint restructuring will take a while.
+  }
   s.authors     = ["Herb Daily"]
   s.email       = 'herb.daily@safe-mail.net'
   s.homepage    = 'http://github.com/herbdaily/marley'

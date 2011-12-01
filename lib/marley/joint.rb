@@ -5,6 +5,9 @@ module Marley
     #    - ClassMethods - Modules within this module will extend any constant in Marley::Resources with the same name.
     #    - InstanceMethods - Modules within this module will append their features to any constant in Marley::Resources with the same name. 
     class Joint
+      #def self.provides(*args)
+      #  [:resources,:class_methods,:]
+      #end
       def initialize(opts={})
         config(opts)
       end

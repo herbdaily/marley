@@ -6,7 +6,8 @@ module Marley
   module Resources
     class Hello
       def self.rest_get
-        'Hello World!'
+        @who=$request[:get_params][:who] || 'World'
+        "Hello #{@who}!"
       end
     end
   end

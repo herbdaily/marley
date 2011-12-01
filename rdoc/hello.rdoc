@@ -9,4 +9,6 @@ example: return hello world
 
     >> @client.read
     => "\"Hello World!\""
-    
+    >> @client.read({:who => 'Dolly'})
+    => "\"Hello Dolly!\""
+
