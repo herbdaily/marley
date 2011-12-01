@@ -12,6 +12,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sequel', '~>3.27'
   s.add_runtime_dependency 'rack', '~>1.2.2'
   s.add_runtime_dependency 'json', '~>1.1.7'
-  s.add_development_dependence 'tdoc', '~>0.12.1'
+  s.add_development_dependency 'tdoc', '~>0.12.1'
   s.files = Dir.glob(["*","lib/**/*","examples/**/*","test/**/*"])
 end
