@@ -7,4 +7,7 @@
   end
 
 examples:
-  
+
+  >> @client.auth=USER1_AUTH
+  => ["user1", "asdfasdf"]
+

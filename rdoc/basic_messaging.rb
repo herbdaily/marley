@@ -15,12 +15,11 @@ Marley.joint 'basic_messaging'
 Marley.joint 'basic_menu_system'
 
 MR::User.delete
-@client=Marley::TestClient.new(:resource_name => 'user')
 ['user1','user2','admin'].each do |un|
   MR::User.new(:name => un,:password => 'asdfasdf', :confirm_password => 'asdfasdf').save
 end
 MR::User[:name => 'admin'].update(:user_type => 'Admin')
-@admin_auth=['admin','asdfasdf']
-@user1_auth=['user1','asdfasdf']
-@user2_auth=['user2','asdfasdf']
+ADMIN_AUTH=['admin','asdfasdf']
+USER1_AUTH=['user1','asdfasdf']
+USER2_AUTH=['user2','asdfasdf']
 
