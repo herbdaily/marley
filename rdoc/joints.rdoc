@@ -8,11 +8,10 @@
 * Require that file.
 * run its #smoke method.
 
-The Joint#smoke method looks for 3 modules inside the joint's namespace:  Resources, ClassMethods, and InstanceMethods.  
+The Joint#smoke method scans the classes constants for a module namee 'Resources' and any modules whose name ends in 'Plugin'.
 
-* if the Resources module exists, Joint#smoke will copy all of its constants to Marley::Resources.
-* If the ClassMethods module exists, Joint#smoke will cycle through the modules within it, and extend objects in Marley::Resources with the same name.
-* If the InstanceMethods module exists, Joint#smoke will cycle through the modules within it, and call their #append_features with the corresponding objects in Marley::Resources with the same name.
+* If the 'Resources' module exists, Joint#smoke will copy all of its constants to Marley::Resources.
+* For every module whose name ends in 'Plugin', if a corresponding class exists in Marley::Resources, it will be extended by the internal 'ClassMethods' module and have the internal 'InstanceMethods' module's features appended to it.
 
 For now, there are 5 joints included in the Marley distribution:
 

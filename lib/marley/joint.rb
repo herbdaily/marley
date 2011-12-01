@@ -5,29 +5,25 @@ module Marley
     #    - ClassMethods - Modules within this module will extend any constant in Marley::Resources with the same name.
     #    - InstanceMethods - Modules within this module will append their features to any constant in Marley::Resources with the same name. 
     class Joint
-      MODS=['Resources','ClassMethods','InstanceMethods']
-      IMPORTERS={
-       'Resources' => lambda {|c| MR.const_set(c,Resources.const_get(c))},
-       'ClassMethods' => lambda {|c| MR.const_get(c).extend klass::ClassMethods.const_get(c)},
-       'InstanceMethods' =>  lambda {|c| klass::InstanceMethods.const_get(c).send :append_features, MR.const_get(c)}
-      }
+      MODS=['Resources','Plugins']
       MODS.each {|mod| const_set(mod,Module.new)}
       def self.mods
-        MODS.map {|mod_name| self.const_get(mod_name.to_s.camelize) } 
+        MODS.map {|mod_name| self.const_get(mod_name) } 
       end
       def initialize(opts={})
         config(opts)
       end
-      def self.resources
-      end
       def smoke
-        klass=self.class
-        { 'resources' => lambda {|c| MR.const_set(c,klass::Resources.const_get(c))},
-          'class_methods' => lambda {|c| MR.const_get(c).extend klass::ClassMethods.const_get(c)},
-          'instance_methods' => lambda {|c| klass::InstanceMethods.const_get(c).send :append_features, MR.const_get(c)}
-        }.each_pair do |mod_name, importer|
-          klass.const_get(mod_name.camelize).constants.each do |c|
-            importer.call(c) unless @opts[mod_name.to_sym] && ! @opts[mod_name.to_sym].include?(c.underscore)
+        self.class::Resources.constants.each do |resource_name|
+          MR.const_set(resource_name, self.class::Resources.const_get(resource_name))
+        end
+        self.class.constants.grep(/.+Plugin$/).each do |plugin_name|
+          plugin=self.class.const_get(plugin_name)
+          resource_name=plugin_name.sub(/Plugin$/,'')
+          if MR.constants.include?(resource_name)
+            resource=MR.const_get(resource_name)
+            plugin.constants.include?('ClassMethods') && resource.extend(plugin.const_get('ClassMethods'))
+            plugin.constants.include?('InstanceMethods') && plugin.const_get('InstanceMethods').send(:append_features,resource)
           end
         end
         self

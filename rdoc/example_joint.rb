@@ -4,15 +4,13 @@ require 'marley'
 module Marley
   module Joints
     class ExampleJoint < Joint
-      module ClassMethods
-        module Hello
+      module HelloPlugin
+        module ClassMethods
           def rest_post
             new($request[:path][1])
           end
         end
-      end
-      module InstanceMethods
-        module Hello
+        module InstanceMethods
           def initialize(greeting)
             @greeting=greeting
           end

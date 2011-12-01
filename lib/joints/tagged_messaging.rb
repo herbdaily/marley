@@ -15,8 +15,8 @@ module Marley
           MR::Tag.tagging_for('Post')
         end
       end
-      module ClassMethods
-        module Message
+      module MessagePlugin
+        module ClassMethods
           def list(params={})
             if associations.include?(:public_tags)
               specified_tags=params.delete(:tags)
@@ -34,9 +34,7 @@ module Marley
             items.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|self[:parent_id => nil, :thread_id => t[:thread_id]].thread} rescue []
           end
         end
-      end
-      module InstanceMethods
-        module Message
+        module InstanceMethods
           def rest_associations
             if ! new?
               [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_dataset : nil].compact
