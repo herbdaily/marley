@@ -22,10 +22,10 @@ module Sequel
             if (relationship=user.send(otm)).respond_to?(:filter)
               relationship.filter($request[:get_params][resource_name.to_sym] || {}).all
             else
-              user.send(otm)
+              @items=user.send(otm)
             end
           else
-            user.send(otm,$request[:get_params][resource_name.to_sym])
+            @items=user.send(otm,$request[:get_params][resource_name.to_sym])
           end
         else
           raise Marley::AuthorizationError

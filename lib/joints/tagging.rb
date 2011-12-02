@@ -30,12 +30,9 @@ module Marley
           @tag_ids=MR::PublicTag.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id) if specified_tags
           @user_tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_user_tags.split(/\s*,\s*/)).select(:id) if specified_user_tags
           @items=filter(params)
-          #would love to make the following line more generic...
           @items=@items.join(@tag_join_table,foreign_key_name.to_sym => :id).filter(@tag_key => @tag_ids) if specified_tags
           @items=@items.join(@tag_join_table,foreign_key_name.to_sym => :id).filter(@tag_key => @user_tag_ids) if specified_user_tags
-          @items=@items.filter("author_id=#{$request[:user][:id]} or recipients like('%#{$request[:user][:name]}%')".lit) if new.rest_cols.include?(:recipients)
-          @items.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|self[:parent_id => nil, :thread_id => t[:thread_id]].thread} rescue []
-          end
+        end
       end
       module InstanceMethods
         def rest_associations

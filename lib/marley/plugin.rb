@@ -9,9 +9,9 @@ module Marley
       def initialize(opts={})
         config(opts)
       end
-      def apply(class_name)
+      def apply(klass)
         plugin=self.class
-        resource=MR.const_get(class_name)
+        resource=klass.class==String ? MR.const_get(klass) : klass
         plugin.constants.include?('ClassMethods') && resource.extend(plugin.const_get('ClassMethods'))
         plugin.constants.include?('InstanceMethods') && plugin.const_get('InstanceMethods').send(:append_features,resource) 
       end

@@ -35,6 +35,11 @@ module Marley
           def rest_schema
             super << [:text, :tags, 0,tags]
           end
+          def self.list(params={})
+            super
+            @items=@items.filter("author_id=#{$request[:user][:id]} or recipients like('%#{$request[:user][:name]}%')".lit)
+            @items.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|self[:parent_id => nil, :thread_id => t[:thread_id]].thread} rescue []
+          end
           def reply
             r=super
             r.tags=(user_tags_dataset.current_user_dataset.map{|t|t.tag} - RESERVED_PM_TAGS).join(',')
@@ -55,6 +60,10 @@ module Marley
           @actions_get=(superclass.actions_get << 'new_user_tags') << 'new_tags'
           def rest_schema
             (super << [:text, :tags, 0,tags] ) << [:text, :my_tags, 0,my_tags] 
+          end
+          def self.list(params={})
+            super
+            @items.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|self[:parent_id => nil, :thread_id => t[:thread_id]].thread} rescue []
           end
           def reply
             r=super
