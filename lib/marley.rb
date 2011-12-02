@@ -23,13 +23,22 @@ log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
 module Marley 
-  JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
-  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
+  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
+  JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
   
-  module Resources 
+  module Abstract
+    JOINT_DIRS.each do |dir|
+      Dir.glob("#{dir}/*").each do |joint|
+        Dir.glob("#{joint}/abstract/*").each do |fn|
+          klass=fn.sub(%r{(.*/)},'').sub(/\..*/,'').camelize
+          raise "Abstract autoload error: #{dir} #{klass}" if autoload?(klass.camelize)
+          autoload klass.camelize,fn
+        end
+      end
+    end
   end
-  module Joints
+  module Resources 
   end
   require 'marley/joint' #this needs to happen after Marley::Resources is defined
   
