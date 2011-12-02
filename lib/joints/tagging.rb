@@ -1,4 +1,10 @@
 module Marley
+  module Plugins
+    module Tagging
+    end
+    module PerUserTagging
+    end
+  end
   module Joints
     class Tagging < Joint
       module Resources

@@ -11,11 +11,27 @@
       - module which contains Joints and Plugins module
     - thoughts:
       - This is very much a semantic question.  As such, it may be strongly advisable to ditch the 'Joints' monicker in favor of something dramatically more boring 
-  - CURRENTLY ATTEMPTING:  4 name spaces:
-    - Resources - same as now but cleaner due to:
-    - Joints - same as now
-    - Plugins - as name implies
-    In this scenario, subclasses of 'Joint' would look more or less the same as now, but with access to generic plugins.  the MJ::MyJoint::FooPlugin 
+  - CURRENTLY ATTEMPTING:  hierarchical namespaces as follows:
+    Marley::Resources
+    Marley::Plugins 
+      _PluginName_
+        Extend
+        Include
+    Marley::Joints
+      _JointName_
+        Resources
+        Plugins 
+          _PluginName_
+            Extend
+            Include
+
+      plugins seem to embody a pattern of connecting resources.  perhaps this should be implemented by a joint_connector???
+
+
+      SHOULD Marley BE A CLASS AND JOINTS A SUBCLASS???  THE OTHER WAY ROUND??  Should both inherit from another class or include a different module???
+      
+    In this scenario, subclasses of 'Joint' would look more or less the same as now, but with read/wite access to a generic plugins namespace and some kind of dynamic method of applying them based on ???what???
+   The MJ::MyJoint::FooPlugin idiom would change to integrating an Marley::Plugins module 
 
 
 NEXT STEP: combine Tag.tagging for and TaggedMessaging::MessagePlugin.  If that works, this is most likely the way to go.  Will still need to think it through, though.
