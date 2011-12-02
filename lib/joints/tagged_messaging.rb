@@ -34,36 +34,6 @@ module Marley
             items.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|self[:parent_id => nil, :thread_id => t[:thread_id]].thread} rescue []
           end
         end
-        module InstanceMethods
-          def rest_associations
-            if ! new?
-              [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_dataset : nil].compact
-            end
-          end
-          def new_tags
-            [:instance,{:name => 'tags',:url => "#{url}/tags", :new_rec => true, :schema => [['number','message_id',RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
-          end
-          def new_user_tags
-            [:instance,{:name => 'user_tags',:url => "#{url}/user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
-          end
-          def add_tags(tags,user=nil)
-            if respond_to?(:public_tags)
-              tags.to_s.split(',').each {|tag| add_public_tag(MR::PublicTag.find_or_create(:tag => tag))}
-            else
-              add_user_tags(tags,user)
-            end
-          end
-          def add_user_tags(tags,user=nil) #does not conflict with add_user_tag
-            user||=$request[:user][:id]
-            if user.class==String
-              user.split(',').each {|u| add_user_tags(tags,MR::User[:name => u][:id])}
-            elsif user.class==Array
-              user.each {|u| add_user_tags(tags,u)}
-            elsif user.class==Fixnum
-              tags.to_s.split(',').each {|tag| add_user_tag(MR::UserTag.find_or_create(:user_id => user, :tag => tag))}
-            end
-          end
-        end
       end
       module Resources
         class User < MJ::BasicUser::Resources::User
