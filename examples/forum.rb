@@ -4,9 +4,6 @@ require 'digest/sha1'
 
 $: << "#{File.dirname(__FILE__)}/../lib/"
 
-Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
-Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
-
 APP_DIR=File.dirname(__FILE__)
 require "marley"
 require "client/jamaica"

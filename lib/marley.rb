@@ -23,24 +23,13 @@ log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
 module Marley 
-  RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
-  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
+  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
+  RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
-  ['resources','abstract'].each do |mod_name|
-    m=Module.new
-    const_set mod_name.camelize,m
-    m.module_eval do |mod|
-      JOINT_DIRS.each do |dir|
-        Dir.glob("#{dir}/*").each do |joint|
-          Dir.glob("#{joint}/#{mod_name}/*").each do |fn|
-            klass=fn.sub(%r{(.*/)},'').sub(/\..*/,'').camelize
-            raise "#{mod_name} autoload error: #{dir} #{klass} is already autoloded in this context" if autoload?(klass.camelize).to_s.match(/#{dir}/)
-            autoload klass.camelize,fn
-          end
-        end
-      end
-    end
+  module Resources 
+  end
+  module Joints
   end
   require 'marley/joint' #this needs to happen after Marley::Resources is defined
   
@@ -170,5 +159,4 @@ module Marley
 end
   MR=Marley::Resources
   MJ=Marley::Joints
-  MA=Marley::Abstract
 at_exit {Marley.run  if ARGV[0]=='run'}

@@ -18,7 +18,7 @@ module Marley
         define_method "rest_#{name}" do
           if opts.find {|opt| send(:"#{name}_#{opt}").to_s > ""}
             foo=opts.inject({}) do |h,k|
-              i=send("#{name}_#{k}".sub(/^_/,'')) #in case no name is specified
+              i=send("#{name}_#{k}".sub(/^_/,''))
               h[k.to_sym]=i.class==Hash ? i[key_proc.call] : i
               h
             end

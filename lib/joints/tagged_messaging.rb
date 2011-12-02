@@ -1,3 +1,5 @@
+Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
+Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
 
 Marley.joint 'basic_user',{:resources => []}
 Marley.joint 'tagging'

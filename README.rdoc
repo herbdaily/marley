@@ -1,9 +1,6 @@
 =Marley
 
-*Note:*  The version currently in github does not work.  If you want a version that does, please grab the gem.
-
 Marley is a framework for quickly building RESTful web services and applications.  It consists of several parts:
-
 
 * A simple Rack application that acts as request parser/router.
 * A default controller for ORM model classes.
