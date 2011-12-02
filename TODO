@@ -1,7 +1,30 @@
 
 
 - complete switchover to tdoc
-- joint dependencies
+- separate plugins from joints
+  -keep current plugin structure or ditch it for separate plugins?
+    - 3rd option - implement both, deprecate 1 before stable release
+  - change module structure to accommodate plugins
+    - possibilities:
+      - separate module for plugins
+      - shared module for plugins/joints
+      - module which contains Joints and Plugins module
+    - thoughts:
+      - This is very much a semantic question.  As such, it may be strongly advisable to ditch the 'Joints' monicker in favor of something dramatically more boring 
+  - CURRENTLY ATTEMPTING:  4 name spaces:
+    - Resources - same as now but cleaner due to:
+    - Joints - same as now
+    - Plugins - as name implies
+    In this scenario, subclasses of 'Joint' would look more or less the same as now, but with access to generic plugins.  the MJ::MyJoint::FooPlugin 
+
+
+NEXT STEP: combine Tag.tagging for and TaggedMessaging::MessagePlugin.  If that works, this is most likely the way to go.  Will still need to think it through, though.
+      
+ANOTHER THOUGHT:  app.rb essentially becomes a configuration file.  all the "active" code sits in joints/ and plugins/.  Might want to revisit autoload thing.
+
+REGARDLESS:  MUST BRANCH next time I do anything major.
+    
+  
 - rename client to sth like output
   - move all output there
 - fix JS

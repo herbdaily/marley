@@ -27,9 +27,13 @@ module Marley
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
+  module AbstractResources
+  end
   module Resources 
   end
   module Joints
+  end
+  module Plugins
   end
   require 'marley/joint' #this needs to happen after Marley::Resources is defined
   

@@ -5,11 +5,6 @@ module Marley
     #    - ClassMethods - Modules within this module will extend any constant in Marley::Resources with the same name.
     #    - InstanceMethods - Modules within this module will append their features to any constant in Marley::Resources with the same name. 
     class Joint
-      MODS=['Resources','Plugins']
-      MODS.each {|mod| const_set(mod,Module.new)}
-      def self.mods
-        MODS.map {|mod_name| self.const_get(mod_name) } 
-      end
       def initialize(opts={})
         config(opts)
       end
