@@ -3,24 +3,39 @@ module Marley
     class Tagging < Plugin
       module ClassMethods
         def tagging(user_class=nil)
-          join_table=:"#{self.table_name}_tags"
-          klass_key=:"#{self.table_name.to_s.singularize}_id"
-          tag_key=:tag_id
+          @tag_join_table=:"#{table_name}_tags"
+          @tag_key=:tag_id
           if user_class
-          current_user_tags=Module.new do
+            current_user_tags=Module.new do
               def current_user_dataset
                 filter(:tags__user_id => $request[:user][:id])
               end
             end
-            MR::UserTag.many_to_many self.resource_name.to_sym,:class => self, :join_table => join_table,:left_key => tag_key,:right_key => klass_key,:extend => current_user_tags
-            many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => [current_user_tags,Marley::RestActions]
+            MR::UserTag.many_to_many resource_name.to_sym,:class => self, :join_table => @tag_join_table,:left_key => @tag_key,:right_key => foreign_key_name.to_sym,:extend => current_user_tags
+            many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => @tag_join_table,:left_key => foreign_key_name.to_sym,:right_key => @tag_key, :extend => [current_user_tags,Marley::RestActions]
             Marley::Resources.const_get(user_class).one_to_many :user_tags, :class => 'Marley::Resources::UserTag'
             MR::UserTag.many_to_one user_class.underscore.to_sym,:class => "Marley::Resources::#{user_class}"
           else
-            MR::PublicTag.many_to_many self.resource_name.to_sym,:class => self, :join_table => join_table,:left_key => tag_key,:right_key => klass_key
-            many_to_many :public_tags,:class => "MR::PublicTag",:join_table => join_table,:left_key => klass_key,:right_key => tag_key, :extend => Marley::RestActions
+            MR::PublicTag.many_to_many self.resource_name.to_sym,:class => self, :join_table => @tag_join_table,:left_key => @tag_key,:right_key => foreign_key_name.to_sym
+            many_to_many :public_tags,:class => "MR::PublicTag",:join_table => @tag_join_table,:left_key => foreign_key_name.to_sym,:right_key => @tag_key, :extend => Marley::RestActions
           end
         end
+        def list(params={})
+          if associations.include?(:public_tags)
+            specified_tags=params.delete(:tags)
+            specified_user_tags=params.delete(:user_tags)
+          else
+            specified_user_tags=params.delete(:tags)
+          end
+          @tag_ids=MR::PublicTag.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id) if specified_tags
+          @user_tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_user_tags.split(/\s*,\s*/)).select(:id) if specified_user_tags
+          @items=filter(params)
+          #would love to make the following line more generic...
+          @items=@items.join(@tag_join_table,foreign_key_name.to_sym => :id).filter(@tag_key => @tag_ids) if specified_tags
+          @items=@items.join(@tag_join_table,foreign_key_name.to_sym => :id).filter(@tag_key => @user_tag_ids) if specified_user_tags
+          @items=filter("author_id=#{$request[:user][:id]} or recipients like('%#{$request[:user][:name]}%')".lit) if new.rest_cols.include?(:recipients)
+          @items.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|self[:parent_id => nil, :thread_id => t[:thread_id]].thread} rescue []
+          end
       end
       module InstanceMethods
         def rest_associations
@@ -29,10 +44,10 @@ module Marley
           end
         end
         def new_tags
-          [:instance,{:name => 'tags',:url => "#{url}/tags", :new_rec => true, :schema => [['number','message_id',RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
+          [:instance,{:name => 'tags',:url => "#{url}/tags", :new_rec => true, :schema => [['number',"#{self.class.resource_name}_id",RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
         end
         def new_user_tags
-          [:instance,{:name => 'user_tags',:url => "#{url}/user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
+          [:instance,{:name => 'user_tags',:url => "#{url}/user_tags", :new_rec => true, :schema => [['number',"user_tags[#{self.class.resource_name}_id]",RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
         end
         def add_tags(tags,user=nil)
           if respond_to?(:public_tags)

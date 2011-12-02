@@ -15,26 +15,6 @@ module Marley
         MR::Post.tagging('User')
         MR::Post.tagging()
       end
-      module MessagePlugin
-        module ClassMethods
-          def list(params={})
-            if associations.include?(:public_tags)
-              specified_tags=params.delete(:tags)
-              specified_user_tags=params.delete(:user_tags)
-            else
-              specified_user_tags=params.delete(:tags)
-            end
-            tag_ids=MR::PublicTag.filter(:tag => specified_tags.split(/\s*,\s*/)).select(:id) if specified_tags
-            user_tag_ids=$request[:user].user_tags_dataset.filter(:tag => specified_user_tags.split(/\s*,\s*/)).select(:id) if specified_user_tags
-            items=filter(params)
-            #would love to make the following line more generic...
-            items=filter("author_id=#{$request[:user][:id]} or recipients like('%#{$request[:user][:name]}%')".lit) if new.rest_cols.include?(:recipients)
-            items=items.join(:messages_tags,:message_id => :id).filter(:tag_id => tag_ids) if specified_tags
-            items=items.join(:messages_tags,:message_id => :id).filter(:tag_id => user_tag_ids) if specified_user_tags
-            items.group(:thread_id).order(:max.sql_function(:date_created).desc,:max.sql_function(:date_updated).desc).map{|t|self[:parent_id => nil, :thread_id => t[:thread_id]].thread} rescue []
-          end
-        end
-      end
       module Resources
         class User < MJ::BasicUser::Resources::User
         end

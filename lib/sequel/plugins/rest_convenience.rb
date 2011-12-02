@@ -9,6 +9,9 @@ module Sequel
       def resource_name
         self.name.sub(/.*::/,'').underscore
       end
+      def foreign_key_name
+        "#{table_name.to_s.singularize}_id"
+      end
       def reggae_link(action=nil)
         [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
       end
