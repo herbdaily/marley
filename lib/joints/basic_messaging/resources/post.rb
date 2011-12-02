@@ -1,7 +1,7 @@
 
 module Marley
   module Resources
-    class Post < Message
+    class Post < MA::Message
       @actions_get=['reply']
       def current_user_role
         super || 'reader'

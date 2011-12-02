@@ -1,6 +1,6 @@
 module Marley
   module Resources
-    class PrivateMessage < Message
+    class PrivateMessage < MA::Message
       @actions_get=['reply','reply_all']
       def rest_cols; super << :recipients; end
       def current_user_role
