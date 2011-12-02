@@ -10,6 +10,8 @@ require 'sequel'
 require 'sequel/plugins/rest_convenience'
 require 'sequel/plugins/rest_auth'
 require 'marley/controllers'
+require 'marley/joint' 
+require 'marley/plugin' 
 require 'logger'
 Sequel.extension :inflector
 
@@ -24,16 +26,11 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 
 module Marley 
   JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
+  PLUGIN_DIRS=[File.expand_path("plugins/",File.dirname(__FILE__)),"#{Dir.pwd}/plugins"]
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
-  module Resources 
-  end
-  module Joints
-  end
-  module Plugins
-  end
-  require 'marley/joint' #this needs to happen after Marley::Resources is defined
+  Resources=Module.new
   
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
@@ -42,13 +39,20 @@ module Marley
     @marley_opts
   end
   
+  def self.plugin(plugin_name, *opts)
+    unless Plugins.constants.include?(plugin_name.camelize)
+      plugin_d=PLUGIN_DIRS.find {|d| File.exists?("#{d}/#{plugin_name}.rb") }
+      require "#{joint_d}/#{plugin_name}"
+    end
+    Plugins.const_get(plugin_name.camelize).new(*opts)
+  end
   def self.joint(joint_name, *opts)
-    unless Marley::Joints.constants.include?(joint_name.camelize)
+    unless Joints.constants.include?(joint_name.camelize)
       joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
       require "#{joint_d}/#{joint_name}"
       @marley_opts && @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
     end
-    Marley::Joints.const_get(joint_name.camelize).new(*opts).smoke
+    Joints.const_get(joint_name.camelize).new(*opts).smoke
   end
 
   def self.run(opts={})
@@ -161,4 +165,5 @@ module Marley
 end
   MR=Marley::Resources
   MJ=Marley::Joints
+  MP=Marley::Plugins
 at_exit {Marley.run  if ARGV[0]=='run'}

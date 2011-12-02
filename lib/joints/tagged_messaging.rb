@@ -9,11 +9,11 @@ module Marley
     class TaggedMessaging < Joint
       def smoke
         super
-        MR::Tag.tagging_for('PrivateMessage', 'User') if MR.constants.include?('PrivateMessage')
-        if MR.constants.include?('Post')
-          MR::Tag.tagging_for('Post', 'User')
-          MR::Tag.tagging_for('Post')
-        end
+        t=Marley.plugin('tagging')
+        t.apply('Message') 
+        MR::PrivateMessage.tagging('User')
+        MR::Post.tagging('User')
+        MR::Post.tagging()
       end
       module MessagePlugin
         module ClassMethods
@@ -41,10 +41,10 @@ module Marley
             end
           end
           def new_tags
-            [:instance,{:name => 'tags',:url => "#{url}tags", :new_rec => true, :schema => [['number','message_id',RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
+            [:instance,{:name => 'tags',:url => "#{url}/tags", :new_rec => true, :schema => [['number','message_id',RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
           end
           def new_user_tags
-            [:instance,{:name => 'user_tags',:url => "#{url}user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
+            [:instance,{:name => 'user_tags',:url => "#{url}/user_tags", :new_rec => true, :schema => [['number','user_tags[message_id]',RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
           end
           def add_tags(tags,user=nil)
             if respond_to?(:public_tags)

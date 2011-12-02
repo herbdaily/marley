@@ -115,7 +115,7 @@ class MessageTests < Test::Unit::TestCase
         context "new tags" do
           should "return tag instance with name tag and same url as original message" do
             assert_equal 'tags', @new_tags.name
-            assert_equal "#{@msg.url}tags", @new_tags.url
+            assert_equal "#{@msg.url}/tags", @new_tags.url
           end
           should "accept new tags, which should then show up with the original message" do
             assert @client.create({'private_message[tags]' => 'added_tag1, added_tag2'},{:method => 'tags'})
