@@ -49,7 +49,7 @@ class UserTests < Test::Unit::TestCase
     end
     should "show correct menu items" do
       menu= @client.read({},:resource_name => '')
-      assert_same_elements ["User Info","Private Messages","Public Posts"], menu.navigation.map{|n| n.title}
+      assert_same_elements ["User Info","Private Messages","Public Messages"], menu.navigation.map{|n| n.title}
     end
     should "allow viewing and changing of user columns with proper validation" do
       @client.instance_id=1

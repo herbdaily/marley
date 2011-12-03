@@ -223,10 +223,10 @@ class MessageTests < Test::Unit::TestCase
       end
     end
   end
-  context "Posts" do
+  context "Public Messages" do
     setup do
-      @client.resource_name='post'
-      @post=MR::Post.new.to_a
+      @client.resource_name='public_message'
+      @post=MR::PublicMessage.new.to_a
     end
     context 'validation' do
       should "get a validation error trying to post without a title or message as admin, user1, or user2" do
@@ -258,16 +258,16 @@ class MessageTests < Test::Unit::TestCase
       @client.create(@post.set_values('title' => 'test', 'message' => 'asdf','tags' => 'user2tag1,user2tag2,user2tag3'),{:auth => @user2_auth})
       @client.create(@post.set_values('title' => 'test', 'message' => 'asdf','tags' => 'user2tag1,user2tag2,user2tag3,user2tag4'),{:auth => @user2_auth})
       assert_equal 7, @client.read({},{:auth => @admin_auth}).length
-      assert_equal 7, @client.read({'post[title]' => 'test'},{:auth => @admin_auth}).length
-      assert_equal 7, @client.read({'post[title]' => 'test'},{:auth => @user1_auth}).length
-      assert_equal 7, @client.read({'post[title]' => 'test'},{:auth => @user2_auth}).length
-      assert_equal 2, @client.read({'post[tags]' => 'admintag1'},{:auth => @admin_auth}).length
-      assert_equal 2, @client.read({'post[tags]' => 'admintag1'},{:auth => @user1_auth}).length
-      assert_equal 1, @client.read({'post[tags]' => 'admintag3'},{:auth => @user2_auth}).length
-      assert_equal 1, @client.read({'post[tags]' => 'admintag3'},{:auth => @admin_auth}).length
-      assert_equal 2, @client.read({'post[tags]' => 'user1tag2'},{:auth => @admin_auth}).length
-      assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @admin_auth}).length
-      assert_equal 3, @client.read({'post[tags]' => 'user1tag1'},{:auth => @user2_auth}).length
+      assert_equal 7, @client.read({'public_message[title]' => 'test'},{:auth => @admin_auth}).length
+      assert_equal 7, @client.read({'public_message[title]' => 'test'},{:auth => @user1_auth}).length
+      assert_equal 7, @client.read({'public_message[title]' => 'test'},{:auth => @user2_auth}).length
+      assert_equal 2, @client.read({'public_message[tags]' => 'admintag1'},{:auth => @admin_auth}).length
+      assert_equal 2, @client.read({'public_message[tags]' => 'admintag1'},{:auth => @user1_auth}).length
+      assert_equal 1, @client.read({'public_message[tags]' => 'admintag3'},{:auth => @user2_auth}).length
+      assert_equal 1, @client.read({'public_message[tags]' => 'admintag3'},{:auth => @admin_auth}).length
+      assert_equal 2, @client.read({'public_message[tags]' => 'user1tag2'},{:auth => @admin_auth}).length
+      assert_equal 3, @client.read({'public_message[tags]' => 'user1tag1'},{:auth => @admin_auth}).length
+      assert_equal 3, @client.read({'public_message[tags]' => 'user1tag1'},{:auth => @user2_auth}).length
     end
     should 'have usable reply, new_tags, and new_user_tags instance actions' do
       @client.create(@post.set_values('title' => 'test', 'message' => 'asdf','tags' => 'admintag1,admintag2'),{:auth => @admin_auth})
@@ -279,9 +279,9 @@ class MessageTests < Test::Unit::TestCase
       user_tags=@client.read({},{:instance_id => posts[0].schema[:id].col_value,:method => 'new_user_tags'})
       assert_equal 're: test', reply.schema[:title].col_value
       assert @client.create(reply.set_values('message' => 'asdf'),{:method => nil,:instance_id => nil})
-      assert @client.create(tags.to_params.merge('post[tags]' => '1,2,3'),{:url => tags.url})
+      assert @client.create(tags.to_params.merge('public_message[tags]' => '1,2,3'),{:url => tags.url})
       assert_same_elements ['1','2','3','admintag1','admintag2'], @client.read[0].find_instances('public_tag').map{|t| t.schema[:tag].col_value}
-      assert @client.create(user_tags.to_params.merge('post[user_tags]' => '4,5,6'),{:url => user_tags.url})
+      assert @client.create(user_tags.to_params.merge('public_message[user_tags]' => '4,5,6'),{:url => user_tags.url})
       assert_same_elements ['4','5','6'], @client.read[0].find_instances('user_tag').map{|t| t.schema[:tag].col_value}
       assert_equal [], @client.read({},{:auth => @user1_auth})[0].find_instances('user_tag').map{|t| t.schema[:tag].col_value}
     end

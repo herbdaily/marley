@@ -12,8 +12,8 @@ module Marley
         t=Marley.plugin('tagging')
         t.apply('Message') 
         MR::PrivateMessage.tagging('User')
-        MR::Post.tagging('User')
-        MR::Post.tagging()
+        MR::PublicMessage.tagging('User')
+        MR::PublicMessage.tagging()
       end
       module Resources
         class User < MJ::BasicUser::Resources::User
@@ -50,12 +50,12 @@ module Marley
             add_user_tags("sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}",author_id)
           end
         end
-        class Post < MJ::BasicMessaging::Resources::Post
+        class PublicMessage < MJ::BasicMessaging::Resources::PublicMessage
           attr_accessor :tags,:my_tags
-          @section_title='Public Posts'
+          @section_title='Public Messages'
           @section_name='posts'
           def self.section_navigation
-            MR::Tag.filter(:user_id => nil).map{|t| [:link,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:link,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(Post.reggae_link('new'))
+            MR::Tag.filter(:user_id => nil).map{|t| [:link,{:url => "/post?post[tag]=#{t.tag}",:title => t.tag.humanize}]}.unshift([:link,{:url => '/post?post[untagged]=true',:title => 'Untagged Messages'}]).unshift(PublicMessage.reggae_link('new'))
           end
           @actions_get=(superclass.actions_get << 'new_user_tags') << 'new_tags'
           def rest_schema

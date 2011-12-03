@@ -72,7 +72,7 @@ module Marley
             end
           end
         end
-        class Post < Message
+        class PublicMessage < Message
           @actions_get=['reply']
           def current_user_role
             super || 'reader'
