@@ -1,7 +1,7 @@
 Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
 Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
 
-Marley.joint 'basic_user',{:resources => []}
+Marley.joint 'basic_user'
 Marley.joint 'tagging'
 Marley.joint 'messaging',{:threaded => true,:resources => ['Message']}
 module Marley
@@ -16,8 +16,6 @@ module Marley
         MR::PublicMessage.tagging()
       end
       module Resources
-        class User < MJ::BasicUser::Resources::User
-        end
         class PrivateMessage < MJ::Messaging::Resources::PrivateMessage
           attr_accessor :tags
           @actions_get= superclass.actions_get << 'new_tags'
