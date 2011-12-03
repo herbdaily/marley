@@ -29,6 +29,10 @@ example: without the plugin, then with the plugin
 
 == Included Plugins
 
-Marley comes with 2 plugins.  
+Marley comes with 2 plugins:
+
+:include: orm_rest_convenience.rdoc
+
+x:include: rest_auth.rdoc
 
 

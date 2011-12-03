@@ -1,0 +1,6 @@
+
+=== Orm Rest Convenience
+
+This plugin tries to be ORM agnostic but I've only tested it with Sequel.  You are encouraged to fork this plugin and make it work with other ORM's.
+
+

@@ -1,7 +1,7 @@
 
 module Marley
   module Plugins
-    class RestConvenience < Plugin
+    class OrmRestConvenience < Plugin
       module ClassMethods
         include Marley::RestActions
         def controller
@@ -37,7 +37,8 @@ module Marley
           rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}
         end
         def required_cols;[];end
-        def rest_schema
+        def reggae_schema
+          Marley::ReggaeInstance.new(
           rest_cols.map do |col_name|
             db_spec=db_schema.to_hash[col_name]
             col_type=db_spec ? db_spec[:db_type].downcase : col_name
@@ -46,12 +47,12 @@ module Marley
             restrictions|=RESTRICT_RO unless write_cols.include?(col_name)
             restrictions|=RESTRICT_REQ if required_cols.include?(col_name) || (db_spec && !db_spec[:allow_null])
             [col_type, col_name, restrictions,send(col_name)]
-          end
+          end)
         end
         def to_s
           respond_to?('name') ? name : id.to_s
         end
-        def to_a
+        def reggae_instance
           a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:actions => self.class.rest_actions})
           a.contents=self.class.associations.map do |assoc|
             assoc=send("#{assoc}_dataset")
