@@ -2,25 +2,34 @@ module Marley
   module Plugins
     class Tagging < Plugin
       module ClassMethods
+        def per_user_tagging(user_class)
+          current_user_tags=Module.new do
+            def current_user_dataset
+              filter(:tags__user_id => $request[:user][:id])
+            end
+          end
+          MR::UserTag.many_to_many resource_name.to_sym,:class => self, :join_table => @tag_join_table,:left_key => @tag_key,:right_key => foreign_key_name.to_sym,:extend => current_user_tags
+          many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => @tag_join_table,:left_key => foreign_key_name.to_sym,:right_key => @tag_key, :extend => [current_user_tags,Marley::RestActions]
+          Marley::Resources.const_get(user_class).one_to_many :user_tags, :class => 'Marley::Resources::UserTag'
+          MR::UserTag.many_to_one user_class.underscore.to_sym,:class => "Marley::Resources::#{user_class}"
+        end
+        def public_tagging
+          MR::PublicTag.many_to_many self.resource_name.to_sym,:class => self, :join_table => @tag_join_table,:left_key => @tag_key,:right_key => foreign_key_name.to_sym
+          many_to_many :public_tags,:class => "MR::PublicTag",:join_table => @tag_join_table,:left_key => foreign_key_name.to_sym,:right_key => @tag_key, :extend => Marley::RestActions
+        end
         def tagging(user_class=nil)
+          @actions_delete='remove_parent'
           @tag_join_table=:"#{table_name}_tags"
           @tag_key=:tag_id
           if user_class
-            current_user_tags=Module.new do
-              def current_user_dataset
-                filter(:tags__user_id => $request[:user][:id])
-              end
-            end
-            MR::UserTag.many_to_many resource_name.to_sym,:class => self, :join_table => @tag_join_table,:left_key => @tag_key,:right_key => foreign_key_name.to_sym,:extend => current_user_tags
-            many_to_many :user_tags, :class => 'Marley::Resources::UserTag',:join_table => @tag_join_table,:left_key => foreign_key_name.to_sym,:right_key => @tag_key, :extend => [current_user_tags,Marley::RestActions]
-            Marley::Resources.const_get(user_class).one_to_many :user_tags, :class => 'Marley::Resources::UserTag'
-            MR::UserTag.many_to_one user_class.underscore.to_sym,:class => "Marley::Resources::#{user_class}"
+            per_user_tagging(user_class)
           else
-            MR::PublicTag.many_to_many self.resource_name.to_sym,:class => self, :join_table => @tag_join_table,:left_key => @tag_key,:right_key => foreign_key_name.to_sym
-            many_to_many :public_tags,:class => "MR::PublicTag",:join_table => @tag_join_table,:left_key => foreign_key_name.to_sym,:right_key => @tag_key, :extend => Marley::RestActions
+            public_tagging
           end
         end
         def list(params={})
+          associations.select {|a| a.to_s.match(/tags$/)}.each do |assoc|
+          end
           if associations.include?(:public_tags)
             specified_tags=params.delete(:tags)
             specified_user_tags=params.delete(:user_tags)

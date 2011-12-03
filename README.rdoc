@@ -4,9 +4,7 @@ Marley is a framework for quickly building RESTful web services and applications
 
 * A simple Rack application that acts as request parser/router.
 * A default controller for ORM model classes.
-* Two plugins for the Sequel ORM.
-  * RestConvenience - Connects the class to a default controller.
-  * RestAuthorization - Adds default authorization methods to a model class and its instances.
+* A plugin system similar to Sequel's.
 * Marley Joints - A framework for creating reusable Marley resource sets.
 * Reggae - A JSON data format
 * Jamaica - A minimal JS/jQuery client which renders Reggae resources as browser DOM objects.
@@ -34,9 +32,7 @@ if the resource has a REST method corresponding the the request verb, the parser
 
 The parser also traps various errors and returns the appropriate error message to the client.
 
-== The Sequel plugins
-
-Marley activates both of them for Sequel::Model.  This will soon change to an option.
+:include: rdoc/plugins.rdoc
 
 ==The Default Model Controller
 

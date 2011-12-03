@@ -1,0 +1,34 @@
+
+== The Plugins System
+
+Marley activates both of them for Sequel::Model.  This will soon change to an option.
+
+:include: rdoc/hello.rb
+
+:include: rdoc/example_plugin.rb
+
+    setup
+        @client=Marley::TestClient.new(:resource_name => 'hello')
+        @plugin=Marley.plugin('example_plugin')
+    end
+example: without the plugin, then with the plugin
+
+    >> MR.constants
+    => ["Hello"]
+    >> @client.read
+    => "\"Hello World!\""
+    >> @client.create({}, :code => 404)
+    => [:error, {:description=>"Not Found", :error_type=>"routing", :error_details=>nil}]
+
+    >> @plugin.apply('Hello')
+    => nil
+    >> @client.create({})
+    => " world"
+    >> @client.create({},:method => 'howdy')
+    => "howdy world"
+
+== Included Plugins
+
+Marley comes with 2 plugins.  
+
+

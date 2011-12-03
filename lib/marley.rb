@@ -42,7 +42,7 @@ module Marley
   def self.plugin(plugin_name, *opts)
     unless Plugins.constants.include?(plugin_name.camelize)
       plugin_d=PLUGIN_DIRS.find {|d| File.exists?("#{d}/#{plugin_name}.rb") }
-      require "#{joint_d}/#{plugin_name}"
+      require "#{plugin_d}/#{plugin_name}"
     end
     Plugins.const_get(plugin_name.camelize).new(*opts)
   end

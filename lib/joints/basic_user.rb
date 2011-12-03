@@ -1,6 +1,15 @@
 require 'digest/sha1'
 LOGIN_FORM= [:instance,{:url => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
 module Marley
+  module Plugins
+    class CurrentUserDS < Plugin
+      module ClassMethods
+        def current_user_ds
+          filter((@owner_col || :user_id) => $request[:user][:id])
+        end
+      end
+    end
+  end
   module Joints
     class BasicUser < Joint
       module Resources

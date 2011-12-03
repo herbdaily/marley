@@ -45,6 +45,7 @@ module Marley
           Marley.plugin('message_threading').apply(Resources::Message)
         end
         if @opts[:tagged]
+          Marley.plugin('message_tagging').apply(Resource::Message)
           Resources::PrivateMessage.tagging('User')
           Resources::PublicMessage.tagging('User')
           Resources::PublicMessage.tagging()
