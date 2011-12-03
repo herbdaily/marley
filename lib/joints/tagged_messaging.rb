@@ -3,7 +3,7 @@ Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_upd
 
 Marley.joint 'basic_user'
 Marley.joint 'tagging'
-Marley.joint 'messaging',{:threaded => true,:resources => ['Message']}
+Marley.joint 'messaging',{:threaded => true,:resources => ['Message']}#:tagged => true,
 module Marley
   module Joints
     class TaggedMessaging < Joint
