@@ -3,7 +3,6 @@ Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_upd
 
 Marley.joint 'basic_user',{:resources => []}
 Marley.joint 'tagging'
-#Marley.joint 'basic_messaging',{:resources => ['Message']}
 Marley.joint 'messaging',{:threaded => true,:resources => ['Message']}
 module Marley
   module Joints
@@ -25,7 +24,6 @@ module Marley
         class Moderator < User
           def self.requires_user?;true;end
         end
-        #class PrivateMessage < MJ::BasicMessaging::Resources::PrivateMessage
         class PrivateMessage < MJ::Messaging::Resources::PrivateMessage
           attr_accessor :tags
           @actions_get= superclass.actions_get << 'new_tags'
@@ -52,7 +50,6 @@ module Marley
             add_user_tags("sent,#{recipients.match(/\b#{author.name}\b/) ? '' : tags}",author_id)
           end
         end
-        #class PublicMessage < MJ::BasicMessaging::Resources::PublicMessage
         class PublicMessage < MJ::Messaging::Resources::PublicMessage
           attr_accessor :tags,:my_tags
           @section_title='Public Messages'

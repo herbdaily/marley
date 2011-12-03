@@ -38,12 +38,6 @@ class MessageTests < Test::Unit::TestCase
         assert_equal "validation", resp.error_type
         assert_equal ["is required"], resp.error_details[:title]
         assert_equal ["is required"], resp.error_details[:message]
-        #reject a PM from user to user
-        @pm.set_values({:title => 'asdf', :message => 'asdf'})
-        resp=@client.create(@pm,{:code => 400})
-        assert_equal :error, resp.resource_type
-        assert_equal "validation", resp.error_type
-        assert resp.error_details[:recipients][0]
         #reject a PM to a non-existent user
         @pm.col_value(:recipients, 'asdfasdfasdf')
         resp=@client.create(@pm,{:code => 400})
