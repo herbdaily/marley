@@ -18,9 +18,6 @@ module Marley
       module Resources
         class User < MJ::BasicUser::Resources::User
         end
-        class Admin < User 
-          def self.requires_user?;true;end
-        end
         class PrivateMessage < MJ::Messaging::Resources::PrivateMessage
           attr_accessor :tags
           @actions_get= superclass.actions_get << 'new_tags'
