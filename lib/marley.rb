@@ -15,8 +15,6 @@ require 'marley/plugin'
 require 'logger'
 Sequel.extension :inflector
 
-Sequel::Model.plugin :rest_convenience
-Sequel::Model.plugin :rest_authorization
 Sequel::Model.plugin :validation_helpers
 Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
 Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated

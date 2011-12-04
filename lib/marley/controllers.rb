@@ -5,6 +5,7 @@ module Marley
       @model=model
       if $request[:path][1].to_s.match(/^\d+$/) #references a specific instance by ID
         @instance=@model[$request[:path][1].to_i]
+        raise RoutingError unless @instance
         @method_name=$request[:path][2]  
         if @method_name
           raise RoutingError unless @instance.respond_to?(@method_name)
@@ -51,7 +52,7 @@ module Marley
       raise RoutingError unless @instance
       (@instances || [@instance]).map do |i|
         i.modified!
-        i.update_only($request[:post_params][@model.resource_name.to_sym],i.write_cols)
+        i.update_only($request[:post_params][@model.resource_name.to_sym].to_a,i.write_cols)
       end
     end
     def rest_delete

@@ -1,3 +1,6 @@
+Sequel::Model.plugin :rest_convenience
+Sequel::Model.plugin :rest_authorization
+Sequel::Model.plugin :validation_helpers
 require 'digest/sha1'
 LOGIN_FORM= [:instance,{:url => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
 module Marley

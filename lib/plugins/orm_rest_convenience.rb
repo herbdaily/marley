@@ -7,20 +7,36 @@ module Marley
         def controller
           Marley::ModelController.new(self)
         end
+        # the next 2 will have to be overridden for most applications
+        def authorize(verb)
+          true 
+        end
+        def requires_user?
+          false
+        end
         def resource_name
           self.name.sub(/.*::/,'').underscore
         end
         def foreign_key_name
           "#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"
         end
-        def reggae_link(action=nil)
-          [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
+        def list(params={})
+          all
         end
+        def reggae_link(action='')
+          [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
         end
       end
       module InstanceMethods
         include Marley::RestActions
         def edit; self; end
+        # the next 2 will have to be overridden for most applications
+        def authorize(verb)
+          true 
+        end
+        def requires_user?
+          false
+        end
         def rest_cols 
           columns.reject do |c| 
             if new?
@@ -38,7 +54,7 @@ module Marley
         end
         def required_cols;[];end
         def reggae_schema
-          Marley::ReggaeInstance.new(
+          Marley::ReggaeSchema.new(
           rest_cols.map do |col_name|
             db_spec=db_schema.to_hash[col_name]
             col_type=db_spec ? db_spec[:db_type].downcase : col_name
@@ -53,20 +69,20 @@ module Marley
           respond_to?('name') ? name : id.to_s
         end
         def reggae_instance
-          a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => rest_schema,:actions => self.class.rest_actions})
+          a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.class.rest_actions})
           a.contents=self.class.associations.map do |assoc|
             assoc=send("#{assoc}_dataset")
-            (assoc.respond_to?(:current_user_dataset) ? assoc.current_user_dataset : assoc).map{|instance| instance.to_a} if assoc.respond_to?(:rest_actions)
+            (assoc.respond_to?(:current_user_dataset) ? assoc.current_user_dataset : assoc).map{|instance| instance.reggae_instance} if assoc.respond_to?(:rest_actions)
           end.compact unless new?
           a
         end
         def to_json(*args)
-          to_a.to_json
+          reggae_instance.to_json
         end
         def url(action=nil)
           "/#{self.class.resource_name}/#{self[:id]}/#{action}".sub(/\/$/,'')
         end
-        def reggae_link(action=nil)
+        def reggae_link(action='')
           [:link,{:url => url,:title => "#{action.humanize}"}]
         end
       end
