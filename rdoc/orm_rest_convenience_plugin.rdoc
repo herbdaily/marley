@@ -24,6 +24,9 @@ examples:
 
 >> @client.read
 => []
+>> @client.read({},{:method => 'new'})
+=> [:instance, {:url=>"/user/", :new_rec=>true, :actions=>nil, :schema=>[["text", :name, 4, nil], ["text", :password, 4, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+
 >> @client.create({},:code => 400)
 => [:error, {:description=>nil, :error_type=>"validation", :error_details=>{:description=>["is required"], :name=>["is required"], :password=>["is required"]}}]
 >> @client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdf', :'user[description]' => 'xxxx'})

@@ -63,6 +63,7 @@ module Marley
     }.to_app,{:Port => @marley_opts[:port]})
   end
   class Router  
+    attr_reader :opts
     def initialize(opts={},app=nil)
       @opts=DEFAULT_OPTS.merge(opts)
     end
