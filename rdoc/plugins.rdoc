@@ -31,8 +31,8 @@ example: without the plugin, then with the plugin
 
 Marley comes with 2 plugins:
 
-:include: orm_rest_convenience.rdoc
+:include: rdoc/orm_rest_convenience_plugin.rdoc
 
-x:include: rest_auth.rdoc
+:include: rdoc/rest_authorization_plugin.rdoc
 
 

@@ -32,7 +32,6 @@ examples:
 => [:instance, {:url=>"/user/1", :new_rec=>false, :actions=>nil, :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :name=>"user"}, []]
 
 
-!!!
 
 
 
