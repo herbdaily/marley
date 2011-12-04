@@ -9,7 +9,6 @@ example: read new user form but not user list
   => [:instance, {:new_rec=>true, :actions=>nil, :schema=>[["text", :name, 0, nil], [:password, :password, 4], [:password, :confirm_password, 4]], :name=>"user", :url=>"/user/"}, []]
 
 example:  new user validation
-
   >> @client.create({}, :code => 400)
   => [:error, {:error_type=>"validation", :error_details=>{:name=>["is required"], :password=>["Password must contain at least 8 characters"]}, :description=>nil}]
 

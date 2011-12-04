@@ -3,6 +3,10 @@
 
   setup
       @client=Marley::TestClient.new(:resource_name => 'user')
-      @user=MR::User.new.to_a
+      @user=MR::User.new.reggae_instance
   end
+
+example:
+
+
 

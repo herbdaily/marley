@@ -13,4 +13,4 @@ DB.create_table :users do
   text :description
 end
 
-Marley.joint 'basic_user'
+Marley.joint 'user'

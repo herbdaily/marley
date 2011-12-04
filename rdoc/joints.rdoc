@@ -15,11 +15,10 @@ The Joint#smoke method scans the classes constants for a module namee 'Resources
 
 For now, there are 5 joints included in the Marley distribution:
 
-* Basic User
-* Basic Messaging
-* Basic Menu System
+* User
+* Messaging
+* Menu System
 * Tagging
-* Tagged Messaging
 
 With a bit of configuration, these comprise the example forum application.
 
@@ -56,5 +55,6 @@ example: without the joint, then with the joint
     >> @client.create({},:method => 'howdy')
     => "howdy world"
 
+:include: rdoc/user_joint.rdoc
 
 

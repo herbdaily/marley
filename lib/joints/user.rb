@@ -12,18 +12,23 @@ module Marley
   end
   module Joints
     class User < Joint
+      def smoke(*opts)
+        super
+        Marley.plugin('orm_rest_convenience').apply('User')
+        Marley.plugin('rest_authorization').apply('User')
+      end
       LOGIN_FORM= [:instance,{:url => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
       module Resources
         class User < Sequel::Model
           set_dataset :users
           plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
           attr_accessor :old_password,:password, :confirm_password
+          @allowed_get_methods=['new']
+          def write_cols;super - [:pw_hash]+ [:password,:confirm_password,:old_password];end
           def self.requires_user?
             ! ($request[:verb]=='rest_post' || ($request[:verb]=='rest_get' && $request[:path][1]=='new'))
           end
           def reggae_schema
-          end
-          def rest_schema
             schema=super.delete_if {|c| [:pw_hash,:description,:active].include?(c[NAME_INDEX])}
             schema.push([:password,:old_password,0]) unless new?
             schema.push([:password,:password ,new? ? RESTRICT_REQ : 0],[:password,:confirm_password,new? ? RESTRICT_REQ : 0])
