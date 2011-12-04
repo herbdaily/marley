@@ -1,0 +1,40 @@
+===Rest Authorization Plugin
+
+This plugin provides authorization methods for ORM models and their instances.  It works seamelessly with the default model controller.
+
+
+setup
+  @client=Marley::TestClient.new(:resource_name => 'user')
+  Marley.plugin('orm_rest_convenience').apply('User')
+  @rest_auth_plugin=Marley.plugin('rest_authorization')
+end
+
+examples:
+
+>> @rest_auth_plugin.apply('User')
+=> nil
+>> MR::User.allowed_get_methods=[]
+=> []
+>> @client.read({},:code => 401)
+=> [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+>> @client.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :name=>"user", :schema=>[["text", :name, 4, nil], ["text", :password, 4, nil], ["text", :description, 4, nil]]}, []]
+>> @client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdf', :'user[description]' => 'xxxx'})
+=> [:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :name=>"user", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]]}, []]
+>> @client.read({},:code => 401)
+=> [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+
+>> @client.read({}, :auth => ['asdf','asdf'], :code => 403)
+=> [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
+>> @client.read({}, :auth => ['asdf','as'], :code => 401)
+=> [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+>> @client.read({}, :auth => ['asdf','asdf'], :instance_id => 1)
+=> [:instance, {:url=>"/user/1", :new_rec=>false, :actions=>nil, :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :name=>"user"}, []]
+
+
+!!!
+
+
+
+
+
