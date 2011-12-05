@@ -4,7 +4,7 @@ require 'marley'
 module Marley
   module Joints
     class ExampleJoint < Joint
-      module HelloPlugin
+      module HelloPlugin 
         module ClassMethods
           def rest_post
             new($request[:path][1])

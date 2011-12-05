@@ -2,21 +2,30 @@ require 'digest/sha1'
 Sequel::Model.plugin :validation_helpers
 module Marley
   module Plugins
-    class CurrentUserDS < Plugin
+    class CurrentUserMethods < Plugin
+      def apply(klass,user_col='user_id',join_type='many_to_one')
+        super(klass)
+        reciprocal_join=join_type.split('_').reverse.join('_')
+        user_class=MR::User
+        klass=MR.const_get(klass) if klass.class==String
+        user_class.send(reciprocal_join, klass.resource_name.to_sym)
+        klass.send(join_type, user_class)
+      end
       module ClassMethods
         def current_user_ds
           filter((@owner_col || :user_id) => $request[:user][:id])
+        end
+        def list(params={})
+          current_user_ds.filter(params)
         end
       end
     end
   end
   module Joints
+    def smoke(opts)
+      super
+    end
     class User < Joint
-      def smoke(*opts)
-        super
-        Marley.plugin('orm_rest_convenience').apply('User')
-        Marley.plugin('rest_authorization').apply('User')
-      end
       LOGIN_FORM= [:instance,{:url => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
       module Resources
         class User < Sequel::Model
