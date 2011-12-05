@@ -18,4 +18,11 @@ example:  new user validation
   >> @client.create(@user.set_values(:name => 'asdf', :password => 'asdfasdf',:confirm_password => 'asdfasdf'),:code => 400)
   => [:error, {:error_type=>"validation", :error_details=>{:name=>["is already taken"]}, :description=>nil}]
 
+>> @client.read({},{:resource_name => 'secrets',:code => 401})
+=> [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+>> @client.read({},{:resource_name => 'announcements',:code => 401})
+=> [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+>> @client.read({},{:resource_name => 'xxx',:code => 401})
+=> [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+
 

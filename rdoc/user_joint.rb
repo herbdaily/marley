@@ -38,4 +38,5 @@ module Marley
 end
 Marley.plugin('orm_rest_convenience').apply(MR.constants)
 Marley.plugin('rest_authorization').apply(MR.constants)
+Marley.plugin(:current_user_methods).apply(MR::Secrets,MR::Announcements)
 

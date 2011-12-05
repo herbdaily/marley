@@ -6,10 +6,9 @@ module Marley
       def apply(klass,user_col='user_id',join_type='many_to_one')
         super(klass)
         reciprocal_join=join_type.split('_').reverse.join('_')
-        user_class=MR::User
         klass=MR.const_get(klass) if klass.class==String
-        user_class.send(reciprocal_join, klass.resource_name.to_sym)
-        klass.send(join_type, user_class)
+        MR::User.send(reciprocal_join, klass.resource_name.to_sym, :class => klass)
+        klass.send(join_type, :user, :class => MR::User)
       end
       module ClassMethods
         def current_user_ds

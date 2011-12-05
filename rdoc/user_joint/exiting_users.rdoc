@@ -18,16 +18,11 @@
     >> user=@client.read({})
     => [:instance, {:schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :new_rec=>false, :actions=>nil, :name=>"user", :url=>"/user/1"}, []]
 
-
-
     >> @client.update(user)
     => [[:instance, {:schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :new_rec=>false, :actions=>nil, :name=>"user", :url=>"/user/1"}, []]]
 
-
-
     >> user.col_value(:password, 'zxcvzxcv')
     => "zxcvzxcv"
-
 
     >> err=@client.update(user,{:code => 400})
     => [:error, {:description=>nil, :error_type=>"validation", :error_details=>{:old_password=>["Old Password Incorrect"], :confirm_password=>["Passwords do not match"]}}]
@@ -46,3 +41,7 @@
 
     >> @client.read({},:instance_id =>2,:auth => ['user1', 'zxcvzxcv'],:code => 403)
     => [:error, {:description=>"You are not authorized for this operation", :error_type=>"authorization", :error_details=>nil}]
+  
+  example:  reading and writing announcements
+
+    

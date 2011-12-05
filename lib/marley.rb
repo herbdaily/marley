@@ -38,6 +38,7 @@ module Marley
   end
   
   def self.plugin(plugin_name, *opts)
+    plugin_name=plugin_name.to_s
     unless Plugins.constants.include?(plugin_name.camelize)
       plugin_d=PLUGIN_DIRS.find {|d| File.exists?("#{d}/#{plugin_name}.rb") }
       require "#{plugin_d}/#{plugin_name}"
@@ -45,6 +46,7 @@ module Marley
     Plugins.const_get(plugin_name.camelize).new(*opts)
   end
   def self.joint(joint_name, *opts)
+    joint_name=joint_name.to_s
     unless Joints.constants.include?(joint_name.camelize)
       joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
       require "#{joint_d}/#{joint_name}"
@@ -89,6 +91,7 @@ module Marley
       verb=$request[:post_params].delete(:_method).match(/^(put|delete)$/i)[1] rescue verb 
       $request[:verb]="rest_#{verb}"
       rn=$request[:path] ? $request[:path][0].camelize : @opts[:default_resource]
+      raise AuthenticationError if (@opts[:http_auth] && $request[:user].new? && ! Resources.constants.include?(rn))
       raise RoutingError unless Resources.constants.include?(rn)
       @resource=Resources.const_get(rn)
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
