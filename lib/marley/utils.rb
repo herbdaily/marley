@@ -1,6 +1,16 @@
 
 module Marley
   module Utils
+    def self.class_attributes(attr_name)
+      Module.new do |m|
+        attr_accessor attr_name.to_sym
+        inherit_attrs=lambda {|o, v|o.send("#{attr_name}=",v)}
+        define_method :inherited do |c|
+          val=send(attr_name.to_sym)
+          inherit_attrs.call(c,val)
+        end
+      end
+    end
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end

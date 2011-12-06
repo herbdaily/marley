@@ -1,12 +1,7 @@
 module Marley
   module Joints
     class Joint
-      class << self
-        attr_accessor :default_opts
-        def inherited(c)
-          c.default_opts=@default_opts
-        end
-      end
+      extend Marley::Utils.class_attributes(:default_opts)
       def initialize(opts={})
         config(opts)
       end
