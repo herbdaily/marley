@@ -2,6 +2,12 @@
 module Marley
   module Plugins
     class Plugin
+      class << self
+        attr_accessor :default_opts
+        def inherited(c)
+          c.default_opts=@default_opts
+        end
+      end
       def initialize(opts={})
         config(opts)
       end
@@ -15,7 +21,7 @@ module Marley
         nil
       end
       def config(opts)
-        @opts=(@opts || {}).merge(opts)
+        @opts=(@opts || self.class.default_opts || {}).merge(opts)
       end
     end
   end

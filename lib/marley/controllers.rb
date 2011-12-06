@@ -43,7 +43,7 @@ module Marley
           @instance.send("add_#{@method_name}",param)
         end
       else
-        @instance=@model.new($request[:post_params][@model.resource_name.to_sym] || {})
+        @instance=@model.new(($request[:post_params][@model.resource_name.to_sym]||{}).reject {|k,v| v.nil?})
         @instance.save(@instance.write_cols)
         @instance.respond_to?('create_msg') ? @instance.create_msg : @instance
       end

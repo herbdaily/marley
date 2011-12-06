@@ -7,36 +7,41 @@ require 'marley/test_helpers'
 DB=Sequel.sqlite('')
 DB.create_table :users do
   primary_key :id
-  text :name
-  text :user_type
+  text :name, :unique => true
+  text :user_type, :index => true
   text :pw_hash
   text :description
 end
-DB.create_table :secrets do
+DB.create_table :messages do
   primary_key :id
   integer :user_id, :index => true
-  text :name
-  text :secret
-  unique [:name, :user_id]
-end
-DB.create_table :announcements do
-  primary_key :id
-  integer :author_id, :index => true
-  text :title
-  text :announcement
+  text :message_type, :index => true
+  text :name,  :index => true,:null => false
+  text :message
 end
 
+Sequel::Model.plugin :validation_helpers
+Marley.plugin('orm_rest_convenience').apply(Sequel::Model)
+Marley.plugin('rest_authorization').apply(Sequel::Model)
 Marley.joint 'user'
 
 module Marley
   module Resources
-    class Secrets < Sequel::Model
+    class Message < Sequel::Model
+      sti
+      def validate
+        super
+        validates_presence [:name]
+      end
     end
-    class Announcements < Sequel::Model
+    class Secret < Message
+    end
+    class Announcement < Message
+      def list(params={})
+        filter(params).all
+      end
     end
   end
 end
-Marley.plugin('orm_rest_convenience').apply(MR.constants)
-Marley.plugin('rest_authorization').apply(MR.constants)
-Marley.plugin(:current_user_methods).apply(MR::Secrets,MR::Announcements)
+Marley.plugin(:current_user_methods).apply(MR::Secret,MR::Announcement)
 

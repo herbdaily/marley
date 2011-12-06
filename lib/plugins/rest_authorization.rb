@@ -21,7 +21,7 @@ module Marley
             when 'rest_put','rest_delete'
               false 
             when 'rest_post'
-              new($request[:post_params][resource_name.to_sym]||{}).current_user_role=='owner' && meth.nil?
+              new(($request[:post_params][resource_name.to_sym]||{}).reject {|k,v| v.nil?}).current_user_role=='owner' && meth.nil?
             when 'rest_get'
               methods=@allowed_get_methods || ['section','list','new']
               (methods.class==Hash ? methods[$request[:user].class] : methods).include?(meth)

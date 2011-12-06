@@ -44,4 +44,14 @@
   
   example:  reading and writing announcements
 
-    
+
+>> @client.read({}, {:resource_name => 'secret'})
+=> []
+
+>> @secret=@client.read({}, {:resource_name => 'secret',:method => 'new'})
+=> [:instance, {:actions=>nil, :url=>"/secret/", :schema=>[["integer", :user_id, 1, 1], ["text", :name, 4, nil], ["text", :message, 0, nil]], :name=>"secret", :new_rec=>true}, []]
+>> @client.create(@secret, {:resource_name => 'secret',:code => 400})
+=> [:error, {:error_details=>{:name=>["is required"]}, :description=>nil, :error_type=>"validation"}]
+
+
+!!!

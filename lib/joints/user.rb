@@ -3,19 +3,24 @@ Sequel::Model.plugin :validation_helpers
 module Marley
   module Plugins
     class CurrentUserMethods < Plugin
-      def apply(klass,user_col='user_id',join_type='many_to_one')
-        super(klass)
-        reciprocal_join=join_type.split('_').reverse.join('_')
-        klass=MR.const_get(klass) if klass.class==String
-        MR::User.send(reciprocal_join, klass.resource_name.to_sym, :class => klass)
-        klass.send(join_type, :user, :class => MR::User)
+      @default_opts={:join_type => 'many_to_one'}
+      def apply(*klasses)
+        super(klasses)
+        klasses.each do |klass|
+          join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
+          reciprocal_join=join_type.split('_').reverse.join('_')
+          klass=MR.const_get(klass) if klass.class==String
+          klass.owner_col='user_id'
+          MR::User.send(reciprocal_join, klass.resource_name.to_sym, :class => klass)
+          klass.send(join_type, :user, :class => MR::User)
+        end
       end
       module ClassMethods
         def current_user_ds
-          filter((@owner_col || :user_id) => $request[:user][:id])
+          filter(@owner_col.to_sym => $request[:user][:id])
         end
         def list(params={})
-          current_user_ds.filter(params)
+          current_user_ds.filter(params).all
         end
       end
     end
@@ -29,7 +34,7 @@ module Marley
       module Resources
         class User < Sequel::Model
           set_dataset :users
-          plugin :single_table_inheritance, :user_type, :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
+          sti
           attr_accessor :old_password,:password, :confirm_password
           @allowed_get_methods=['new']
           def write_cols;super - [:pw_hash]+ [:password,:confirm_password,:old_password];end
