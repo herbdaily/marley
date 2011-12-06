@@ -104,3 +104,24 @@ examples:  announcements
 >> @client.create(@announcement.set_values({:name => 'user1 announcement'}))
 => [:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/1"}, []]
 
+>> @client.read
+=> [[:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/1"}, []]]
+>>  @client.create(@announcement.set_values({:name => 'user1 announcement2'}))
+=> [:instance, {:schema=>[["integer", :id, 2, 2], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/2"}, []]
+>> @client.read
+=> [[:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/1"}, []], [:instance, {:schema=>[["integer", :id, 2, 2], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/2"}, []]]
+
+>> @client.auth=@user2_auth
+=> ["user2", "asdfasdf"]
+>> @client.read
+=> [[:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/1"}, []], [:instance, {:schema=>[["integer", :id, 2, 2], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/2"}, []]]
+
+>>  @client.create(@announcement.set_values({:name => 'user2 announcement1'}))
+=> [:instance, {:schema=>[["integer", :id, 2, 3], ["integer", :user_id, 1, 2], ["text", :name, 4, "user2 announcement1"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/3"}, []]
+>>  @client.create(@announcement.set_values({:name => 'user2 announcement1'}))
+=> [:instance, {:schema=>[["integer", :id, 2, 4], ["integer", :user_id, 1, 2], ["text", :name, 4, "user2 announcement1"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/4"}, []]
+>> @client.read
+=> [[:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/1"}, []], [:instance, {:schema=>[["integer", :id, 2, 2], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/2"}, []], [:instance, {:schema=>[["integer", :id, 2, 3], ["integer", :user_id, 1, 2], ["text", :name, 4, "user2 announcement1"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/3"}, []], [:instance, {:schema=>[["integer", :id, 2, 4], ["integer", :user_id, 1, 2], ["text", :name, 4, "user2 announcement1"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/4"}, []]]
+>> @client.read({},:auth => @user1_auth)
+=> [[:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/1"}, []], [:instance, {:schema=>[["integer", :id, 2, 2], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/2"}, []], [:instance, {:schema=>[["integer", :id, 2, 3], ["integer", :user_id, 1, 2], ["text", :name, 4, "user2 announcement1"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/3"}, []], [:instance, {:schema=>[["integer", :id, 2, 4], ["integer", :user_id, 1, 2], ["text", :name, 4, "user2 announcement1"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"announcement", :url=>"/announcement/4"}, []]]
+

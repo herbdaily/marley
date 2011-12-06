@@ -37,7 +37,7 @@ module Marley
     class Secret < Message
     end
     class Announcement < Message
-      def list(params={})
+      def self.list(params={})
         filter(params).all
       end
     end
