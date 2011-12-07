@@ -2,11 +2,17 @@
 == The Tags Joint
 
   setup
-      @client=Marley::TestClient.new
+      user_client=Marley::TestClient.new(:resource_name => 'user')
+      user=Marley::ReggaeInstance.new(MR::User.new.reggae_instance).set_values(:password => 'asdfasdf', :confirm_password => 'asdfasdf')
+      [1,2,3].each { |i|
+        user_client.create(user.set_values(:name => "user#{i}"))
+      }
+      @user1_auth=['user1', 'asdfasdf']
+      @user2_auth=['user1', 'asdfasdf']
+      @user3_auth=['user1', 'asdfasdf']
   end
 
 example:
 
-!!!
 
 
