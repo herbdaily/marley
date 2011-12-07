@@ -1,4 +1,6 @@
 
+#will need to replace rest actions.  Each action should include both link text and a URL for the action.  These will of course need to be selectable per request.
+
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
@@ -21,7 +23,11 @@ module Marley
           "#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"
         end
         def list(params={})
-          all
+          if respond_to?(:list_dataset)
+            list_dataset.filter(params).all
+          else
+            filter(params).all
+          end
         end
         def reggae_link(action='')
           [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
@@ -33,6 +39,7 @@ module Marley
       module InstanceMethods
         include Marley::RestActions
         def edit; self; end
+        def rest_associations;[];end
         # the next 2 will have to be overridden for most applications
         def authorize(verb)
           true 
@@ -73,10 +80,9 @@ module Marley
         end
         def reggae_instance
           a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.class.rest_actions})
-          a.contents=self.class.associations.map do |assoc|
-            assoc=send("#{assoc}_dataset")
-            (assoc.respond_to?(:current_user_dataset) ? assoc.current_user_dataset : assoc).map{|instance| instance.reggae_instance} if assoc.respond_to?(:rest_actions)
-          end.compact unless new?
+          a.contents=rest_associations.to_a.map do |assoc|
+            assoc.map{|instance| instance.reggae_instance} 
+          end unless new?
           a
         end
         def to_json(*args)

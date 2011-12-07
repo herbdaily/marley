@@ -35,11 +35,11 @@ module Marley
       end
     end
     class Secret < Message
+      def self.list_dataset
+        current_user_ds
+      end
     end
     class Announcement < Message
-      def self.list(params={})
-        filter(params).all
-      end
     end
   end
 end

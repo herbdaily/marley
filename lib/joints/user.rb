@@ -19,9 +19,6 @@ module Marley
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
         end
-        def list(params={})
-          current_user_ds.filter(params).all
-        end
       end
     end
   end
@@ -30,7 +27,7 @@ module Marley
       super
     end
     class User < Joint
-      LOGIN_FORM= [:instance,{:url => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
+      LOGIN_FORM= [:instance,{:link => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
       module Resources
         class User < Sequel::Model
           set_dataset :users

@@ -11,6 +11,10 @@ module Marley
         end
       end
     end
+    def self.per_request_attributes(attr_name, key_proc)
+      Module.new do |m|
+      end
+    end
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end

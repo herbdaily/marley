@@ -44,11 +44,6 @@ module Marley
         end
       end
       module InstanceMethods
-        def rest_associations
-          if ! new?
-            [ respond_to?(:public_tags) ? :public_tags : nil, respond_to?(:user_tags) ? user_tags_dataset.current_user_dataset : nil].compact
-          end
-        end
         def new_tags
           [:instance,{:name => 'tags',:url => "#{url}/tags", :new_rec => true, :schema => [['number',"#{self.class.resource_name}_id",RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
         end

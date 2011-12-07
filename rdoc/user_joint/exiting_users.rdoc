@@ -52,6 +52,7 @@
 >> @client.resource_name='secret'
 => "secret"
 
+
 >> @client.read
 => []
 
