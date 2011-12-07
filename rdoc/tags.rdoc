@@ -1,0 +1,12 @@
+
+== The Tags Joint
+
+  setup
+      @client=Marley::TestClient.new
+  end
+
+example:
+
+!!!
+
+
