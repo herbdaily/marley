@@ -16,17 +16,14 @@ module Marley
         end
       end
       module ClassMethods
-        def current_user_actions
-          @actions[$request[:user][:id]]
+        def per_user_attribute(attr_hash)
+          PerRequestAttribute.new(attr_hash, lambda {$request[:user][:user_type].to_s.underscore.to_sym})
         end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
         end
       end
       module InstanceMethods
-        def current_user_actions
-          @actions[$request[:user][:id]]
-        end
       end
     end
   end

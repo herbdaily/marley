@@ -10,13 +10,16 @@ module Marley
         @param[$request[]]
       end
     end
-    def self.class_attributes(attr_name)
+    def self.class_attributes(attr_name, val=nil)
       Module.new do |m|
         attr_accessor attr_name.to_sym
-        inherit_attrs=lambda {|o, v|o.send("#{attr_name}=",v)}
+        @attr_name, @val=[attr_name,val]
+        def self.extended(o)
+          o.send("#{@attr_name}=",@val)
+        end
         define_method :inherited do |c|
           super
-          inherit_attrs.call(c,send(attr_name.to_sym))
+          c.send("#{attr_name}=",send(attr_name.to_sym))
         end
       end
     end

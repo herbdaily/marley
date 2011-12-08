@@ -3,31 +3,14 @@
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
-      def apply(*klasses)
-        super
-      end
+      @default_opts={:additional_extensions => [Marley::Utils.class_attributes(:model_actions,[:new]), Marley::Utils.class_attributes(:instance_actions)]}
       module ClassMethods
-        def controller
-          Marley::ModelController.new(self)
-        end
-        def instance_actions
-        end
-        def model_actions
-          [:new]
-        end
+        def controller; Marley::ModelController.new(self); end
         # the next 2 will have to be overridden for most applications
-        def authorize(verb)
-          true 
-        end
-        def requires_user?
-          false
-        end
-        def resource_name
-          self.name.sub(/.*::/,'').underscore
-        end
-        def foreign_key_name
-          "#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"
-        end
+        def authorize(verb); true ; end
+        def requires_user?; false; end
+        def resource_name; self.name.sub(/.*::/,'').underscore; end
+        def foreign_key_name; "#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end
         def list(params={})
           if respond_to?(:list_dataset)
             list_dataset.filter(params).all
@@ -35,6 +18,7 @@ module Marley
             filter(params).all
           end
         end
+        def actions; @model_actions; end
         def reggae_link(action='')
           [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
         end
@@ -46,12 +30,8 @@ module Marley
         def edit; self; end
         def rest_associations;[];end
         # the next 2 will have to be overridden for most applications
-        def authorize(verb)
-          true 
-        end
-        def requires_user?
-          false
-        end
+        def authorize(verb); true ; end
+        def requires_user?; false; end
         def rest_cols 
           columns.reject do |c| 
             if new?
@@ -61,13 +41,10 @@ module Marley
             end
           end
         end
-        def hidden_cols
-          columns.select {|c| c.to_s.match(/(_id$)/)}
-        end
-        def write_cols
-          rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}
-        end
+        def hidden_cols; columns.select {|c| c.to_s.match(/(_id$)/)}; end
+        def write_cols; rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}; end
         def required_cols;[];end
+        def actions; end
         def reggae_schema
           Marley::ReggaeSchema.new(
           rest_cols.map do |col_name|
@@ -84,7 +61,9 @@ module Marley
           respond_to?('name') ? name : id.to_s
         end
         def reggae_instance
-          a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.class.instance_actions})
+          a=Marley::ReggaeInstance.new( 
+            {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.actions}
+          )
           a.contents=rest_associations.to_a.map do |assoc|
             assoc.map{|instance| instance.reggae_instance} 
           end unless new?
