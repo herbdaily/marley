@@ -4,14 +4,11 @@
 This plugin tries to be ORM agnostic but I've only tested it with Sequel.  You are encouraged to fork this plugin and make it work with other ORM's.
 
 setup
-  @plugin=Marley.plugin('orm_rest_convenience')
   @client=Marley::TestClient.new(:resource_name => 'user')
 end
 
 examples:
 
->> @plugin.apply('User')
-=> nil
 => Marley::Resources::User
 >> MR::User.resource_name
 => "user"
@@ -21,6 +18,8 @@ examples:
 => [:link, {:url=>"/user/", :title=>"User"}]
 >> MR::User.reggae_link('new')
 => [:link, {:url=>"/user/new", :title=>"New User"}]
+>> MR::User.model_actions
+=> [:new]
 
 >> @client.read
 => []

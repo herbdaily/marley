@@ -1,13 +1,22 @@
 
 module Marley
   module Utils
+    class PerRequestAttribute
+      attr_accessor :param,:key
+      def initialize(param,key)
+        @param,@key=[param,key]
+      end
+      def retrieve
+        @param[$request[]]
+      end
+    end
     def self.class_attributes(attr_name)
       Module.new do |m|
         attr_accessor attr_name.to_sym
         inherit_attrs=lambda {|o, v|o.send("#{attr_name}=",v)}
         define_method :inherited do |c|
-          val=send(attr_name.to_sym)
-          inherit_attrs.call(c,val)
+          super
+          inherit_attrs.call(c,send(attr_name.to_sym))
         end
       end
     end

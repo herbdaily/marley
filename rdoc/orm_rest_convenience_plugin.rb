@@ -25,3 +25,4 @@ module Marley
     end
   end
 end
+  Marley.plugin('orm_rest_convenience').apply('User')

@@ -1,13 +1,19 @@
 
-#will need to replace rest actions.  Each action should include both link text and a URL for the action.  These will of course need to be selectable per request.
 
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
+      def apply(*klasses)
+        super
+      end
       module ClassMethods
-        include Marley::RestActions
         def controller
           Marley::ModelController.new(self)
+        end
+        def instance_actions
+        end
+        def model_actions
+          [:new]
         end
         # the next 2 will have to be overridden for most applications
         def authorize(verb)
@@ -37,7 +43,6 @@ module Marley
         end
       end
       module InstanceMethods
-        include Marley::RestActions
         def edit; self; end
         def rest_associations;[];end
         # the next 2 will have to be overridden for most applications
@@ -79,7 +84,7 @@ module Marley
           respond_to?('name') ? name : id.to_s
         end
         def reggae_instance
-          a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.class.rest_actions})
+          a=Marley::ReggaeInstance.new( {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.class.instance_actions})
           a.contents=rest_associations.to_a.map do |assoc|
             assoc.map{|instance| instance.reggae_instance} 
           end unless new?

@@ -16,8 +16,16 @@ module Marley
         end
       end
       module ClassMethods
+        def current_user_actions
+          @actions[$request[:user][:id]]
+        end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
+        end
+      end
+      module InstanceMethods
+        def current_user_actions
+          @actions[$request[:user][:id]]
         end
       end
     end
