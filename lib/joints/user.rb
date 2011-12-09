@@ -16,9 +16,9 @@ module Marley
         end
       end
       module ClassMethods
-        def per_user_attribute(attr_hash,key_proc)
-          Marley::Utils::PerRequestAttribute.new(attr_hash, lambda {key_proc.call($request[:user][:user_type])})
-        end
+        #def per_user_attribute(attr_hash,key_proc)
+        #  Marley::Utils::PerRequestAttribute.new(attr_hash, lambda {key_proc.call($request[:user][:user_type])})
+        #end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
         end

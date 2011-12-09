@@ -34,6 +34,14 @@ module Marley
           end
         end
       end
+      def reggae_schema
+        p 'asdf'
+        foo=super
+        [:public_tags,:user_tags].each do |tag_type|
+          foo << [text,tag_type,0,nil] if respond_to?(tag_type)
+        end
+        foo
+      end
     end
     class PublicTagging < Tagging
       @default_opts[:tag_class_name] = 'PublicTag'
@@ -73,11 +81,14 @@ module Marley
         end
         class PublicTag < Tag
           set_dataset DB[:tags].filter(:user_id => nil)
-          @actions_delete='remove_parent'
+#          @actions_delete='remove_parent'
         end
         class UserTag < Tag
           Marley.plugin('current_user_methods').apply(self)
-          @actions_delete='remove_parent'
+          def self.list_dataset
+            current_user_dataset
+          end
+#          @actions_delete='remove_parent'
         end
       end
     end

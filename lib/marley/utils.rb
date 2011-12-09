@@ -1,15 +1,6 @@
 
 module Marley
   module Utils
-    class PerRequestAttribute
-      attr_accessor :param,:key
-      def initialize(param,key)
-        @param,@key=[param,key]
-      end
-      def retrieve
-        @param[key.call]
-      end
-    end
     def self.class_attributes(attr_name, val=nil)
       Module.new do |m|
         attr_accessor attr_name.to_sym
