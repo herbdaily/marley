@@ -35,13 +35,17 @@ module Marley
       end
     end
     class Secret < Message
+      Marley.plugin(:current_user_methods).apply(self)
       def self.list_dataset
         current_user_ds
       end
     end
     class Announcement < Message
+      Marley.plugin(:current_user_methods).apply(self)
+      def instance_actions
+        {:delete => self.url} if current_user_role=='owner' && ! self.new?
+      end
     end
   end
 end
-Marley.plugin(:current_user_methods).apply(MR::Secret,MR::Announcement)
 

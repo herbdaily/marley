@@ -7,7 +7,7 @@ module Marley
         @param,@key=[param,key]
       end
       def retrieve
-        @param[$request[]]
+        @param[key.call]
       end
     end
     def self.class_attributes(attr_name, val=nil)
@@ -21,10 +21,6 @@ module Marley
           super
           c.send("#{attr_name}=",send(attr_name.to_sym))
         end
-      end
-    end
-    def self.per_request_attributes(attr_name, key_proc)
-      Module.new do |m|
       end
     end
     def self.hash_keys_to_syms(hsh)

@@ -16,8 +16,8 @@ module Marley
         end
       end
       module ClassMethods
-        def per_user_attribute(attr_hash)
-          PerRequestAttribute.new(attr_hash, lambda {$request[:user][:user_type].to_s.underscore.to_sym})
+        def per_user_attribute(attr_hash,key_proc)
+          Marley::Utils::PerRequestAttribute.new(attr_hash, lambda {key_proc.call($request[:user][:user_type])})
         end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
@@ -28,9 +28,6 @@ module Marley
     end
   end
   module Joints
-    def smoke(opts)
-      super
-    end
     class User < Joint
       LOGIN_FORM= [:instance,{:link => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
       module Resources

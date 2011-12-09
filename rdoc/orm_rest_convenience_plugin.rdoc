@@ -18,9 +18,8 @@ examples:
 => [:link, {:url=>"/user/", :title=>"User"}]
 >> MR::User.reggae_link('new')
 => [:link, {:url=>"/user/new", :title=>"New User"}]
-!!!
 >> MR::User.actions
-=> [:new]
+=> {:get => [:new]}
 
 >> @client.read
 => []

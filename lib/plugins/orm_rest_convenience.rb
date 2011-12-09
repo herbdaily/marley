@@ -3,7 +3,7 @@
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
-      @default_opts={:additional_extensions => [Marley::Utils.class_attributes(:model_actions,[:new]), Marley::Utils.class_attributes(:instance_actions)]}
+      @default_opts={:additional_extensions => [Marley::Utils.class_attributes(:model_actions,{:get => [:new]}), Marley::Utils.class_attributes(:instance_actions)]}
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
         # the next 2 will have to be overridden for most applications
@@ -18,7 +18,7 @@ module Marley
             filter(params).all
           end
         end
-        def actions; @model_actions; end
+        def actions; @model_actions.respond_to?(:retrieve) ? @model_actions.retrieve : @model_actions; end
         def reggae_link(action='')
           [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
         end
@@ -44,7 +44,12 @@ module Marley
         def hidden_cols; columns.select {|c| c.to_s.match(/(_id$)/)}; end
         def write_cols; rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}; end
         def required_cols;[];end
-        def actions; end
+
+        def actions
+          foo=respond_to?(:instance_actions) ? instance_actions : self.class.instance_actions
+          foo.respond_to?(:retrieve) ? foo.retrieve : foo
+        end
+
         def reggae_schema
           Marley::ReggaeSchema.new(
           rest_cols.map do |col_name|
