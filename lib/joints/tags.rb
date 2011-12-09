@@ -11,13 +11,13 @@ module Marley
           join_table=[klass.table_name.to_s, 'tags'].sort.join('_')
           reciprocal_join=join_type.split('_').reverse.join('_')
           join_opts=@opts[:join_type]=='many_to_many' ? {:join_table => join_table} : {}
-          tag_class.send(reciprocal_join.to_sym, klass.resource_name.to_sym, join_opts.merge({:class => klass}))
-          klass.send(join_type.to_sym, tag_class.resource_name.to_sym, join_opts.merge({:class => tag_class}))
+          tag_class.send(reciprocal_join.to_sym, klass.resource_name.pluralize.to_sym, join_opts.merge({:class => klass}))
+          klass.send(join_type.to_sym, tag_class.resource_name.pluralize.to_sym, join_opts.merge({:class => tag_class}))
         end
       end
     end
     class PrivateTagging < Tagging
-      @default_opts[:tag_class_name] = 'PrivateTag'
+      @default_opts=@default_opts.merge(:tag_class_name => 'PrivateTag')
       module InstanceMethods
         def rest_associations;super << private_tags.filter(:user_id => $request[:user][:id]);end
         def new_user_tags
@@ -33,18 +33,18 @@ module Marley
             tags.to_s.split(',').each {|tag| add_user_tag(MR::UserTag.find_or_create(:user_id => user, :tag => tag))}
           end
         end
-      end
-      def reggae_schema
-        p 'asdf'
-        foo=super
-        [:public_tags,:user_tags].each do |tag_type|
-          foo << [text,tag_type,0,nil] if respond_to?(tag_type)
+        def reggae_schema
+          foo=super
+          [:public_tags,:private_tags].each do |tag_type|
+            foo << [:text,tag_type,0,nil] if self.class.associations.include?(tag_type)
+          end
+          foo
         end
-        foo
       end
     end
     class PublicTagging < Tagging
-      @default_opts[:tag_class_name] = 'PublicTag'
+      @default_opts=@default_opts.merge(:tag_class_name => 'PublicTag')
+      #@default_opts[:tag_class_name] = 'PublicTag'
       module InstanceMethods
         def rest_associations;super << public_tags;end
         def new_public_tags
@@ -83,7 +83,7 @@ module Marley
           set_dataset DB[:tags].filter(:user_id => nil)
 #          @actions_delete='remove_parent'
         end
-        class UserTag < Tag
+        class PrivateTag < Tag
           Marley.plugin('current_user_methods').apply(self)
           def self.list_dataset
             current_user_dataset
