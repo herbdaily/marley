@@ -35,9 +35,7 @@ module Marley
           elsif user.class==Fixnum
             #tags.to_s.split(',').each {|tag| add_private_tag(MR::PrivateTag.find_or_create(:user_id => user, :tag => tag))}
             tags.to_s.split(',').each {|tag| 
-              foo=MR::PrivateTag.find_or_create(:user_id => user, :tag => tag)
-              p foo
-              self.add_private_tag(foo)
+              self.add_private_tag(MR::PrivateTag.find_or_create(:user_id => user, :tag => tag))
             }
           end
         end
