@@ -8,6 +8,7 @@ end
 DB.create_table :messages_tags do
   primary_key :id
   integer :user_id
+  integer :tag_id
   integer :message_id
 end
 Marley.joint('tags')

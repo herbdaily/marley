@@ -21,24 +21,34 @@ module Marley
     class PrivateTagging < Tagging
       @default_opts=@default_opts.merge(:tag_class_name => 'PrivateTag')
       module InstanceMethods
-        def rest_associations;super << private_tags.filter(:user_id => $request[:user][:id]);end
-        def new_user_tags
-          [:instance,{:name => 'user_tags',:url => "#{url}/user_tags", :new_rec => true, :schema => [['number',"user_tags[#{self.class.resource_name}_id]",RESTRICT_HIDE,id],['text','user_tags[tags]',RESTRICT_REQ]]}]
+        attr_accessor :_private_tags
+        def rest_associations; super << private_tags_dataset.filter(:tags__user_id => $request[:user][:id]) ; end
+        def new_private_tags
+          [:instance,{:name => 'private_tags',:url => "#{url}/private_tags", :new_rec => true, :schema => [['number',"private_tags[#{self.class.resource_name}_id]",RESTRICT_HIDE,id],['text','private_tags[tags]',RESTRICT_REQ]]}]
         end
-        def add_user_tags(tags,user=nil) #does not conflict with add_user_tag
+        def add_private_tags(tags,user=nil)
           user||=$request[:user][:id]
           if user.class==String
             user.split(',').each {|u| add_user_tags(tags,MR::User[:name => u][:id])}
           elsif user.class==Array
             user.each {|u| add_user_tags(tags,u)}
           elsif user.class==Fixnum
-            tags.to_s.split(',').each {|tag| add_user_tag(MR::UserTag.find_or_create(:user_id => user, :tag => tag))}
+            #tags.to_s.split(',').each {|tag| add_private_tag(MR::PrivateTag.find_or_create(:user_id => user, :tag => tag))}
+            tags.to_s.split(',').each {|tag| 
+              foo=MR::PrivateTag.find_or_create(:user_id => user, :tag => tag)
+              p foo
+              self.add_private_tag(foo)
+            }
           end
+        end
+        def after_create
+          super
+          add_private_tags _private_tags
         end
         def reggae_schema
           foo=super
           [:public_tags,:private_tags].each do |tag_type|
-            foo << [:text,tag_type,0,nil] if self.class.associations.include?(tag_type)
+            foo << [:text,"_#{tag_type}",0,nil] if self.class.associations.include?(tag_type) && new?
           end
           foo
         end

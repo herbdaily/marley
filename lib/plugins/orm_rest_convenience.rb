@@ -10,7 +10,7 @@ module Marley
         def authorize(verb); true ; end
         def requires_user?; false; end
         def resource_name; self.name.sub(/.*::/,'').underscore; end
-        def foreign_key_name; "#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end
+        def foreign_key_name; :"#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end
         def list(params={})
           if respond_to?(:list_dataset)
             list_dataset.filter(params).all

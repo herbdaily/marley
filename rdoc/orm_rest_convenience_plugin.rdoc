@@ -13,7 +13,7 @@ examples:
 >> MR::User.resource_name
 => "user"
 >> MR::User.foreign_key_name
-=> "user_id"
+=> :user_id
 >> MR::User.reggae_link
 => [:link, {:url=>"/user/", :title=>"User"}]
 >> MR::User.reggae_link('new')

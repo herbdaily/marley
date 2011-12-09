@@ -3,8 +3,8 @@ module Marley
   module Utils
     def self.many_to_many_join(lclass, rclass)
       join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_')
-      lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_name => join_table, :left_key => rclass.foreign_key_name, :right_key => lclass.foreign_key_name)
-      rclass.many_to_many(lclass.resource_name.pluralize.to_sym,:join_name => join_table, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
+      lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
+      rclass.many_to_many(lclass.resource_name.pluralize.to_sym,:join_table => join_table, :class =>lclass,:left_key => rclass.foreign_key_name, :right_key => lclass.foreign_key_name)
     end
     def self.class_attributes(attr_name, val=nil)
       Module.new do |m|
