@@ -8,11 +8,13 @@ module Marley
           klass=MR.const_get(klass) if klass.class==String
           tag_class=MR.const_get(@opts[:tag_class_name])
           join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
-          join_table=[klass.table_name.to_s, 'tags'].sort.join('_')
-          reciprocal_join=join_type.split('_').reverse.join('_')
-          join_opts=@opts[:join_type]=='many_to_many' ? {:join_table => join_table} : {}
-          tag_class.send(reciprocal_join.to_sym, klass.resource_name.pluralize.to_sym, join_opts.merge({:class => klass}))
-          klass.send(join_type.to_sym, tag_class.resource_name.pluralize.to_sym, join_opts.merge({:class => tag_class}))
+          if join_type=='many_to_many'
+            Marley::Utils.many_to_many_join(klass, tag_class)
+          else
+            reciprocal_join=join_type.split('_').reverse.join('_')
+            tag_class.send(reciprocal_join.to_sym, klass.resource_name.pluralize.to_sym, {:class => klass})
+            klass.send(join_type.to_sym, tag_class.resource_name.pluralize.to_sym, {:class => tag_class})
+          end
         end
       end
     end
