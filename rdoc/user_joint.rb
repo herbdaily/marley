@@ -22,8 +22,8 @@ end
 
 Sequel::Model.plugin :validation_helpers
 Marley.plugin('orm_rest_convenience').apply(Sequel::Model)
-Marley.plugin('rest_authorization').apply(Sequel::Model)
 Marley.joint 'user'
+Marley.plugin('rest_authorization').apply(Sequel::Model)
 
 module Marley
   module Resources

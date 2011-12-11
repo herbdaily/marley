@@ -29,10 +29,7 @@ example: without the plugin, then with the plugin
 
 == Included Plugins
 
-Marley comes with 2 plugins:
+Marley comes with 1 external plugin (there are others in the included Joints, described later):
 
 :include: rdoc/orm_rest_convenience_plugin.rdoc
-
-:include: rdoc/rest_authorization_plugin.rdoc
-
 
