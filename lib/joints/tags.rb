@@ -93,12 +93,12 @@ module Marley
           end
         end
         class PublicTag < Tag
-          set_dataset DB[:tags].filter(:user_id => nil)
+          set_dataset DB[:tags].filter(:user_id => nil).order(:tag)
         end
         class PrivateTag < Tag
           Marley.plugin('current_user_methods').apply(self)
           def self.list_dataset
-            current_user_dataset
+            current_user_dataset.order(:tag)
           end
         end
       end

@@ -27,7 +27,6 @@ module Marley
     end
     attr_reader :resource_type
     attr_accessor :properties,:contents
-    # @param [Array] *args an array in Reggae syntax
     def initialize(*args)
       super 
       if is_resource?
@@ -51,7 +50,7 @@ module Marley
       is_resource? ? Marley.const_get("Reggae#{resource_type.to_s.camelize}".to_sym).new(self) : self
     end
     def find_instances(rn,instances=Reggae.new([]))
-      if self.class==ReggaeInstance && self.name.to_s==rn 
+      if self.class==ReggaeInstance && self.name.to_s==rn.to_s 
         instances << self
       else
         (is_resource? ? contents : self).each {|a| a && Reggae.new(a).to_resource.find_instances(rn,instances)}
