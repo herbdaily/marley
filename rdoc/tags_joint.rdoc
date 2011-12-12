@@ -8,8 +8,8 @@
         user_client.create(user.set_values(:name => "user#{i}"))
       }
       @user1_auth=['user1', 'asdfasdf']
-      @user2_auth=['user1', 'asdfasdf']
-      @user3_auth=['user1', 'asdfasdf']
+      @user2_auth=['user2', 'asdfasdf']
+      @user3_auth=['user3', 'asdfasdf']
   end
 
 example:
