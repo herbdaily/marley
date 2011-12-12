@@ -11,6 +11,7 @@ module Marley
         attr_accessor attr_name.to_sym
         @attr_name, @val=[attr_name,val]
         def self.extended(o)
+          super
           o.send("#{@attr_name}=",@val)
         end
         define_method :inherited do |c|

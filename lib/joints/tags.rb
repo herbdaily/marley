@@ -74,6 +74,9 @@ module Marley
             validates_presence :tag
             validates_unique [:tag,:user_id]
           end
+          def instance_actions(parent_instance)
+            {:delete => "#{parent_instance ? parent_instance.url : ''}#{url}"}
+          end
           def before_save
             super
             self.tag.downcase!
@@ -91,14 +94,12 @@ module Marley
         end
         class PublicTag < Tag
           set_dataset DB[:tags].filter(:user_id => nil)
-#          @actions_delete='remove_parent'
         end
         class PrivateTag < Tag
           Marley.plugin('current_user_methods').apply(self)
           def self.list_dataset
             current_user_dataset
           end
-#          @actions_delete='remove_parent'
         end
       end
     end

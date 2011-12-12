@@ -45,9 +45,8 @@ module Marley
         def write_cols; rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}; end
         def required_cols;[];end
 
-        def actions
-          foo=respond_to?(:instance_actions) ? instance_actions : self.class.instance_actions
-          foo.respond_to?(:retrieve) ? foo.retrieve : foo
+        def actions(parent_instance=nil)
+          respond_to?(:instance_actions) ? instance_actions(parent_instance) : self.class.instance_actions
         end
 
         def reggae_schema
@@ -65,12 +64,12 @@ module Marley
         def to_s
           respond_to?('name') ? name : id.to_s
         end
-        def reggae_instance
+        def reggae_instance(parent_instance=nil)
           a=Marley::ReggaeInstance.new( 
-            {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.actions}
+            {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => reggae_schema,:actions => self.actions(parent_instance)}
           )
           a.contents=rest_associations.to_a.map do |assoc|
-            assoc.map{|instance| instance.reggae_instance} 
+            assoc.map{|instance|  instance.reggae_instance(self)} 
           end unless new?
           a
         end

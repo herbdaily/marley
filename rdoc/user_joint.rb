@@ -42,7 +42,7 @@ module Marley
     end
     class Announcement < Message
       Marley.plugin(:current_user_methods).apply(self)
-      def instance_actions
+      def instance_actions(parent_instance=nil)
         {:delete => self.url} if current_user_role=='owner' && ! self.new?
       end
     end
