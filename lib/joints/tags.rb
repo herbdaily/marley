@@ -22,33 +22,17 @@ module Marley
       @default_opts=@default_opts.merge(:tag_class_name => 'PrivateTag')
       module InstanceMethods
         attr_accessor :_private_tags
-        def rest_associations; super << private_tags_dataset.filter(:tags__user_id => $request[:user][:id]) ; end
-        def instance_actions(parent_instance=nil); new? ? super : (super || {}).update({:get => 'new_private_tags'})  ;end
-        def new_private_tags
-          [:instance,{:name => 'private_tags',:url => "#{url}/private_tags", :new_rec => true, :schema => [['number',"#{self.class.resource_name}_id",RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
+        def rest_cols; super << :_private_tags;end
+        def add_private_tags(tags)
+          tags.to_s.split(',').each {|tag| self.add_private_tag(MR::PrivateTag.find_or_create(:user_id => $request[:user][:id], :tag => tag)) }
         end
-        def add_private_tags(tags,user=nil)
-          user||=$request[:user][:id]
-          if user.class==String
-            user.split(',').each {|u| add_user_tags(tags,MR::User[:name => u][:id])}
-          elsif user.class==Array
-            user.each {|u| add_user_tags(tags,u)}
-          elsif user.class==Fixnum
-            tags.to_s.split(',').each {|tag| 
-              self.add_private_tag(MR::PrivateTag.find_or_create(:user_id => user, :tag => tag))
-            }
-          end
-        end
-        def after_create
+        def after_save
           super
-          add_private_tags _private_tags
+          remove_all_private_tags
+          add_private_tags @_private_tags
         end
-        def reggae_schema
-          foo=super
-          [:public_tags,:private_tags].each do |tag_type|
-            foo << [:text,"_#{tag_type}",0,nil] if self.class.associations.include?(tag_type) && new?
-          end
-          foo
+        def _private_tags
+          private_tags.map {|t|t.tag}.join(', ')
         end
       end
     end
@@ -81,15 +65,6 @@ module Marley
             super
             self.tag.downcase!
             self.tag.strip!
-          end
-          def after_save
-            super
-            assoc=methods.grep(/_id=$/) - ['user_id=']
-            assoc.each do |a|
-              if c=self.send(a.sub(/=$/,''))
-                send "add_#{a.sub(/_id=/,'')}", Marley::Resources.const_get(a.sub(/_id=/,'').camelize.to_sym)[c]
-              end
-            end
           end
         end
         class PublicTag < Tag

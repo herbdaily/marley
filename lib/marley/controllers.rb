@@ -43,13 +43,17 @@ module Marley
           @instance.send("add_#{@method_name}",param)
         end
       else
-        @instance=@model.new(($request[:post_params][@model.resource_name.to_sym]||{}).reject {|k,v| v.nil?})
+        params=($request[:post_params][@model.resource_name.to_sym]||{})
+        @instance=@model.new(params.reject {|k,v| v.nil?}) #reject nils to work around sequel validation flaw
+        params.keys.each {|k| @instance.send("#{k.to_s}=",params[k]) if k.to_s.match(/^_/)}
         @instance.save(@instance.write_cols)
         @instance.respond_to?('create_msg') ? @instance.create_msg : @instance
       end
     end
     def rest_put
       raise RoutingError unless @instance
+      params=($request[:post_params][@model.resource_name.to_sym]||{})
+      params.keys.each {|k| @instance.send("#{k.to_s}=",params[k]) if k.to_s.match(/^_/)}
       (@instances || [@instance]).map do |i|
         i.modified!
         i.update_only($request[:post_params][@model.resource_name.to_sym].to_a,i.write_cols)

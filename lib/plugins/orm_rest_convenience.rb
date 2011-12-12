@@ -54,15 +54,16 @@ module Marley
 
         def reggae_schema
           Marley::ReggaeSchema.new(
-          rest_cols.map do |col_name|
-            db_spec=db_schema.to_hash[col_name]
-            col_type=db_spec ? db_spec[:db_type].downcase : col_name
-            restrictions=0
-            restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
-            restrictions|=RESTRICT_RO unless write_cols.include?(col_name)
-            restrictions|=RESTRICT_REQ if required_cols.include?(col_name) || (db_spec && !db_spec[:allow_null])
-            [col_type, col_name, restrictions,send(col_name)]
-          end)
+            rest_cols.map do |col_name|
+              db_spec=db_schema.to_hash[col_name]
+              col_type=db_spec ? db_spec[:db_type].downcase : "text"
+              restrictions=0
+              restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
+              restrictions|=RESTRICT_RO unless write_cols.include?(col_name)
+              restrictions|=RESTRICT_REQ if required_cols.include?(col_name) || (db_spec && !db_spec[:allow_null])
+              [col_type, col_name, restrictions,send(col_name)]
+            end 
+          )
         end
         def to_s
           respond_to?('name') ? name : id.to_s
