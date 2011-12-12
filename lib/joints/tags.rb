@@ -23,8 +23,9 @@ module Marley
       module InstanceMethods
         attr_accessor :_private_tags
         def rest_associations; super << private_tags_dataset.filter(:tags__user_id => $request[:user][:id]) ; end
+        def instance_actions(parent_instance=nil); new? ? super : (super || {}).update({:get => 'new_private_tags'})  ;end
         def new_private_tags
-          [:instance,{:name => 'private_tags',:url => "#{url}/private_tags", :new_rec => true, :schema => [['number',"private_tags[#{self.class.resource_name}_id]",RESTRICT_HIDE,id],['text','private_tags[tags]',RESTRICT_REQ]]}]
+          [:instance,{:name => 'private_tags',:url => "#{url}/private_tags", :new_rec => true, :schema => [['number',"#{self.class.resource_name}_id",RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
         end
         def add_private_tags(tags,user=nil)
           user||=$request[:user][:id]
@@ -33,7 +34,6 @@ module Marley
           elsif user.class==Array
             user.each {|u| add_user_tags(tags,u)}
           elsif user.class==Fixnum
-            #tags.to_s.split(',').each {|tag| add_private_tag(MR::PrivateTag.find_or_create(:user_id => user, :tag => tag))}
             tags.to_s.split(',').each {|tag| 
               self.add_private_tag(MR::PrivateTag.find_or_create(:user_id => user, :tag => tag))
             }

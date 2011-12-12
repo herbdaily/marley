@@ -36,7 +36,7 @@ module Marley
     def rest_post
       if @instance
         raise RoutingError unless @method
-        params=$request[:post_params][@model.resource_name.to_sym][@method_name.to_sym] || $request[:post_params][@method_name.to_sym] 
+        params=$request[:post_params][@method_name.to_sym] || $request[:post_params][@model.resource_name.to_sym][@method_name.to_sym] 
         raise ValidationFailed unless params
         params=[params] unless params.class==Array
         params.map do |param|

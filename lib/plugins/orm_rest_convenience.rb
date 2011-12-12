@@ -3,7 +3,7 @@
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
-      @default_opts={:additional_extensions => [Marley::Utils.class_attributes(:model_actions,{:get => [:new]}), Marley::Utils.class_attributes(:instance_actions)]}
+      @default_opts={:additional_extensions => [Marley::Utils.class_attributes(:model_actions,{:get => [:new]}), Marley::Utils.class_attributes(:instance_actions,nil)]}
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
         # the next 2 will have to be overridden for most applications
@@ -29,6 +29,9 @@ module Marley
       module InstanceMethods
         def edit; self; end
         def rest_associations;[];end
+        def instance_actions(parent_instance)
+          self.class.instance_actions
+        end
         # the next 2 will have to be overridden for most applications
         def authorize(verb); true ; end
         def requires_user?; false; end
