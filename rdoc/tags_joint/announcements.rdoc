@@ -3,9 +3,6 @@
 === Announcements
 
 setup
-  DB[:messages].delete
-  DB[:messages_tags].delete
-  DB[:tags].delete
   @client=Marley::TestClient.new(:resource_name => 'announcement')
 end
 

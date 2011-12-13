@@ -29,7 +29,7 @@ module Marley
             super << tag_col_name.to_sym
           end
           define_method("add#{tag_col_name}".to_sym) {|tags|  #e.g. add_private_tags
-            vals_hash={:user_id => (tag_class.respond_to?(:user) ? $request[:user][:id] : nil)}
+            vals_hash={:user_id => (tag_class.associations.include?(:user) ? $request[:user][:id] : nil)}
             tags.to_s.split(',').each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(vals_hash.update(:tag => tag))) }
           }
           define_method(:after_save) {

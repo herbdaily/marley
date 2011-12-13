@@ -27,7 +27,7 @@ With a bit of configuration, these comprise the example forum application.
 :include: rdoc/example_joint.rb
 
     setup
-        @client=Marley::TestClient.new(:resource_name => 'hello')
+      @client=Marley::TestClient.new(:resource_name => 'hello')
     end
 
 example: without the joint, then with the joint
