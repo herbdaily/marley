@@ -12,5 +12,4 @@ DB.create_table :messages_tags do
   integer :message_id
 end
 Marley.joint('tags')
-Marley.plugin(:private_tagging).apply('Secret')
-Marley.plugin(:public_tagging).apply('Announcement')
+Marley.plugin(:tagging,{:tag_type => 'private'}).apply('Secret')

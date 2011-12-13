@@ -6,7 +6,8 @@ module Marley
         super
         klasses.each do |klass|
           klass=MR.const_get(klass) if klass.class==String
-          tag_class=MR.const_get(@opts[:tag_class_name])
+          #tag_class=MR.const_get(@opts[:tag_class_name])
+          tag_class=@tag_class
           join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
           if join_type=='many_to_many'
             Marley::Utils.many_to_many_join(klass, tag_class)
@@ -17,36 +18,30 @@ module Marley
           end
         end
       end
-    end
-    class PrivateTagging < Tagging
-      @default_opts=@default_opts.merge(:tag_class_name => 'PrivateTag')
-      module InstanceMethods
-        attr_accessor :_private_tags
-        def rest_cols; super << :_private_tags;end
-        def add_private_tags(tags)
-          tags.to_s.split(',').each {|tag| self.add_private_tag(MR::PrivateTag.find_or_create(:user_id => $request[:user][:id], :tag => tag)) }
+      def initialize(opts={})
+        super
+        tag_type=@tag_type=@opts[:tag_type]
+        tag_col_name=@tag_col_name="_#{@tag_type}_tags"
+        tag_class=@tag_class=MR.const_get(@tag_col_name.sub(/^_/,'').singularize.camelcase)
+        instance_methods_mod=Module.new do |m|
+          attr_accessor tag_col_name
+          define_method :rest_cols do 
+            super << tag_col_name.to_sym
+          end
+          define_method("add#{tag_col_name}".to_sym) {|tags|  #e.g. add_private_tags
+            tags.to_s.split(',').each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(:user_id => $request[:user][:id], :tag => tag)) }
+          }
+          define_method(:after_save) {
+            super
+            send("remove_all#{tag_col_name}")
+            send("add#{tag_col_name}",instance_variable_get("@#{tag_col_name}"))
+          }
+          define_method(tag_col_name.to_sym) {
+            send(tag_col_name.sub(/^_/,'')).map {|t| t.tag}.join(', ')
+          }
         end
-        def after_save
-          super
-          remove_all_private_tags
-          add_private_tags @_private_tags
-        end
-        def _private_tags
-          private_tags.map {|t|t.tag}.join(', ')
-        end
-      end
-    end
-    class PublicTagging < Tagging
-      @default_opts=@default_opts.merge(:tag_class_name => 'PublicTag')
-      #@default_opts[:tag_class_name] = 'PublicTag'
-      module InstanceMethods
-        def rest_associations;super << public_tags;end
-        def new_public_tags
-          [:instance,{:name => 'tags',:url => "#{url}/tags", :new_rec => true, :schema => [['number',"#{self.class.resource_name}_id",RESTRICT_HIDE,id],['text','tags',RESTRICT_REQ]]}]
-        end
-        def add_public_tags(tags,user=nil)
-          tags.to_s.split(',').each {|tag| add_public_tag(MR::PublicTag.find_or_create(:tag => tag))}
-        end
+        self.class.const_set :InstanceMethods,instance_methods_mod
+
       end
     end
   end
