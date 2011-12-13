@@ -3,9 +3,9 @@ module Marley
     class Tagging < Plugin
       @default_opts={:join_type => 'many_to_many'}
       def apply(*klasses)
-        super
         klasses.each do |klass|
           klass=MR.const_get(klass) if klass.class==String
+          @instance_methods_mod.send(:append_features,klass)
           #tag_class=MR.const_get(@opts[:tag_class_name])
           tag_class=@tag_class
           join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
@@ -23,13 +23,14 @@ module Marley
         tag_type=@tag_type=@opts[:tag_type]
         tag_col_name=@tag_col_name="_#{@tag_type}_tags"
         tag_class=@tag_class=MR.const_get(@tag_col_name.sub(/^_/,'').singularize.camelcase)
-        instance_methods_mod=Module.new do |m|
+        @instance_methods_mod=Module.new do |m|
           attr_accessor tag_col_name
           define_method :rest_cols do 
             super << tag_col_name.to_sym
           end
           define_method("add#{tag_col_name}".to_sym) {|tags|  #e.g. add_private_tags
-            tags.to_s.split(',').each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(:user_id => $request[:user][:id], :tag => tag)) }
+            vals_hash={:user_id => (tag_class.respond_to?(:user) ? $request[:user][:id] : nil)}
+            tags.to_s.split(',').each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(vals_hash.update(:tag => tag))) }
           }
           define_method(:after_save) {
             super
@@ -40,8 +41,6 @@ module Marley
             send(tag_col_name.sub(/^_/,'')).map {|t| t.tag}.join(', ')
           }
         end
-        self.class.const_set :InstanceMethods,instance_methods_mod
-
       end
     end
   end
@@ -63,7 +62,7 @@ module Marley
           end
         end
         class PublicTag < Tag
-          set_dataset DB[:tags].filter(:user_id => nil).order(:tag)
+          set_dataset DB[:tags].filter(:tags__user_id => nil).order(:tag)
         end
         class PrivateTag < Tag
           Marley.plugin('current_user_methods').apply(self)

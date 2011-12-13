@@ -5,7 +5,7 @@ module Marley
     class CurrentUserMethods < Plugin
       @default_opts={:join_type => 'many_to_one'}
       def apply(*klasses)
-        super(klasses)
+        super
         klasses.each do |klass|
           join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
           reciprocal_join=join_type.split('_').reverse.join('_')
@@ -16,14 +16,9 @@ module Marley
         end
       end
       module ClassMethods
-        #def per_user_attribute(attr_hash,key_proc)
-        #  Marley::Utils::PerRequestAttribute.new(attr_hash, lambda {key_proc.call($request[:user][:user_type])})
-        #end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
         end
-      end
-      module InstanceMethods
       end
     end
     class RestAuthorization < Plugin
