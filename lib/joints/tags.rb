@@ -23,18 +23,25 @@ module Marley
         tag_type=@tag_type=@opts[:tag_type]
         tag_col_name=@tag_col_name="_#{@tag_type}_tags"
         tag_class=@tag_class=MR.const_get(@tag_col_name.sub(/^_/,'').singularize.camelcase)
-        tags_ds_name=@tags_ds="#{tag_col_name.sub(/^_/,'')}_dataset"
+        tags_ds_name=@tags_ds_name="#{tag_col_name.sub(/^_/,'')}_dataset"
         @instance_methods_mod=Module.new do |m|
           attr_accessor tag_col_name
           define_method :rest_cols do 
             super << tag_col_name.to_sym
           end
+
+          define_method("#{tag_col_name}_ds".to_sym) { #e.g. _private_tags_dataset
+            send(tags_ds_name).filter({:tags__user_id => (tag_class.associations.include?(:user) ? $request[:user][:id] : nil)})
+          }
+          define_method(tag_col_name.to_sym) {    #e.g. _private_tags
+            send("#{tag_col_name}_ds").map {|t| t.tag}.join(', ') unless new?
+          }
           define_method("add#{tag_col_name}".to_sym) {|tags|  #e.g. add_private_tags
             vals_hash={:user_id => (tag_class.associations.include?(:user) ? $request[:user][:id] : nil)}
             tags.to_s.split(',').each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(vals_hash.update(:tag => tag))) }
           }
           define_method("replace#{tag_col_name}".to_sym) {  #e.g. replace_private_tags
-            send("remove_all#{tag_col_name}")
+            send("#{tag_col_name}_ds").each {|tag| send("remove#{tag_col_name}".singularize,tag)}
             send("add#{tag_col_name}",instance_variable_get("@#{tag_col_name}"))
           }
           define_method(:after_save) {
@@ -42,9 +49,6 @@ module Marley
             methods.select {|m| m.match(/^replace_.+_tags/)}.each do |replace_method|
               send(replace_method)
             end
-          }
-          define_method(tag_col_name.to_sym) {    #e.g. _private_tags
-            send(tags_ds_name).filter({:tags__user_id => (tag_class.associations.include?(:user) ? $request[:user][:id] : nil)}).map {|t| t.tag}.join(', ') unless new?
           }
         end
       end
