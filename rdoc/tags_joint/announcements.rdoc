@@ -11,11 +11,11 @@ examples: announcements with private and public tags
 
 >> @client.auth=@user1_auth
 => ["user1", "asdfasdf"]
-
 >> @announcement=@client.read({},{:method => 'new'})
-=> [:instance, {:schema=>[["integer", :user_id, 1, 1], ["text", :name, 4, nil], ["text", :message, 0, nil], ["text", :_private_tags, 0, ""], ["text", :_public_tags, 0, ""]], :url=>"/announcement/", :new_rec=>true, :actions=>nil, :name=>"announcement"}, []]
+=> [:instance, {:schema=>[["integer", :user_id, 1, 1], ["text", :name, 4, nil], ["text", :message, 0, nil], ["text", :_private_tags, 0, nil], ["text", :_public_tags, 0, nil]], :url=>"/announcement/", :new_rec=>true, :actions=>nil, :name=>"announcement"}, []]
 
 >> @client.create(@announcement.set_values({:name => 'user1 ann1', :message => 'user1ann1 msg', :_private_tags => 'aaa,bbb',:_public_tags => 'ppp'}), :url => @announcement.url)
-=> [:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 ann1"], ["text", :message, 0, "user1ann1 msg"], ["text", :_private_tags, 0, "ppp"], ["text", :_public_tags, 0, "ppp"]], :url=>"/announcement/1", :new_rec=>false, :actions=>{:delete=>"/announcement/1"}, :name=>"announcement"}, []]
+=> [:instance, {:schema=>[["integer", :id, 2, 1], ["integer", :user_id, 1, 1], ["text", :name, 4, "user1 ann1"], ["text", :message, 0, "user1ann1 msg"], ["text", :_private_tags, 0, "aaa, bbb"], ["text", :_public_tags, 0, ""]], :url=>"/announcement/1", :new_rec=>false, :actions=>{:delete=>"/announcement/1"}, :name=>"announcement"}, []]
 
-x!!!
+!!!
+
