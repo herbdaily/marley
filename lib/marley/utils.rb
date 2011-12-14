@@ -2,6 +2,7 @@
 module Marley
   module Utils
     #Woo Hoo???
+    #http://blog.jayfields.com/2008/04/alternatives-for-redefining-methods.html
     def self.extend_new_instances(klass)
       klass.module_exec {
         class << self
@@ -9,12 +10,18 @@ module Marley
           def instance_extensions
             @instance_extensions ||= superclass.respond_to?(:object_extensions) && superclass.instance_extensions || []
           end
-          alias_method :___this_is_from_extend_all_objects,:new
-          def new(*args)
-            foo=___this_is_from_extend_all_objects(*args)
+          alias_method :___this_is_allocate_from_extend_all_objects,:allocate
+          def allocate
+            foo=___this_is_allocate_from_extend_all_objects
             instance_extensions.each do |mod|
               foo.extend mod
             end
+            foo
+          end
+          alias_method :___this_is_new_from_extend_all_objects,:new
+          def new(*args)
+            foo=allocate
+            foo.send(:initialize, *args)
             foo
           end
         end
