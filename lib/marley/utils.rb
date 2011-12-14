@@ -1,17 +1,18 @@
 
 module Marley
   module Utils
-    def self.extend_all_objects(klass)
+    #Woo Hoo???
+    def self.extend_new_instances(klass)
       klass.module_exec {
         class << self
-          attr_accessor :object_extensions
-          def object_extensions
-            @object_extensions || superclass.respond_to?(:object_extensions) && superclass.object_extensions
+          attr_writer :instance_extensions
+          def instance_extensions
+            @instance_extensions ||= superclass.respond_to?(:object_extensions) && superclass.instance_extensions || []
           end
           alias_method :___this_is_from_extend_all_objects,:new
           def new(*args)
             foo=___this_is_from_extend_all_objects(*args)
-            object_extensions.to_a.each do |mod|
+            instance_extensions.to_a.each do |mod|
               foo.extend mod
             end
             foo
