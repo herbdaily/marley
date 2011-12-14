@@ -1,6 +1,24 @@
 
 module Marley
   module Utils
+    def self.extend_all_objects(klass)
+      klass.module_exec {
+        class << self
+          attr_accessor :object_extensions
+          def object_extensions
+            @object_extensions || superclass.respond_to?(:object_extensions) && superclass.object_extensions
+          end
+          alias_method :___this_is_from_extend_all_objects,:new
+          def new(*args)
+            foo=___this_is_from_extend_all_objects(*args)
+            object_extensions.to_a.each do |mod|
+              foo.extend mod
+            end
+            foo
+          end
+        end
+      }
+    end
     def self.many_to_many_join(lclass, rclass)
       join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_')
       lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
