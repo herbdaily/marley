@@ -12,7 +12,7 @@ module Marley
           alias_method :___this_is_from_extend_all_objects,:new
           def new(*args)
             foo=___this_is_from_extend_all_objects(*args)
-            instance_extensions.to_a.each do |mod|
+            instance_extensions.each do |mod|
               foo.extend mod
             end
             foo
