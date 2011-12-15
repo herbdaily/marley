@@ -8,12 +8,12 @@ module Marley
         class << self
           attr_writer :instance_extensions
           def instance_extensions
-            @instance_extensions ||= superclass.respond_to?(:object_extensions) && superclass.instance_extensions || []
+            @instance_extensions || superclass.respond_to?(:instance_extensions) && Array.new(superclass.instance_extensions) || nil
           end
           alias_method :___this_is_allocate_from_extend_all_objects,:allocate
           def allocate
             foo=___this_is_allocate_from_extend_all_objects
-            instance_extensions.each do |mod|
+            instance_extensions.to_a.each do |mod|
               foo.extend mod
             end
             foo
