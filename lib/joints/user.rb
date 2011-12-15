@@ -54,6 +54,9 @@ module Marley
           super
           send("#{self.class.owner_col}=",$request[:user][:id]) if $request && self.class.owner_col && new?
         end
+        #def write_cols
+        #  current_user_role=='owner' && super || []
+        #end
         def requires_user?(verb=nil,meth=nil);true;end
         def authorize(meth)
           if respond_to?(auth_type="authorize_#{$request[:verb]}")
@@ -63,7 +66,7 @@ module Marley
           end
         end
         def current_user_role
-          "owner" if owners.include?($request[:user])
+          "owner" if $request && owners.include?($request[:user])
         end
         def owners
           if self.class.to_s.match(/User$/)||self.class.superclass.to_s.match(/User$/)

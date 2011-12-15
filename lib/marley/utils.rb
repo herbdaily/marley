@@ -1,32 +1,6 @@
 
 module Marley
   module Utils
-    #Woo Hoo???
-    #http://blog.jayfields.com/2008/04/alternatives-for-redefining-methods.html
-    def self.extend_new_instances(klass)
-      klass.module_exec {
-        class << self
-          attr_writer :instance_extensions
-          def instance_extensions
-            @instance_extensions || superclass.respond_to?(:instance_extensions) && Array.new(superclass.instance_extensions) || nil
-          end
-          alias_method :___this_is_allocate_from_extend_all_objects,:allocate
-          def allocate
-            foo=___this_is_allocate_from_extend_all_objects
-            instance_extensions.to_a.each do |mod|
-              foo.extend mod
-            end
-            foo
-          end
-          alias_method :___this_is_new_from_extend_all_objects,:new
-          def new(*args)
-            foo=allocate
-            foo.send(:initialize, *args)
-            foo
-          end
-        end
-      }
-    end
     def self.many_to_many_join(lclass, rclass)
       join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_')
       lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)

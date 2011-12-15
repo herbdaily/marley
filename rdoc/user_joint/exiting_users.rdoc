@@ -94,7 +94,6 @@ example:  reading and writing secrets
     => [[:instance, {:schema=>[["integer", :id, 2, 4], ["integer", :user_id, 1, 2], ["text", :name, 4, "user2 second secret"], ["text", :message, 0, nil]], :new_rec=>false, :actions=>nil, :name=>"secret", :url=>"/secret/4"}, []]]
 
   examples:  announcements
-
   >> @client.resource_name='announcement'
   => "announcement"
   >> @client.read
