@@ -8,42 +8,14 @@ module Marley
         :additional_extensions => 
           [
             Marley::Utils.class_attributes(:reject_cols,[]), 
-            Marley::Utils.class_attributes(:ro_cols,nil)
+            Marley::Utils.class_attributes(:ro_cols,nil),
+            Marley::Utils.class_attributes(:owner_col,:user_id),
+            Marley::Utils.class_attributes(:allowed_get_methods,nil)
           ]
       }
-      
-      def apply(*klasses)
-        super
-        klasses.each do |klass|
-          join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
-          reciprocal_join=join_type.split('_').reverse.join('_')
-          klass=MR.const_get(klass) if klass.class==String
-          klass.owner_col='user_id'
-          MR::User.send(reciprocal_join, klass.resource_name.to_sym, :class => klass)
-          klass.send(join_type, :user, :class => MR::User)
-        end
-      end
       module ClassMethods
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
-        end
-      end
-      module InstanceMethods
-        #def write_cols
-        #  current_user_role=='owner' && super || []
-        #end
-      end
-    end
-    class RestAuthorization < Plugin
-      def apply(klass)
-        super
-      end
-      module ClassMethods
-        attr_accessor :owner_col, :allowed_get_methods
-        def inherited(c)
-          super
-          c.owner_col=@owner_col
-          c.allowed_get_methods=@allowed_get_methods
         end
         def requires_user?(verb=nil,meth=nil);true;end
         def authorize(meth)
@@ -63,6 +35,9 @@ module Marley
         end
       end
       module InstanceMethods
+        #def write_cols
+        #  current_user_role=='owner' && super || []
+        #end
         def after_initialize
           super
           send("#{self.class.owner_col}=",$request[:user][:id]) if $request && self.class.owner_col && new?
@@ -81,8 +56,8 @@ module Marley
         def owners
           if self.class.to_s.match(/User$/)||self.class.superclass.to_s.match(/User$/)
             [self]
-          elsif @owner_col
-            [User[send(@owner_col)]]
+          elsif self.class.owner_col
+            [MR::User[send(self.class.owner_col)]]
           else
             self.class.association_reflections.select {|k,v| v[:type]==:many_to_one}.map {|a| self.send(a[0]) && self.send(a[0]).owners}.flatten.compact
           end
@@ -95,16 +70,30 @@ module Marley
       LOGIN_FORM= [:instance,{:link => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
       module Resources
         class User < Sequel::Model
+          def self.join_to(klass, user_id_col_name=nil)
+            user_id_col_name||='user_id'
+            klass=MR.const_get(klass) if klass.class==String
+            klass.owner_col=user_id_col_name
+            one_to_many klass.resource_name.to_sym, :class => klass, :key => user_id_col_name
+            klass.send(:many_to_one, :user, :class => MR::User, :key => user_id_col_name)
+          end
           set_dataset :users
           sti
           attr_accessor :old_password,:password, :confirm_password
           @allowed_get_methods=['new']
           def current_user
-            block_given? ?  yield $request[:user] : $request[:user]
+            if block_given? 
+              yield $request[:user] 
+            else 
+              $request[:user]
+            end
           end
           def write_cols;super - [:pw_hash]+ [:password,:confirm_password,:old_password];end
           def self.requires_user?
             ! ($request[:verb]=='rest_post' || ($request[:verb]=='rest_get' && $request[:path][1]=='new'))
+          end
+          def self.authorize_rest_post
+            true
           end
           def reggae_schema
             schema=super.delete_if {|c| [:pw_hash,:description,:active].include?(c[NAME_INDEX])}

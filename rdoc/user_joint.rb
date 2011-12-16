@@ -23,7 +23,7 @@ end
 Sequel::Model.plugin :validation_helpers
 Marley.plugin('orm_rest_convenience').apply(Sequel::Model)
 Marley.joint 'user'
-Marley.plugin('rest_authorization').apply(Sequel::Model)
+Marley.plugin('current_user_methods').apply(Sequel::Model)
 
 module Marley
   module Resources
@@ -35,13 +35,12 @@ module Marley
       end
     end
     class Secret < Message
-      Marley.plugin(:current_user_methods).apply(self)
       def self.list_dataset
         current_user_ds
       end
     end
     class Announcement < Message
-      Marley.plugin(:current_user_methods).apply(self)
+      User.join_to(self)
       def instance_actions(parent_instance=nil)
         {:delete => self.url} if current_user_role=='owner' && ! self.new?
       end
