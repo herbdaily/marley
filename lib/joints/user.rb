@@ -35,6 +35,9 @@ module Marley
         end
       end
       module InstanceMethods
+        def rest_cols
+          super.reject {|col| self.class.reject_cols.to_a.find {|c| c.to_s==col.to_s}}
+        end
         #def write_cols
         #  current_user_role=='owner' && super || []
         #end
