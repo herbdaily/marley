@@ -3,7 +3,15 @@ Sequel::Model.plugin :validation_helpers
 module Marley
   module Plugins
     class CurrentUserMethods < Plugin
-      @default_opts={:join_type => 'many_to_one'}
+      @default_opts={
+        :join_type => 'many_to_one',
+        :additional_extensions => 
+          [
+            Marley::Utils.class_attributes(:reject_cols,[]), 
+            Marley::Utils.class_attributes(:ro_cols,nil)
+          ]
+      }
+      
       def apply(*klasses)
         super
         klasses.each do |klass|
@@ -19,6 +27,11 @@ module Marley
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
         end
+      end
+      module InstanceMethods
+        #def write_cols
+        #  current_user_role=='owner' && super || []
+        #end
       end
     end
     class RestAuthorization < Plugin
@@ -54,9 +67,6 @@ module Marley
           super
           send("#{self.class.owner_col}=",$request[:user][:id]) if $request && self.class.owner_col && new?
         end
-        #def write_cols
-        #  current_user_role=='owner' && super || []
-        #end
         def requires_user?(verb=nil,meth=nil);true;end
         def authorize(meth)
           if respond_to?(auth_type="authorize_#{$request[:verb]}")
@@ -89,6 +99,9 @@ module Marley
           sti
           attr_accessor :old_password,:password, :confirm_password
           @allowed_get_methods=['new']
+          def current_user
+            block_given? ?  yield $request[:user] : $request[:user]
+          end
           def write_cols;super - [:pw_hash]+ [:password,:confirm_password,:old_password];end
           def self.requires_user?
             ! ($request[:verb]=='rest_post' || ($request[:verb]=='rest_get' && $request[:path][1]=='new'))
