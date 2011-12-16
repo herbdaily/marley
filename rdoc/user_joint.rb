@@ -35,12 +35,12 @@ module Marley
       end
     end
     class Secret < Message
+      User.join_to(self)
       def self.list_dataset
         current_user_ds
       end
     end
     class Announcement < Message
-      User.join_to(self)
       def instance_actions(parent_instance=nil)
         {:delete => self.url} if current_user_role=='owner' && ! self.new?
       end
