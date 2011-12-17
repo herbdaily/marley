@@ -1,9 +1,13 @@
-
-
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
-      @default_opts={:additional_extensions => [Marley::Utils.class_attributes(:model_actions,{:get => [:new]}), Marley::Utils.class_attributes(:instance_actions,nil)]}
+      @default_opts={:class_attributes =>  [
+        [:model_actions,{:get => [:new, :list]}],
+        [:instance_actions,nil],
+        [:reject_cols,[]],
+        [:ro_cols,[]],
+        [:required_cols,[]]
+      ]}
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
         # the next 2 will have to be overridden for most applications

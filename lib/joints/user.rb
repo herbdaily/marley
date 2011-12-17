@@ -5,13 +5,7 @@ module Marley
     class CurrentUserMethods < Plugin
       @default_opts={
         :join_type => 'many_to_one',
-        :additional_extensions => 
-          [
-            Marley::Utils.class_attributes(:reject_cols,[]), 
-            Marley::Utils.class_attributes(:ro_cols,[]),
-            Marley::Utils.class_attributes(:owner_col,:user_id),
-            Marley::Utils.class_attributes(:allowed_class_get_methods,['section','list','new'])
-          ]
+        :class_attributes =>  [ [:owner_col,:user_id] ]
       }
       module ClassMethods
         def current_user_ds
@@ -28,8 +22,7 @@ module Marley
             when 'rest_post'
               new(($request[:post_params][resource_name.to_sym]||{}).reject {|k,v| v.nil?}).current_user_role=='owner' && meth.nil?
             when 'rest_get'
-              methods=@allowed_class_get_methods
-              (methods.class==Hash ? methods[$request[:user].class] : methods).include?(meth)
+              model_actions[:get].to_a.include?(meth.to_sym)
             end
           end
         end
@@ -91,8 +84,7 @@ module Marley
           set_dataset :users
           sti
           attr_accessor :old_password,:password, :confirm_password
-          @allowed_get_methods=['new']
-          def current_user
+          def self.current_user
             if block_given? 
               yield $request[:user] 
             else 

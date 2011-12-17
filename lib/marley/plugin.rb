@@ -12,6 +12,9 @@ module Marley
           resource=klass.class==String ? MR.const_get(klass) : klass
           plugin.constants.include?('ClassMethods') && resource.extend(plugin.const_get('ClassMethods'))
           plugin.constants.include?('InstanceMethods') && resource.send(:include, plugin.const_get('InstanceMethods'))
+          @opts[:class_attributes].to_a.each do |att|
+            resource.extend Marley::Utils.class_attributes(*att)
+          end
           @opts[:additional_extensions].to_a.each do |ext|
             resource.extend(ext)
           end
