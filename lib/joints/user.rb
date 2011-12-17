@@ -8,9 +8,9 @@ module Marley
         :additional_extensions => 
           [
             Marley::Utils.class_attributes(:reject_cols,[]), 
-            Marley::Utils.class_attributes(:ro_cols,nil),
+            Marley::Utils.class_attributes(:ro_cols,[]),
             Marley::Utils.class_attributes(:owner_col,:user_id),
-            Marley::Utils.class_attributes(:allowed_get_methods,nil)
+            Marley::Utils.class_attributes(:allowed_class_get_methods,['section','list','new'])
           ]
       }
       module ClassMethods
@@ -28,7 +28,7 @@ module Marley
             when 'rest_post'
               new(($request[:post_params][resource_name.to_sym]||{}).reject {|k,v| v.nil?}).current_user_role=='owner' && meth.nil?
             when 'rest_get'
-              methods=@allowed_get_methods || ['section','list','new']
+              methods=@allowed_class_get_methods
               (methods.class==Hash ? methods[$request[:user].class] : methods).include?(meth)
             end
           end
@@ -36,11 +36,11 @@ module Marley
       end
       module InstanceMethods
         def rest_cols
-          super.reject {|col| self.class.reject_cols.to_a.find {|c| c.to_s==col.to_s}}
+          super.reject {|col| attr_for_current_user('reject_cols').to_a.find {|c| c.to_s==col.to_s}}
         end
-        #def write_cols
-        #  current_user_role=='owner' && super || []
-        #end
+        def write_cols
+          super.reject {|col| attr_for_current_user('ro_cols').to_a.find {|c| c.to_s==col.to_s}}
+        end
         def after_initialize
           super
           send("#{self.class.owner_col}=",$request[:user][:id]) if $request && self.class.owner_col && new?
@@ -55,6 +55,14 @@ module Marley
         end
         def current_user_role
           "owner" if $request && owners.include?($request[:user])
+        end
+        def attr_for_current_user(attr_name)
+          a=self.class.send(attr_name)
+          if a.respond_to?(:keys) && a.keys.include?(current_user_role)
+            a[current_user_role]
+          else
+            a
+          end
         end
         def owners
           if self.class.to_s.match(/User$/)||self.class.superclass.to_s.match(/User$/)
