@@ -49,7 +49,7 @@ module Marley
         def required_cols;[];end
 
         def actions(parent_instance=nil)
-          respond_to?(:super) ? super : self.class.instance_actions
+          self.class.instance_actions
         end
 
         def reggae_schema
