@@ -44,7 +44,7 @@ module Marley
       def current_user_role
         super || 'reader' unless User.current_user.new?
       end
-      def instance_actions(parent_instance=nil)
+      def actions(parent_instance=nil)
         {:delete => self.url} if current_user_role=='owner' && ! self.new?
       end
     end

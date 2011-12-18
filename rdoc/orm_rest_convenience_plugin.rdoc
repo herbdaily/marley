@@ -18,7 +18,7 @@ examples:
 => [:link, {:url=>"/user/", :title=>"User"}]
 >> MR::User.reggae_link('new')
 => [:link, {:url=>"/user/new", :title=>"New User"}]
->> MR::User.actions
+>> MR::User.model_actions
 => {:get => [:new,:list]}
 
 >> @client.read
@@ -68,5 +68,4 @@ examples:
 => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
 >> @client.update({},:instance_id => 1)
 => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
-
 

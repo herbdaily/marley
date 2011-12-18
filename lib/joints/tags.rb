@@ -62,7 +62,7 @@ module Marley
             validates_presence :tag
             validates_unique [:tag,:user_id]
           end
-          def instance_actions(parent_instance)
+          def actions(parent_instance)
             {:delete => "#{parent_instance ? parent_instance.url : ''}#{url}"}
           end
           def before_save

@@ -22,7 +22,6 @@ module Marley
             filter(params).all
           end
         end
-        def actions; @model_actions.respond_to?(:retrieve) ? @model_actions.retrieve : @model_actions; end
         def reggae_link(action='')
           [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
         end
@@ -33,9 +32,6 @@ module Marley
       module InstanceMethods
         def edit; self; end
         def rest_associations;[];end
-        def instance_actions(parent_instance)
-          self.class.instance_actions
-        end
         # the next 2 will have to be overridden for most applications
         def authorize(verb); true ; end
         def requires_user?; false; end
@@ -53,7 +49,7 @@ module Marley
         def required_cols;[];end
 
         def actions(parent_instance=nil)
-          respond_to?(:instance_actions) ? instance_actions(parent_instance) : self.class.instance_actions
+          respond_to?(:super) ? super : self.class.instance_actions
         end
 
         def reggae_schema
