@@ -28,12 +28,12 @@ module Marley
         end
       end
       module InstanceMethods
-        def rest_cols
-          super.reject {|col| attr_for_current_user('reject_cols').to_a.find {|c| c.to_s==col.to_s}}
-        end
-        def write_cols
-          super.reject {|col| attr_for_current_user('ro_cols').to_a.find {|c| c.to_s==col.to_s}}
-        end
+        #def rest_cols
+        #  super.reject {|col| attr_for_current_user('reject_cols').to_a.find {|c| c.to_s==col.to_s}}
+        #end
+        #def write_cols
+        #  super.reject {|col| attr_for_current_user('ro_cols').to_a.find {|c| c.to_s==col.to_s}}
+        #end
         def after_initialize
           super
           send("#{self.class.owner_col}=",$request[:user][:id]) if $request && self.class.owner_col && new?

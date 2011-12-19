@@ -5,7 +5,7 @@ module Marley
         [:model_actions,{:get => [:new, :list]}],
         [:instance_actions,{true => nil, false => nil}],
         [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
-        [:ro_cols,{true => [], false => []}],
+        [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
         [:required_cols,{true => [], false => []}]
       ]}
       module ClassMethods
@@ -35,11 +35,12 @@ module Marley
         # the next 2 will have to be overridden for most applications
         def authorize(verb); true ; end
         def requires_user?; false; end
-        def rest_cols 
-          columns.reject { |c| c.to_s.match(Regexp.union(self.class.reject_cols[new?]))}
-        end
+
+        def reject_cols; self.class.reject_cols[new?]; end
+        def rest_cols; columns.reject { |c| c.to_s.match(Regexp.union(reject_cols))}; end
+        def ro_cols; self.class.ro_cols[new?]; end
+        def write_cols; rest_cols.reject {|c| c.to_s.match(Regexp.union(ro_cols))}; end
         def hidden_cols; columns.select {|c| c.to_s.match(/(_id$)/)}; end
-        def write_cols; rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}; end
         def required_cols;[];end
         def actions(parent_instance=nil)
           self.class.instance_actions[new?]
