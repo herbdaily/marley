@@ -3,10 +3,10 @@ module Marley
     class OrmRestConvenience < Plugin
       @default_opts={:class_attributes =>  [
         [:model_actions,{:get => [:new, :list]}],
-        [:instance_actions,nil],
-        [:reject_cols,[]],
-        [:ro_cols,[]],
-        [:required_cols,[]]
+        [:instance_actions,{true => nil, false => nil}],
+        [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
+        [:ro_cols,{true => [], false => []}],
+        [:required_cols,{true => [], false => []}]
       ]}
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
@@ -36,22 +36,14 @@ module Marley
         def authorize(verb); true ; end
         def requires_user?; false; end
         def rest_cols 
-          columns.reject do |c| 
-            if new?
-              c.to_s.match(/(^id$)|(_type$)|(date_(created|updated))/)
-            else
-              c.to_s.match(/_type$/)
-            end
-          end
+          columns.reject { |c| c.to_s.match(Regexp.union(self.class.reject_cols[new?]))}
         end
         def hidden_cols; columns.select {|c| c.to_s.match(/(_id$)/)}; end
         def write_cols; rest_cols.reject {|c| c.to_s.match(/(^id$)|(date_(created|updated))/)}; end
         def required_cols;[];end
-
         def actions(parent_instance=nil)
-          self.class.instance_actions
+          self.class.instance_actions[new?]
         end
-
         def reggae_schema
           Marley::ReggaeSchema.new(
             rest_cols.map do |col_name|
