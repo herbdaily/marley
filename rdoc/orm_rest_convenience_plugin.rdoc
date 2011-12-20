@@ -71,8 +71,6 @@ examples:
 
 >> MR::User.reject_cols[true]=['name']
 => ["name"]
->> MR::User.new.reject_cols
-=> ["name"]
 >> MR::User.new.rest_cols
 => [:id, :password, :description]
 >> @client.read({}, :method => 'new')
