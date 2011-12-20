@@ -37,14 +37,17 @@ module Marley
         def authorize(verb); true ; end
         def requires_user?; false; end
 
-        def reject_cols; self.class.reject_cols[new?]; end
+        def col_mods(mod_type)
+          self.class.send(mod_type)[new?]
+        end
+        def reject_cols; col_mods(:reject_cols); end
         def rest_cols; columns.reject { |c| c.to_s.match(Regexp.union(reject_cols))}; end
-        def ro_cols; self.class.ro_cols[new?]; end
+        def ro_cols; col_mods(:ro_cols); end
         def write_cols; rest_cols.reject {|c| c.to_s.match(Regexp.union(ro_cols))}; end
-        def hidden_cols; rest_cols.select {|c| c.to_s.match(Regexp.union(self.class.hidden_cols[new?]))}; end
-        def required_cols; rest_cols.select {|c| c.to_s.match(Regexp.union(self.class.required_cols[new?]))}; end
+        def hidden_cols; rest_cols.select {|c| c.to_s.match(Regexp.union(col_mods(:hidden_cols)))}; end
+        def required_cols; rest_cols.select {|c| c.to_s.match(Regexp.union(col_mods(:required_cols)))}; end
         def actions(parent_instance=nil)
-          self.class.instance_actions[new?]
+          col_mods(:instance_actions)
         end
         def reggae_schema
           Marley::ReggaeSchema.new(
