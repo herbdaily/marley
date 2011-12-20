@@ -6,6 +6,7 @@ module Marley
         [:instance_actions,{true => nil, false => nil}],
         [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
         [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
+        [:hidden_cols,{true => [/_id$/], false => [/_id$/]}],
         [:required_cols,{true => [], false => []}]
       ]}
       module ClassMethods
@@ -40,8 +41,8 @@ module Marley
         def rest_cols; columns.reject { |c| c.to_s.match(Regexp.union(reject_cols))}; end
         def ro_cols; self.class.ro_cols[new?]; end
         def write_cols; rest_cols.reject {|c| c.to_s.match(Regexp.union(ro_cols))}; end
-        def hidden_cols; columns.select {|c| c.to_s.match(/(_id$)/)}; end
-        def required_cols;[];end
+        def hidden_cols; rest_cols.select {|c| c.to_s.match(Regexp.union(self.class.hidden_cols[new?]))}; end
+        def required_cols; rest_cols.select {|c| c.to_s.match(Regexp.union(self.class.required_cols[new?]))}; end
         def actions(parent_instance=nil)
           self.class.instance_actions[new?]
         end
@@ -59,7 +60,7 @@ module Marley
           )
         end
         def to_s
-          respond_to?('name') ? name : id.to_s
+          respond_to?('name') ? name : "#{self.class.name} #{id.to_s}"
         end
         def reggae_instance(parent_instance=nil)
           a=Marley::ReggaeInstance.new( 

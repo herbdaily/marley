@@ -91,3 +91,14 @@ examples:
 >> @client.read
 => [[:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :schema=>[["integer", :id, 0, 1], ["text", :password, 4, "asdf"], ["text", :description, 6, "ddd"]], :name=>"user"}, []]]
 
+
+>> MR::User.hidden_cols[true]=['password']
+=> ["password"]
+>> @client.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["integer", :id, 2, nil], ["text", :password, 5, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+
+>> MR::User.required_cols[true]=['id']
+=> ["id"]
+>> @client.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["integer", :id, 6, nil], ["text", :password, 5, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+
