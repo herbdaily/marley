@@ -10,6 +10,9 @@ DB.create_table :users do
   text :name, :unique => true
   text :user_type, :index => true
   text :pw_hash
+  text :email
+  date :birthday
+  datetime :date_created
   text :description
 end
 DB.create_table :messages do
@@ -28,7 +31,7 @@ Marley.plugin('current_user_methods').apply(Sequel::Model)
 module Marley
   module Resources
     class Message < Sequel::Model
-      sti
+      sti # sets single_table_inheritance plugin
       def validate
         super
         validates_presence [:name]
