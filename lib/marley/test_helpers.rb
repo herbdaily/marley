@@ -16,6 +16,17 @@ module Marley
       opts||=@opts
       opts[:url] || '/' + [:root_url, :resource_name, :instance_id, :method].map {|k| opts[k]}.compact.join('/') + opts[:extention].to_s
     end
+    def date_hack(reggae_obj)
+      if reggae_obj.class==Marley::Reggae
+        reggae_obj.map {|o| date_hack(o)}
+      elsif reggae_obj.class==Marley::ReggaeInstance
+        reggae_obj.set_values(:date_created => 'date_created') if reggae_obj.schema[:date_created]
+        reggae_obj.set_values(:date_updated => 'date_updated') if reggae_obj.schema[:date_updated]
+        reggae_obj
+      else
+        reggae_obj
+      end
+    end
     def process(verb,params={},opts={})
       #p 'params:',params,'opts:',opts,"-------------" if opts
       opts||={}
@@ -36,7 +47,7 @@ module Marley
       p last_response.status if opts[:debug]
       p expected_code if opts[:debug]
       return false unless (expected_code || RESP_CODES[method])==last_response.status
-      Reggae.get_resource(JSON.parse(last_response.body)) rescue last_response.body
+      date_hack(Reggae.get_resource(JSON.parse(last_response.body))) rescue last_response.body
     end
     ['create','read','update','del'].each do |op|
       define_method op.to_sym, Proc.new { |*args| 

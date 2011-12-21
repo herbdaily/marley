@@ -7,7 +7,6 @@
     @client.create(@user.set_values(:name => 'user2', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
     @user1_auth=['user1', 'asdfasdf']
     @user2_auth=['user2', 'asdfasdf']
-    @client.auth=@user1_auth
   end
 
 examples: 2 users exist
@@ -15,8 +14,19 @@ examples: 2 users exist
     >> MR::User.count
     => 2
 
-example: allow viewing and changing of user columns with proper validation
+example: user1 logged in
+  >> @client.auth=@user1_auth
+  => ["user1", "asdfasdf"]
 
-    >> @client.instance_id=1
-    => 1
+    # Note:  Date hack, defined in test_helper.rb is causing the strings to appear in the date_created/updated fields
+
+    >>@client.read
+  => [[:instance, {:new_rec=>false, :actions=>nil, :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :name=>"user", :url=>"/user/1"}, []], [:instance, {:new_rec=>false, :actions=>nil, :schema=>[["integer", :id, 2, 2], ["text", :name, 0, "user2"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], [:password, :old_password, 0], [:password, :password, 0], [:password, :confirm_password, 0]], :name=>"user", :url=>"/user/2"}, []]]
+
+
+    !!!
+
+
+  >> @client.instance_id=1
+  => 1
 
