@@ -9,7 +9,7 @@ example: read new user form but not user list
   >> @client.read({},:code => 401)
   => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
   >> @client.read({},:method => 'new')
-  => [:instance, {:actions=>nil, :schema=>[["text", :name, 0, nil], ["text", :email, 0, nil], ["date", :birthday, 0, nil], [:password, :password, 4], [:password, :confirm_password, 4]], :url=>"/user/", :name=>"user", :new_rec=>true}, []]
+  => [:instance, {:actions=>[], :schema=>[["text", :name, 0, nil], ["text", :email, 0, nil], ["date", :birthday, 0, nil], [:password, :password, 4], [:password, :confirm_password, 4]], :url=>"/user/", :name=>"user", :new_rec=>true}, []]
 
 example:  user validation
   >> @client.create({}, :code => 400)

@@ -3,11 +3,11 @@ module Marley
     class OrmRestConvenience < Plugin
       @default_opts={:class_attributes =>  [
         [:model_actions,{:get => [:new, :list]}],
-        [:instance_actions,{true => nil, false => nil}],
+        [:instance_actions,{:all => nil}],
         [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
         [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
-        [:hidden_cols,{true => [/_id$/], false => [/_id$/]}],
-        [:required_cols,{true => [], false => []}]
+        [:hidden_cols,{:all => [/_id$/]}],
+        [:required_cols,{:all => []}]
       ]}
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
@@ -31,13 +31,14 @@ module Marley
         end
       end
       module InstanceMethods
-        def edit; self; end
-        def rest_associations;[];end
         # the next 2 will have to be overridden for most applications
         def authorize(verb); true ; end
         def requires_user?; false; end
 
-        def col_mods(mod_type); self.class.send(mod_type)[new?]; end
+        def col_mods(mod_type)
+          mod=self.class.send(mod_type)
+          mod[new?].to_a + mod[:all].to_a
+        end
         def col_mods_match(mod_type); lambda {|c| c.to_s.match(Regexp.union(col_mods(mod_type)))}; end
 
         def rest_cols; columns.reject &col_mods_match(:reject_cols);end
@@ -45,6 +46,8 @@ module Marley
         def hidden_cols; rest_cols.select &col_mods_match(:hidden_cols);end
         def required_cols; rest_cols.select &col_mods_match(:required_cols);end
         def actions(parent_instance=nil); col_mods(:instance_actions); end
+
+        def rest_associations;[];end
 
         def reggae_schema
           Marley::ReggaeSchema.new(

@@ -32,7 +32,6 @@ module Marley
   module Resources
     class Admin < User
       def self.requires_user?; true;end
-      def requires_user?; true;end
     end
     class Message < Sequel::Model
       sti # sets single_table_inheritance plugin
