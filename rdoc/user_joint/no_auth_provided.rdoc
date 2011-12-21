@@ -4,6 +4,33 @@ example: read new user form but not user list
 
   >> @client.read({},:code => 401)
   => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
-
   >> @client.read({},:method => 'new')
+  => [:instance, {:actions=>nil, :schema=>[["text", :name, 0, nil], ["text", :email, 0, nil], ["date", :birthday, 0, nil], [:password, :password, 4], [:password, :confirm_password, 4]], :url=>"/user/", :name=>"user", :new_rec=>true}, []]
+
+example:  user validation
+  >> @client.create({}, :code => 400)
+  => [:error, {:error_type=>"validation", :error_details=>{:name=>["is required"], :password=>["Password must contain at least 8 characters"]}, :description=>nil}]
+  >> @client.create(@user.set_values(:name => 'asdf', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
+  => [[:msg, {:title=>"Success!"}, "Your login, 'asdf', has been sucessfully created. You can now log in."]]
+
+
+example:  cannot list any other resources
+  >> @client.read({},{:resource_name => 'secrets',:code => 401})
+  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+  >> @client.read({},{:resource_name => 'announcements',:code => 401})
+  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+
+example:  non-existent resource yields 401, not 404
+  >> @client.read({},{:resource_name => 'xxx',:code => 401})
+  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+
+example: unable to create admin user
+  >> @client.create(@user.set_values(:name => 'admin',:password => 'asdfasdf',:confirm_password => 'asdfasdf'),:resource_name => 'admin', :code=> 401)
+  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+  >> @client.create(@user.set_values(:name => 'admin',:password => 'asdfasdf',:confirm_password => 'asdfasdf').to_params.update("user[user_type]" => 'Admin'))
+  => [[:msg, {:title=>"Success!"}, "Your login, 'admin', has been sucessfully created. You can now log in."]]
+
+  >> MR::User[2].class
+  => Marley::Joints::User::Resources::User
+
 
