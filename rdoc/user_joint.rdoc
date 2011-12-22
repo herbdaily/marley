@@ -6,5 +6,8 @@
     MR::Message.delete
     DB[:SQLITE_SEQUENCE].delete  #kinda hate this but it seems necessary for the moment
     @client=Marley::TestClient.new(:resource_name => 'user')
-    @user=MR::User.new.reggae_instance
+    @user=@client.read({},:method => 'new')
   end
+
+examples:
+

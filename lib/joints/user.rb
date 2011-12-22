@@ -77,6 +77,9 @@ module Marley
           sti
           set_dataset :users
           reject_cols[:all]=['pw_hash']
+          derived_cols[true]=[:password,:confirm_password]
+          derived_cols[:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
+          required_cols[true]=['password','confirm_password']
           def self.join_to(klass, user_id_col_name=nil)
             user_id_col_name||='user_id'
             klass=MR.const_get(klass) if klass.class==String
@@ -84,30 +87,27 @@ module Marley
             one_to_many klass.resource_name.to_sym, :class => klass, :key => user_id_col_name
             klass.send(:many_to_one, :user, :class => MR::User, :key => user_id_col_name)
           end
-          attr_accessor :old_password,:password, :confirm_password
           def self.current_user
+            return nil unless $request
             if block_given? 
               yield $request[:user] 
             else 
               $request[:user]
             end
           end
-          def write_cols; (new? ? rest_cols - [:id,:user_type,:pw_hash] : super) + [:password,:confirm_password,:old_password] ;end
+          attr_accessor :old_password,:password, :confirm_password
           def self.requires_user?
             ! ($request[:verb]=='rest_post' || ($request[:verb]=='rest_get' && $request[:path][1]=='new'))
           end
           def self.authorize_rest_post
             true
           end
-          def reggae_schema
-            schema=super.delete_if {|c| [:pw_hash,:description,:active].include?(c[NAME_INDEX])}
-            schema.push([:password,:old_password,0]) unless new?
-            schema.push([:password,:password ,new? ? RESTRICT_REQ : 0],[:password,:confirm_password,new? ? RESTRICT_REQ : 0])
-            schema
-          end
           def self.authenticate(credentials)
             u=find(:name => credentials[0], :pw_hash => Digest::SHA1.hexdigest(credentials[1]))
             u.respond_to?(:user_type) ? Marley::Resources.const_get(u[:user_type].to_sym)[u[:id]] : u
+          end
+          def current_user_role
+            new? && self.class.current_user && self.class.current_user.new? || super
           end
           def validate
             super
