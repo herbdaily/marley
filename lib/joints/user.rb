@@ -8,6 +8,9 @@ module Marley
         :class_attributes =>  [ [:owner_col,:user_id] ]
       }
       module ClassMethods
+        def self.extended(o)
+          o.ro_cols[:current_user_role]={nil => [/.*/] }
+        end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
         end
@@ -28,8 +31,8 @@ module Marley
         end
       end
       module InstanceMethods
-        def reject_cols
-          super
+        def col_mods(mod_type)
+          super + (@mod[:current_user_role] && @mod[:current_user_role][current_user_role]).to_a
         end
         def after_initialize
           super
@@ -71,6 +74,9 @@ module Marley
       LOGIN_FORM= [:instance,{:link => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
       module Resources
         class User < Sequel::Model
+          sti
+          set_dataset :users
+          reject_cols[:all]=['pw_hash']
           def self.join_to(klass, user_id_col_name=nil)
             user_id_col_name||='user_id'
             klass=MR.const_get(klass) if klass.class==String
@@ -78,8 +84,6 @@ module Marley
             one_to_many klass.resource_name.to_sym, :class => klass, :key => user_id_col_name
             klass.send(:many_to_one, :user, :class => MR::User, :key => user_id_col_name)
           end
-          set_dataset :users
-          sti
           attr_accessor :old_password,:password, :confirm_password
           def self.current_user
             if block_given? 
@@ -88,7 +92,7 @@ module Marley
               $request[:user]
             end
           end
-          def write_cols;super - [:pw_hash]+ [:password,:confirm_password,:old_password];end
+          def write_cols; (new? ? rest_cols - [:id,:user_type,:pw_hash] : super) + [:password,:confirm_password,:old_password] ;end
           def self.requires_user?
             ! ($request[:verb]=='rest_post' || ($request[:verb]=='rest_get' && $request[:path][1]=='new'))
           end

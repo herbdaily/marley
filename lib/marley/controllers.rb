@@ -45,8 +45,9 @@ module Marley
       else
         params=($request[:post_params][@model.resource_name.to_sym]||{})
         @instance=@model.new(params.reject {|k,v| v.nil?}) #reject nils to work around sequel validation flaw
+        raise AuthorizationError if params.keys.find {|k| ! @instance.write_cols.include?(k) }
         params.keys.each {|k| @instance.send("#{k.to_s}=",params[k]) if k.to_s.match(/^_/)}
-        @instance.save(@instance.write_cols)
+        @instance.save
         @instance.respond_to?('create_msg') ? @instance.create_msg : @instance
       end
     end

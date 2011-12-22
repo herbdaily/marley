@@ -2,10 +2,9 @@
 == The User Joint
 
   setup
-      @client=Marley::TestClient.new(:resource_name => 'user')
-      @user=MR::User.new.reggae_instance
+    MR::User.delete
+    MR::Message.delete
+    DB[:SQLITE_SEQUENCE].delete  #kinda hate this but it seems necessary for the moment
+    @client=Marley::TestClient.new(:resource_name => 'user')
+    @user=MR::User.new.reggae_instance
   end
-
-example:
-
-

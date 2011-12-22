@@ -36,8 +36,8 @@ module Marley
         def requires_user?; false; end
 
         def col_mods(mod_type)
-          mod=self.class.send(mod_type)
-          mod[new?].to_a + mod[:all].to_a
+          @mod=self.class.send(mod_type)
+          @mod[new?].to_a + @mod[:all].to_a
         end
         def col_mods_match(mod_type); lambda {|c| c.to_s.match(Regexp.union(col_mods(mod_type)))}; end
 
