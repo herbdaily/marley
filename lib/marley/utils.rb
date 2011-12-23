@@ -6,18 +6,42 @@ module Marley
       lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
       rclass.many_to_many(lclass.resource_name.pluralize.to_sym,:join_table => join_table, :class =>lclass,:left_key => rclass.foreign_key_name, :right_key => lclass.foreign_key_name)
     end
+    def self.combine(old,new)
+      if old.is_a?(Hash) && new.is_a?(Hash)
+        old.merge(new) {|k,o,n|Marley::Utils.combine(o,n)}
+      elsif old.is_a?(Array) && new.is_a?(Array)
+        old + new
+      else
+        new
+      end
+    end
     def self.class_attributes(attr_name, val=nil)
       Module.new do |m|
-        attr_accessor attr_name.to_sym
+        attr_writer attr_name.to_sym
         @attr_name, @val=[attr_name,val]
         def self.extended(o)
           super
-          o.send("#{@attr_name}=",@val)
+          o.send("#{@attr_name}=",Marshal.load(Marshal.dump(@val)))
         end
-        define_method :inherited do |c|
-          super
-          c.send("#{attr_name}=",send(attr_name.to_sym))
+        define_method attr_name.to_sym do
+          my_val=instance_variable_defined?("@#{attr_name}") && instance_variable_get("@#{attr_name}")
+          super_val=superclass.respond_to?(attr_name.to_sym) && Marshal.load(Marshal.dump(superclass.send(attr_name.to_sym)))
+          return my_val unless super_val
+          if instance_variable_defined?("@#{attr_name}")
+            Marley::Utils.combine(super_val, my_val)
+          else
+            send("#{attr_name}=",super_val)
+          end
+          #if instance_variable_defined?("@#{attr_name}") 
+          #  instance_variable_get("@#{attr_name}")
+          #elsif superclass.respond_to?(attr_name.to_sym)
+          #  send("#{attr_name}=",Marshal.load(Marshal.dump(superclass.send(attr_name.to_sym))))
+          #end
         end
+        #define_method :inherited do |c|
+        #  super
+        #  c.send("#{attr_name}=",Marshal.load(Marshal.dump(send(attr_name.to_sym))))
+        #end
       end
     end
     def self.hash_keys_to_syms(hsh)

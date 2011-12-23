@@ -114,6 +114,7 @@ module Marley
       end
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
+      $request=nil #mostly for testing
     end
   end
   class MarleyError < StandardError

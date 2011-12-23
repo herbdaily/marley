@@ -8,7 +8,7 @@
       DB[:tags].delete
       DB[:SQLITE_SEQUENCE].update(:seq => 0)
       user_client=Marley::TestClient.new(:resource_name => 'user')
-      user=Marley::ReggaeInstance.new(MR::User.new.reggae_instance).set_values(:password => 'asdfasdf', :confirm_password => 'asdfasdf')
+      user=user_client.read({},:method => 'new').set_values(:password => 'asdfasdf', :confirm_password => 'asdfasdf')
       [1,2,3].each { |i|
         user_client.create(user.set_values(:name => "user#{i}"))
       }

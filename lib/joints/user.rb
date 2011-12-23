@@ -47,7 +47,10 @@ module Marley
           end
         end
         def current_user_role
-          "owner" if $request && owners.include?($request[:user])
+          if $request && $request[:user]
+            return 'new' if $request[:user].new?
+            return "owner" if owners.include?($request[:user])
+          end
         end
         def attr_for_current_user(attr_name)
           a=self.class.send(attr_name)
@@ -76,9 +79,11 @@ module Marley
         class User < Sequel::Model
           sti
           set_dataset :users
+          @owner_col=nil 
           reject_cols[:all]=['pw_hash']
           derived_cols[true]=[:password,:confirm_password]
-          derived_cols[:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
+          @derived_cols[:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
+          ro_cols[:current_user_role]={'new' => ['id']} 
           required_cols[true]=['password','confirm_password']
           def self.join_to(klass, user_id_col_name=nil)
             user_id_col_name||='user_id'
@@ -105,9 +110,6 @@ module Marley
           def self.authenticate(credentials)
             u=find(:name => credentials[0], :pw_hash => Digest::SHA1.hexdigest(credentials[1]))
             u.respond_to?(:user_type) ? Marley::Resources.const_get(u[:user_type].to_sym)[u[:id]] : u
-          end
-          def current_user_role
-            new? && self.class.current_user && self.class.current_user.new? || super
           end
           def validate
             super
