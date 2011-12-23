@@ -1,8 +1,3 @@
-
-  setup
-      @user=MR::User.new.reggae_instance
-  end
-
 example: read new user form but not user list
   >> @client.read({},:code => 401)
   => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
