@@ -19,7 +19,28 @@ example: user1 logged in
   >> @client.read
   => [[:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 0, nil], ["text", :old_password, 0, nil], ["text", :password, 0, nil], ["text", :confirm_password, 0, nil]], :name=>"user", :url=>"/user/1"}, []], [:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 2], ["text", :name, 2, "user2"], ["text", :email, 2, nil], ["date", :birthday, 2, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 2, nil]], :name=>"user", :url=>"/user/2"}, []]]
 
+    >> @client.instance_id=1
+    => 1
+    >> @user1=@client.read
+    => [:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 0, nil], ["text", :old_password, 0, nil], ["text", :password, 0, nil], ["text", :confirm_password, 0, nil]], :name=>"user", :url=>"/user/1"}, []]
+    >> @client.update(@user1)
+    => [[:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 0, nil], ["text", :old_password, 0, nil], ["text", :password, 0, nil], ["text", :confirm_password, 0, nil]], :name=>"user", :url=>"/user/1"}, []]]
 
+    >> @user1=@client.read
+    => [:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 0, nil], ["text", :old_password, 0, nil], ["text", :password, 0, nil], ["text", :confirm_password, 0, nil]], :name=>"user", :url=>"/user/1"}, []]
+    >> @client.update(@user1)
+    => [[:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 0, nil], ["text", :old_password, 0, nil], ["text", :password, 0, nil], ["text", :confirm_password, 0, nil]], :name=>"user", :url=>"/user/1"}, []]]
+    >> @user1.col_value(:password, 'zxcvzxcv')
+    => "zxcvzxcv"
+    >> @client.update(@user1,{:code => 400})
+    => [:error, {:error_type=>"validation", :error_details=>{:old_password=>["Old Password Incorrect"], :confirm_password=>["Passwords do not match"]}, :description=>nil}]
+    >> @user1.set_values(:confirm_password => 'zxcvzxcv',:old_password => 'asdfasdf')
+    => [:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 0, nil], ["text", :old_password, 0, "asdfasdf"], ["text", :password, 0, "zxcvzxcv"], ["text", :confirm_password, 0, "zxcvzxcv"]], :name=>"user", :url=>"/user/1"}, []]
+    >> @client.update(@user1)
+    => [[:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 2, "user1"], ["text", :email, 2, nil], ["date", :birthday, 2, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 2, nil]], :name=>"user", :url=>"/user/1"}, []]]
+    >> @client.read({},:code => 401)
+    => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+    >> @client.read({},:auth => ['user1', 'zxcvzxcv'])
+    => [:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["text", :name, 0, "user1"], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["datetime", :date_created, 2, "date_created"], ["text", :description, 0, nil], ["text", :old_password, 0, nil], ["text", :password, 0, nil], ["text", :confirm_password, 0, nil]], :name=>"user", :url=>"/user/1"}, []]
 
-
-
+!!!

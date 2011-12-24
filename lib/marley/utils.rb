@@ -32,16 +32,7 @@ module Marley
           else
             send("#{attr_name}=",super_val)
           end
-          #if instance_variable_defined?("@#{attr_name}") 
-          #  instance_variable_get("@#{attr_name}")
-          #elsif superclass.respond_to?(attr_name.to_sym)
-          #  send("#{attr_name}=",Marshal.load(Marshal.dump(superclass.send(attr_name.to_sym))))
-          #end
         end
-        #define_method :inherited do |c|
-        #  super
-        #  c.send("#{attr_name}=",Marshal.load(Marshal.dump(send(attr_name.to_sym))))
-        #end
       end
     end
     def self.hash_keys_to_syms(hsh)
