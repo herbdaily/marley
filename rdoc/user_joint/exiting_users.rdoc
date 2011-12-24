@@ -61,6 +61,10 @@ example:  user1 reading/writing secrets
   => [:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 4, "this is my secret"], ["text", :message, 0, nil]], :name=>"secret", :url=>"/secret/1"}, []]
   >> @client.read
   => [[:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 4, "this is my secret"], ["text", :message, 0, nil]], :name=>"secret", :url=>"/secret/1"}, []]]
+  >> @client.read({},:auth => @user2_auth)
+  => []
+  >> @client.read({},:auth => @user2_auth,:instance_id => 1, :code => 403)
+  => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
 
 example: user2 reading/writing secrets
   >> @client.auth=@user2_auth
@@ -74,6 +78,8 @@ example: user2 reading/writing secrets
   >> @client.create(@secret.set_values(:name => 'user2 my secret'))
   => [:instance, {:new_rec=>false, :actions=>[], :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 2], ["text", :name, 4, "user2 my secret"], ["text", :message, 0, nil]], :name=>"secret", :url=>"/secret/1"}, []]
 
-
-!!!
+  >> @client.read({}, :auth => @user1_auth)
+  => []
+  >> @client.read({}, :auth => @user1_auth, :instance_id => 1,:code => 403)
+  => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
 
