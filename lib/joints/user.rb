@@ -43,7 +43,7 @@ module Marley
           if respond_to?(auth_type="authorize_#{$request[:verb]}")
             send(auth_type,meth)
           else
-            current_user_role=='owner'
+            current_user_role && current_user_role != 'new'
           end
         end
         def current_user_role
