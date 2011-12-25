@@ -83,3 +83,38 @@ example: user2 reading/writing secrets
   >> @client.read({}, :auth => @user1_auth, :instance_id => 1,:code => 403)
   => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
 
+examples:  announcements
+  >> @client.auth=@user1_auth
+  => ["user1", "asdfasdf"]
+  >> @client.resource_name='announcement'
+  => "announcement"
+  >> @client.read
+  => []
+
+  >> @announcement=@client.read({},{:method => 'new'})
+  => [:instance, {:new_rec=>true, :actions=>nil, :schema=>[["integer", :user_id, 3, 1], ["text", :name, 4, nil], ["text", :message, 0, nil]], :name=>"announcement", :url=>"/announcement/"}, []]
+  >> @client.create(@announcement.set_values({:name => 'user1 announcement'}))
+  => [:instance, {:new_rec=>false, :actions=>{:delete=>"/announcement/1"}, :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :name=>"announcement", :url=>"/announcement/1"}, []]
+  >> @client.read
+  => [[:instance, {:new_rec=>false, :actions=>{:delete=>"/announcement/1"}, :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :name=>"announcement", :url=>"/announcement/1"}, []]]
+  >> @client.create(@announcement.set_values({:name => 'user1 announcement2'}))
+  => [:instance, {:new_rec=>false, :actions=>{:delete=>"/announcement/2"}, :schema=>[["integer", :id, 2, 2], ["integer", :user_id, 3, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]], :name=>"announcement", :url=>"/announcement/2"}, []]
+  >> @client.read
+  => [[:instance, {:new_rec=>false, :actions=>{:delete=>"/announcement/1"}, :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]], :name=>"announcement", :url=>"/announcement/1"}, []], [:instance, {:new_rec=>false, :actions=>{:delete=>"/announcement/2"}, :schema=>[["integer", :id, 2, 2], ["integer", :user_id, 3, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]], :name=>"announcement", :url=>"/announcement/2"}, []]]
+
+  >>  @client.auth=@user2_auth
+  => ["user2", "asdfasdf"]
+  >> @client.read
+  => [[:instance, {:url=>"/announcement/1", :new_rec=>false, :actions=>nil, :name=>"announcement", :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 6, "user1 announcement"], ["text", :message, 2, nil]]}, []], [:instance, {:url=>"/announcement/2", :new_rec=>false, :actions=>nil, :name=>"announcement", :schema=>[["integer", :id, 2, 2], ["integer", :user_id, 3, 1], ["text", :name, 6, "user1 announcement2"], ["text", :message, 2, nil]]}, []]]
+
+  >> @client.read
+  => [[:instance, {:url=>"/announcement/1", :new_rec=>false, :actions=>nil, :name=>"announcement", :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 6, "user1 announcement"], ["text", :message, 2, nil]]}, []], [:instance, {:url=>"/announcement/2", :new_rec=>false, :actions=>nil, :name=>"announcement", :schema=>[["integer", :id, 2, 2], ["integer", :user_id, 3, 1], ["text", :name, 6, "user1 announcement2"], ["text", :message, 2, nil]]}, []]]
+  >> @announcement=@client.read({},{:method => 'new'})
+  => [:instance, {:url=>"/announcement/", :new_rec=>true, :actions=>nil, :name=>"announcement", :schema=>[["integer", :user_id, 3, 2], ["text", :name, 4, nil], ["text", :message, 0, nil]]}, []]
+  >> @client.create(@announcement.set_values({:name => 'user2 announcement'}))
+  => [:instance, {:url=>"/announcement/3", :new_rec=>false, :actions=>{:delete=>"/announcement/3"}, :name=>"announcement", :schema=>[["integer", :id, 2, 3], ["integer", :user_id, 3, 2], ["text", :name, 4, "user2 announcement"], ["text", :message, 0, nil]]}, []]
+  >> @client.read
+  => [[:instance, {:url=>"/announcement/1", :new_rec=>false, :actions=>nil, :name=>"announcement", :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 6, "user1 announcement"], ["text", :message, 2, nil]]}, []], [:instance, {:url=>"/announcement/2", :new_rec=>false, :actions=>nil, :name=>"announcement", :schema=>[["integer", :id, 2, 2], ["integer", :user_id, 3, 1], ["text", :name, 6, "user1 announcement2"], ["text", :message, 2, nil]]}, []], [:instance, {:url=>"/announcement/3", :new_rec=>false, :actions=>{:delete=>"/announcement/3"}, :name=>"announcement", :schema=>[["integer", :id, 2, 3], ["integer", :user_id, 3, 2], ["text", :name, 4, "user2 announcement"], ["text", :message, 0, nil]]}, []]]
+  >> @client.read({}, :auth => @user1_auth)
+  => [[:instance, {:url=>"/announcement/1", :new_rec=>false, :actions=>{:delete=>"/announcement/1"}, :name=>"announcement", :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :name, 4, "user1 announcement"], ["text", :message, 0, nil]]}, []], [:instance, {:url=>"/announcement/2", :new_rec=>false, :actions=>{:delete=>"/announcement/2"}, :name=>"announcement", :schema=>[["integer", :id, 2, 2], ["integer", :user_id, 3, 1], ["text", :name, 4, "user1 announcement2"], ["text", :message, 0, nil]]}, []], [:instance, {:url=>"/announcement/3", :new_rec=>false, :actions=>nil, :name=>"announcement", :schema=>[["integer", :id, 2, 3], ["integer", :user_id, 3, 2], ["text", :name, 6, "user2 announcement"], ["text", :message, 2, nil]]}, []]]
+
