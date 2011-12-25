@@ -4,9 +4,8 @@ module Marley
       @default_opts={:join_type => 'many_to_many'}
       def apply(*klasses)
         klasses.each do |klass|
-          klass=MR.const_get(klass) if klass.class==String
+          klass=MR.const_get(klass) if klass.is_a?(String)
           @instance_methods_mod.send(:append_features,klass)
-          #tag_class=MR.const_get(@opts[:tag_class_name])
           tag_class=@tag_class
           join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
           if join_type=='many_to_many'
@@ -29,8 +28,11 @@ module Marley
           define_method :rest_cols do 
             super << tag_col_name.to_sym
           end
+          define_method(:write_cols) {
+            super << tag_col_name.to_sym
+          }
 
-          define_method("#{tag_col_name}_ds".to_sym) { #e.g. _private_tags_dataset
+          define_method("#{tag_col_name}_ds".to_sym) { #e.g. _private_tags_ds
             send(tags_ds_name).filter({:tags__user_id => (tag_class.associations.include?(:user) ? $request[:user][:id] : nil)})
           }
           define_method(tag_col_name.to_sym) {    #e.g. _private_tags
