@@ -38,7 +38,7 @@ module Marley
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end
-    # @todo:  make options inheritable?
+    # Deprecated.
     def self.rest_opts_mod(name,opts,key_proc)
       Module.new do |m|
         @create_opts=[name,opts,key_proc]

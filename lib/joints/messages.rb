@@ -3,20 +3,25 @@ module Marley
     class Messages < Joint
       module Resources
         class Message < Sequel::Model
-          sti # sets single_table_inheritance plugin
+          sti 
+          MR::User.join_to(self)
           def validate
             super
             validates_presence [:title]
           end
         end
         class PrivateMessage < Message
-          User.join_to(self)
+          ro_cols[:all]=[/.*/]
+          Marley::Utils.many_to_many_join(self, MR::User)
           def self.list_dataset
             current_user_ds
           end
           def validate
             super
             validates_presence [:recipients]
+          end
+          def after_save
+            super
           end
         end
         class PublicMessage < Message

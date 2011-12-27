@@ -3,10 +3,7 @@ Sequel::Model.plugin :validation_helpers
 module Marley
   module Plugins
     class CurrentUserMethods < Plugin
-      @default_opts={
-        :join_type => 'many_to_one',
-        :class_attributes =>  [ [:owner_col,:user_id] ]
-      }
+      @default_opts={ :class_attributes =>  [ [:owner_col,:user_id] ] }
       module ClassMethods
         def self.extended(o)
           o.ro_cols[:current_user_role]={nil => [/.*/] }
