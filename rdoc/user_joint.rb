@@ -52,7 +52,11 @@ module Marley
         super || 'reader' unless User.current_user.new?
       end
       def actions(parent_instance=nil)
-        {:delete => self.url} if current_user_role=='owner' && ! self.new?
+        if current_user_role=='owner' && ! self.new?
+          {:delete => self.url}.update(super ? super : {})
+        else
+          super
+        end
       end
     end
   end

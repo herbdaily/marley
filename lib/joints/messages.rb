@@ -4,10 +4,14 @@ module Marley
       module Resources
         class Message < Sequel::Model
           sti 
+          instance_actions[false]={:get => 'reply'}
           MR::User.join_to(self)
           def validate
             super
             validates_presence [:title]
+          end
+          def reply
+            self.new(:title => title,:content => content)
           end
         end
         class PrivateMessage < Message
@@ -27,10 +31,14 @@ module Marley
         class PublicMessage < Message
           ro_cols[:current_user_role]={'reader' => [/.*/]}
           def current_user_role
-            super || 'reader' unless User.current_user.new?
+            super || 'reader' unless MR::User.current_user.new?
           end
           def actions(parent_instance=nil)
-            {:delete => self.url} if current_user_role=='owner' && ! self.new?
+            if current_user_role=='owner' && ! self.new?
+              {:delete => self.url}.update(super ? super : {})
+            else
+              super
+            end
           end
         end
       end

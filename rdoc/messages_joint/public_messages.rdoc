@@ -1,0 +1,23 @@
+
+==Public Messages
+
+  setup
+    (1 .. 5).each { |i|
+      instance_variable_get(:"@client#{i}").resource_name='public_message'
+    }
+  end
+example: user1 writes post
+
+>>@msg=@client1.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/public_message/", :name=>"public_message", :schema=>[["integer", :user_id, 3, 1], ["text", :title, 4, nil], ["text", :content, 0, nil]]}, []]
+
+>> @client1.create(@msg,:code => 400)
+=> [:error, {:error_type=>"validation", :description=>nil, :error_details=>{:title=>["is required"]}}]
+
+>> @msg=@client1.create(@msg.set_values(:title => 'test'))
+=> [:instance, {:new_rec=>false, :actions=>{:delete=>"/public_message/1", :get=>"reply"}, :url=>"/public_message/1", :name=>"public_message", :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :title, 4, "test"], ["text", :content, 0, nil]]}, []]
+
+!!!
+
+
+

@@ -10,11 +10,9 @@
     user=user_client.read({},:method => 'new').set_values(:password => 'asdfasdf', :confirm_password => 'asdfasdf')
     (1 .. 5).each { |i|
       user_client.create(user.set_values(:name => "user#{i}"))
-      instance_variable_set(:"@user#{i}_auth", ["user#{i}",'asdfasdf'])
-      instance_variable_set(:"@client#{i}", Marley::TestClient.new(:auth => instance_variable_get("@user#{i}_auth")))
+      instance_variable_set(:"@client#{i}", Marley::TestClient.new(:auth => ["user#{i}",'asdfasdf'] ))
     }
   end
 
 examples:
 
-!!!

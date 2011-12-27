@@ -1,0 +1,10 @@
+
+==Private Messages
+
+  setup
+    (1 .. 5).each { |i|
+      instance_variable_get(:"@client#{i}").resource_name='private_message'
+    }
+  end
+
+example: user1 sends message to user2

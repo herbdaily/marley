@@ -38,11 +38,15 @@ module Marley
 
         def col_mods(mod_type)
           @mod=self.class.send(mod_type)
-          @mod[new?].to_a + @mod[:all].to_a
+          if @mod.keys.include?(:all) && @mod.keys.include?(new?)
+            Marley::Utils.combine(@mod[:all],@mod[new?])
+          else
+            @mod[:all] || @mod[new?]
+          end
         end
         def col_mods_match(mod_type); lambda {|c| c.to_s.match(Regexp.union(col_mods(mod_type)))}; end
 
-        def rest_cols; (columns.reject &col_mods_match(:reject_cols)) + col_mods(:derived_cols);end
+        def rest_cols; (columns.reject &col_mods_match(:reject_cols)) + col_mods(:derived_cols).to_a;end
         def write_cols; rest_cols.reject &col_mods_match(:ro_cols);end
         def hidden_cols; rest_cols.select &col_mods_match(:hidden_cols);end
         def required_cols; rest_cols.select &col_mods_match(:required_cols);end

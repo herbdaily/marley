@@ -17,7 +17,7 @@ DB.create_table :messages do
   integer :user_id, :index => true
   text :message_type, :index => true
   text :title,  :index => true,:null => false
-  text :message
+  text :content
 end
 DB.create_table :messages_users do
   primary_key :id

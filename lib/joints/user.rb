@@ -29,7 +29,12 @@ module Marley
       end
       module InstanceMethods
         def col_mods(mod_type)
-          super + (@mod[:current_user_role] && @mod[:current_user_role][current_user_role]).to_a
+          foo=super
+          if @mod[:current_user_role] && @mod[:current_user_role].keys.include?(current_user_role) 
+            Marley::Utils.combine(foo, @mod[:current_user_role][current_user_role])
+          else
+            foo
+          end
         end
         def after_initialize
           super
