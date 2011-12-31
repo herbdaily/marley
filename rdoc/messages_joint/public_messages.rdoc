@@ -26,6 +26,15 @@ example: user1 writes, edits, deletes post
 >> @client1.del({},:url => @msg.url)
 => [:instance, {:new_rec=>false, :actions=>{:delete=>"/public_message/1", :get=>"reply"}, :url=>"/public_message/1", :name=>"public_message", :schema=>[["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :title, 4, "test"], ["text", :content, 0, "asdf"]]}, []]
 
+example:  several users
+>> @u1m1=@client1.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/public_message/", :name=>"public_message", :schema=>[["integer", :user_id, 3, 1], ["text", :title, 4, nil], ["text", :content, 0, nil]]}, []]
+>> @u1m2=@client1.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/public_message/", :name=>"public_message", :schema=>[["integer", :user_id, 3, 1], ["text", :title, 4, nil], ["text", :content, 0, nil]]}, []]
+>> @u2m1=@client2.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/public_message/", :name=>"public_message", :schema=>[["integer", :user_id, 3, 2], ["text", :title, 4, nil], ["text", :content, 0, nil]]}, []]
+
+
 !!!
 
 
