@@ -1,0 +1,102 @@
+
+=== Orm Rest Convenience
+
+This plugin tries to be ORM agnostic but I've only tested it with Sequel.  You are encouraged to fork this plugin and make it work with other ORM's.
+
+setup
+  @client=Marley::TestClient.new(:resource_name => 'user')
+end
+
+examples:
+
+  => Marley::Resources::User
+  >> MR::User.resource_name
+  => "user"
+  >> MR::User.foreign_key_name
+  => :user_id
+  >> MR::User.reggae_link
+  => [:link, {:url=>"/user/", :title=>"User"}]
+  >> MR::User.reggae_link('new')
+  => [:link, {:url=>"/user/new", :title=>"New User"}]
+  >> MR::User.model_actions
+  => {:get => [:new,:list]}
+
+  >> @client.read
+  => []
+  >> @client.read({},{:method => 'new'})
+  => [:instance, {:url=>"/user/", :new_rec=>true, :actions=>nil, :schema=>[["text", :name, 4, nil], ["text", :password, 4, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+
+  >> @client.create({},:code => 400)
+  => [:error, {:description=>nil, :error_type=>"validation", :error_details=>{:description=>["is required"], :name=>["is required"], :password=>["is required"]}}]
+  >> @client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdf', :'user[description]' => 'xxxx'})
+  => [:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]
+
+  >> MR::User[1].to_s
+  => "asdf"
+  >> MR::User[1].url
+  => "/user/1"
+  >> MR::User[1].reggae_link
+  => [:link, {:url=>"/user/1", :title=>""}]
+  >> MR::User[1].reggae_link('foobar')
+  => [:link, {:url=>"/user/1", :title=>"Foobar"}]
+  >> MR::User[1].rest_cols
+  => [:id, :name, :password, :description]
+  >> MR::User[1].write_cols
+  => [:name, :password, :description]
+  >> MR::User[1].hidden_cols
+  => []
+  >> MR::User[1].required_cols
+  => []
+  >> MR::User[1].reggae_schema
+  => [["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]]
+  >> MR::User[1].reggae_instance
+  => [:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]
+
+  >> @client.create({:'user[name]' => 'asdf',:'user[password]' => 'asdf', :'user[description]' => 'xxxx'},:code => 400)
+  => [:error, {:description=>nil, :error_type=>"validation", :error_details=>{:name=>["is already taken"]}}]
+  >> @client.create({:'user[name]' => 'asd',:'user[password]' => 'asdf', :'user[description]' => 'xxxx'})
+  => [:instance, {:url=>"/user/2", :schema=>[["integer", :id, 2, 2], ["text", :name, 4, "asd"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]
+  >> @client.read
+  => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []], [:instance, {:url=>"/user/2", :schema=>[["integer", :id, 2, 2], ["text", :name, 4, "asd"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
+  >> @client.del({},:instance_id => 2)
+  => [:instance, {:url=>"/user/2", :schema=>[["integer", :id, 2, 2], ["text", :name, 4, "asd"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]
+  >> @client.read
+  => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "xxxx"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
+  >> @client.read({},:instance_id => 2, :code => 404)
+  => [:error, {:description=>"Not Found", :error_type=>"routing", :error_details=>nil}]
+  >> @client.update({:'user[description]' => 'ddd'},:instance_id => 1)
+  => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
+  >> @client.update({},:instance_id => 1)
+  => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
+
+>> MR::User.reject_cols[true]=['name']
+=> ["name"]
+>> MR::User.new.rest_cols
+=> [:id, :password, :description]
+>> @client.read({}, :method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["integer", :id, 2, nil], ["text", :password, 4, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+>> @client.read
+=> [[:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :name=>"user"}, []]]
+>> MR::User.reject_cols[false]=['name']
+=> ["name"]
+>> @client.read
+=> [[:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :name=>"user"}, []]]
+
+>> MR::User.ro_cols[false]=['description']
+=> ["description"]
+>> @client.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["integer", :id, 2, nil], ["text", :password, 4, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+>> @client.read
+=> [[:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :schema=>[["integer", :id, 0, 1], ["text", :password, 4, "asdf"], ["text", :description, 6, "ddd"]], :name=>"user"}, []]]
+
+
+>> MR::User.hidden_cols[true]=['password']
+=> ["password"]
+>> @client.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["integer", :id, 2, nil], ["text", :password, 5, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+
+>> MR::User.required_cols[true]=['id']
+=> ["id"]
+>> @client.read({},:method => 'new')
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["integer", :id, 6, nil], ["text", :password, 5, nil], ["text", :description, 4, nil]], :name=>"user"}, []]
+
