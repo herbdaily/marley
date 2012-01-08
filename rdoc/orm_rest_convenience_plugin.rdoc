@@ -65,9 +65,9 @@ examples:
   >> @client.read({},:instance_id => 2, :code => 404)
   => [:error, {:description=>"Not Found", :error_type=>"routing", :error_details=>nil}]
   >> @client.update({:'user[description]' => 'ddd'},:instance_id => 1)
-  => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
+  => [:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]
   >> @client.update({},:instance_id => 1)
-  => [[:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]]
+  => [:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 4, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]
 
 >> MR::User.reject_cols[true]=['name']
 => ["name"]

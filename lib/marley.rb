@@ -110,7 +110,7 @@ module Marley
       if $!.class.superclass==MarleyError
         $!.to_a
       else
-        p $!,$!.backtrace
+        p $!,$!.class,$!.backtrace
       end
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
