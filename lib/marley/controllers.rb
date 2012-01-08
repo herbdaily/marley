@@ -54,13 +54,10 @@ module Marley
     def rest_put
       raise RoutingError unless @instance
       params=($request[:post_params][@model.resource_name.to_sym]||{})
+      raise AuthorizationError if params.keys.find {|k| ! @instance.write_cols.include?(k) }
       params.keys.each {|k| @instance.send("#{k.to_s}=",params[k]) if k.to_s.match(/^_/)}
       @instance.modified!
       @instance.update_only(params,@instance.write_cols)
-      #(@instances || [@instance]).map do |i|
-      #  i.modified!
-      #  i.update_only($request[:post_params][@model.resource_name.to_sym].to_a,i.write_cols)
-      #end
     end
     def rest_delete
       raise RoutingError unless @instance

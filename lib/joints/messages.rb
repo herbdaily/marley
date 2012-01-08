@@ -11,7 +11,7 @@ module Marley
             validates_presence [:title]
           end
           def reply
-            self.new(:title => title,:content => content)
+            self.class.new(:title => "re: #{title}",:content => content)
           end
         end
         class PrivateMessage < Message
