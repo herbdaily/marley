@@ -13,19 +13,43 @@ module Marley
           def reply
             self.class.new(:title => "re: #{title}",:content => content)
           end
+          def author
+            MR::User[user_id].to_s
+          end
         end
         class PrivateMessage < Message
-          ro_cols[:all]=[/.*/]
+          ro_cols[false]=[/.*/]
+          attr_writer :recipients
+          def rest_cols
+            [:recipients] + super
+          end
           Marley::Utils.many_to_many_join(self, MR::User)
           def self.list_dataset
-            current_user_ds
+            filter(:id => DB[:messages_users].filter(:user_id => MR::User.current_user[:id]).select(:message_id))
+          end
+          def actions(parent_instance=nil)
+            return super if new? || ! recipients.to_s.match(/,/) 
+            [:reply, :reply_all]
+          end
+          def recipients
+            users.map{|u|u.name}.join(',')
+          end
+          def reply
+          end
+          def reply_all
           end
           def validate
             super
-            validates_presence [:recipients]
+            errors[:recipients]='Recipients must be specified' unless @recipients
+            @recipients=@recipients.split(',').map do |recipient_name|
+              u=MR::User[:name => recipient_name]
+              errors[:recipients] << "#{recipient_name} is not a valid message recipient" unless u
+              u
+            end
           end
           def after_save
             super
+            @recipients.each {|recipient| add_user recipient} 
           end
         end
         class PublicMessage < Message

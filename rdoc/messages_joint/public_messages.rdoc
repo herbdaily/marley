@@ -11,6 +11,7 @@
 
 example: user1 writes, edits, deletes post
 
+
 >>@msg=@client1.read({},:method => 'new')
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/public_message/", :name=>"public_message", :schema=>[["integer", :user_id, 3, 1], ["text", :title, 4, nil], ["text", :content, 0, nil]]}, []]
 
@@ -57,7 +58,6 @@ example:  two users, several messages
 
 
 
-!!!
 
 
 

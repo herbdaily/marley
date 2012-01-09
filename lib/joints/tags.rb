@@ -5,6 +5,8 @@ module Marley
       def apply(*klasses)
         klasses.each do |klass|
           klass=MR.const_get(klass) if klass.is_a?(String)
+          klass.derived_cols[:all]||=[]
+          klass.derived_cols[:all] << @tag_col_name.to_sym
           @instance_methods_mod.send(:append_features,klass)
           tag_class=@tag_class
           join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
@@ -26,9 +28,6 @@ module Marley
         add_to_write_cols=@opts[:add_to_write_cols?]
         @instance_methods_mod=Module.new do |m|
           attr_accessor tag_col_name
-          define_method :rest_cols do 
-            super << tag_col_name.to_sym
-          end
           if add_to_write_cols
             define_method(:write_cols) {
               super << tag_col_name.to_sym
