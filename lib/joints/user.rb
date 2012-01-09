@@ -83,8 +83,8 @@ module Marley
           set_dataset :users
           @owner_col=nil 
           reject_cols[:all]=['pw_hash']
-          derived_cols[true]=[:password,:confirm_password]
-          @derived_cols[:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
+          derived_after_cols[true]=[:password,:confirm_password]
+          @derived_after_cols[:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
           ro_cols[:current_user_role]={'new' => ['id']} 
           required_cols[true]=['password','confirm_password']
           def self.join_to(klass, user_id_col_name=nil)

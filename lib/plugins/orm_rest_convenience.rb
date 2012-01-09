@@ -4,7 +4,8 @@ module Marley
       @default_opts={:class_attributes =>  [
         [:model_actions,{:get => [:new, :list]}],
         [:instance_actions,{:all => nil}],
-        [:derived_cols,{:all => nil}],
+        [:derived_before_cols,{:all => nil}],
+        [:derived_after_cols,{:all => nil}],
         [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
         [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
         [:hidden_cols,{:all => [/_id$/]}],
@@ -46,7 +47,7 @@ module Marley
         end
         def col_mods_match(mod_type); lambda {|c| c.to_s.match(Regexp.union(col_mods(mod_type)))}; end
 
-        def rest_cols; (columns.reject &col_mods_match(:reject_cols)) + col_mods(:derived_cols).to_a;end
+        def rest_cols; col_mods(:derived_before_cols).to_a + (columns.reject &col_mods_match(:reject_cols)) + col_mods(:derived_after_cols).to_a;end
         def write_cols; rest_cols.reject &col_mods_match(:ro_cols);end
         def hidden_cols; rest_cols.select &col_mods_match(:hidden_cols);end
         def required_cols; rest_cols.select &col_mods_match(:required_cols);end
