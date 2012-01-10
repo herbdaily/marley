@@ -20,7 +20,7 @@ module Marley
           end
         end
         class PrivateMessage < Message
-          @ro_cols={:false => [/.*/]}
+          @ro_cols={false => [/.*/]}
           attr_writer :recipients
           def rest_cols
             [:recipients] + super
@@ -28,6 +28,9 @@ module Marley
           Marley::Utils.many_to_many_join(self, MR::User)
           def self.list_dataset
             filter(:id => DB[:messages_users].filter(:user_id => MR::User.current_user[:id]).select(:message_id))
+          end
+          def current_user_role
+            super || (self.users.include?(MR::User.current_user) && 'recipient')
           end
           def actions(parent_instance=nil)
             return super if new? || ! recipients.to_s.match(/,/) 
@@ -37,8 +40,10 @@ module Marley
             users.map{|u|u.name}.join(',')
           end
           def reply
+            super.reggae_instance.set_values(:recipients => author)
           end
           def reply_all
+            reply.set_values(:recipients => "#{author},#{recipients}".sub(/\b#{MR::User.current_user.name}\b,?/,''))
           end
           def validate
             super
@@ -56,11 +61,11 @@ module Marley
         end
         class PublicMessage < Message
           def current_user_role
-            super || 'reader' unless MR::User.current_user.new?
+            super || 'reader' 
           end
           def actions(parent_instance=nil)
             if current_user_role=='owner' && ! self.new?
-              {:delete => self.url}.update(super ? super : {})
+              {:delete => self.url}.update(super || {})
             else
               super
             end
