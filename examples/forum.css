@@ -1,3 +1,0 @@
-a.expandCollapse, a.expandCollapseAll{background-color:#398235;color:#fff;text-decoration:none;margin:.5em;font-weight:bold;}
-.collapsed > .instance > .colContainer,.collapsed > .instance > .instanceActions{display:none;}
-.collapsed > .instance > .post__titleColContainer,.collapsed > .instance > .private_message__titleColContainer{display:block;}
