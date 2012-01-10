@@ -5,6 +5,8 @@ module Marley
         class Message < Sequel::Model
           sti 
           instance_actions[false]={:get => 'reply'}
+          derived_before_cols[false]=[:author]
+          @ro_cols={:current_user_role => {'reader' => [/.*/],'owner' => [/^author$/]}}
           MR::User.join_to(self)
           def validate
             super
@@ -18,7 +20,7 @@ module Marley
           end
         end
         class PrivateMessage < Message
-          ro_cols[false]=[/.*/]
+          @ro_cols={:false => [/.*/]}
           attr_writer :recipients
           def rest_cols
             [:recipients] + super
@@ -53,7 +55,6 @@ module Marley
           end
         end
         class PublicMessage < Message
-          ro_cols[:current_user_role]={'reader' => [/.*/]}
           def current_user_role
             super || 'reader' unless MR::User.current_user.new?
           end

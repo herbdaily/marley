@@ -10,7 +10,7 @@ module Marley
       if old.is_a?(Hash) && new.is_a?(Hash)
         old.merge(new) {|k,o,n|Marley::Utils.combine(o,n)}
       elsif old.is_a?(Array) && new.is_a?(Array)
-        old + new
+        (old + new).uniq
       else
         new
       end

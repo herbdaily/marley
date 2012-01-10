@@ -15,25 +15,25 @@ example: user1 sends message to user2
 >> @client1.create(@msg.set_values(:title => 'asdf',:recipients => 'xxx'),:code => 400)
 => [:error, {:error_type=>"validation", :error_details=>{:recipients=>["xxx is not a valid message recipient"]}, :description=>nil}]
 >> @client1.create(@msg.set_values(:title => 'asdf',:recipients => 'user2'))
-=> [:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user2"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :title, 6, "asdf"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []]
+=> [:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 0, "user2"], ["text", :author, 2, "user1"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :title, 4, "asdf"], ["text", :content, 0, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []]
 
 >> @client1.read
 => []
 >> @client3.read
 => []
 >> @client2.read
-=> [[:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user2"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :title, 6, "asdf"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []]]
+=> [[:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user2"], ["text", :author, 2, "user1"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :title, 6, "asdf"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []]]
 
 example: user2 sends message to user3 and user4, each of which replies
 
 >> @msg=@client2.read({},:method => 'new')
 => [:instance, {:url=>"/private_message/", :schema=>[["text", :recipients, 0, ""], ["integer", :user_id, 3, 2], ["text", :title, 4, nil], ["text", :content, 0, nil]], :name=>"private_message", :new_rec=>true, :actions=>nil}, []]
 >> @client2.create(@msg.set_values(:title => 'message1',:recipients => 'user3,user4'))
-=> [:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user3,user4"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 2], ["text", :title, 6, "message1"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]
+=> [:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 0, "user3,user4"], ["text", :author, 2, "user2"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 2], ["text", :title, 4, "message1"], ["text", :content, 0, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]
 >> @client3.read
-=> [[:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user3,user4"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 2], ["text", :title, 6, "message1"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
+=> [[:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user3,user4"], ["text", :author, 2, "user2"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 2], ["text", :title, 6, "message1"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
 >> @client4.read
-=> [[:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user3,user4"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 2], ["text", :title, 6, "message1"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
+=> [[:instance, {:url=>"/private_message/1", :schema=>[["text", :recipients, 2, "user3,user4"], ["text", :author, 2, "user2"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 2], ["text", :title, 6, "message1"], ["text", :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
 >> @client1.read
 => []
 >> @client2.read
