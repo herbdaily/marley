@@ -1,24 +1,24 @@
 module Marley
   module Joints
     class Messages < Joint
-      module Resources
-        class Message < Sequel::Model
-          sti 
-          instance_actions[false]={:get => 'reply'}
-          derived_before_cols[false]=[:author]
-          @ro_cols={:current_user_role => {'reader' => [/.*/],'owner' => [/^author$/]}}
-          MR::User.join_to(self)
-          def validate
-            super
-            validates_presence [:title]
-          end
-          def reply
-            self.class.new(:title => "re: #{title}",:content => content)
-          end
-          def author
-            MR::User[user_id].to_s
-          end
+      class Message < Sequel::Model
+        sti 
+        instance_actions[false]={:get => 'reply'}
+        derived_before_cols[false]=[:author]
+        @ro_cols={:current_user_role => {'reader' => [/.*/],'owner' => [/^author$/]}}
+        MR::User.join_to(self)
+        def validate
+          super
+          validates_presence [:title]
         end
+        def reply
+          self.class.new(:title => "re: #{title}",:content => content)
+        end
+        def author
+          MR::User[user_id].to_s
+        end
+      end
+      module Resources
         class PrivateMessage < Message
           @ro_cols={false => [/.*/]}
           attr_writer :recipients

@@ -26,7 +26,14 @@ module Marley
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
-  Resources=Module.new
+  module Resources
+    def self.resources_responding_to(method)
+      constants.map{|c| r=const_get(c); r if r.respond_to?(method)}.compact
+    end
+    def self.map_resource_methods(method)
+      constants.map{|c| r=const_get(c); r.send(method) if r.respond_to?(method)}.compact
+    end
+  end
   
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
