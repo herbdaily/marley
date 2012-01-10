@@ -59,4 +59,6 @@ example: without the joint, then with the joint
 
 :include: rdoc/tags_joint.rdoc
 
+:include: rdoc/messages_joint.rdoc
+
 
