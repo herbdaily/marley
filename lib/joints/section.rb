@@ -3,9 +3,20 @@
 module Marley
   module Plugins
     class Section < Plugin
-      @default_opts={:class_attributes =>  [[:section, nil]]}
+      @default_opts={ 
+        :class_attributes =>  [:section_title,:section_nav,:section_desc,:section_contents],
+        :lazy_key => lambda {MR::User.current_user.class}
+      }
+      def apply(*klasses)
+        super
+      end
       module ClassMethods
         def section
+          ReggaeSection.new({
+            :title => section_title,
+            :navigation => section_nav,
+            :description => section_desc},
+            section_contents)
         end
       end
     end
@@ -20,9 +31,6 @@ module Marley
               :decription => 'Welcome',
               :navigation => MR.resources_responding_to(:section).map{|r| r.reggae_link('section')}
             )
-          end
-          def initialize(klass)
-            ReggaeSection.new(klass.section)
           end
         end
       end

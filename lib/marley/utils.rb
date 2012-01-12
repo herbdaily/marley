@@ -15,7 +15,8 @@ module Marley
         new
       end
     end
-    def self.class_attributes(attr_name, val=nil)
+    def self.class_attributes(attr_name, val=nil, &block)
+      key_proc= block if block_given?
       Module.new do |m|
         attr_writer attr_name.to_sym
         @attr_name, @val=[attr_name,val]

@@ -15,9 +15,6 @@ module Marley
           @opts[:class_attributes].to_a.each do |att|
             resource.extend Marley::Utils.class_attributes(*att)
           end
-          @opts[:additional_extensions].to_a.each do |ext|
-            resource.extend(ext)
-          end
         end
         nil
       end
