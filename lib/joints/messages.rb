@@ -5,7 +5,7 @@ module Marley
         sti 
         instance_actions![false]={:get => 'reply'}
         derived_before_cols![false]=[:author]
-        @ro_cols={:current_user_role => {'reader' => [/.*/],'owner' => [/^author$/]}}
+        ro_cols![:current_user_role] = {'reader' => [/.*/],'owner' => [/^author$/]}
         MR::User.join_to(self)
         def validate
           super
@@ -20,7 +20,7 @@ module Marley
       end
       module Resources
         class PrivateMessage < Message
-          @ro_cols={false => [/.*/]}
+          ro_cols![false] = [/.*/]
           attr_writer :recipients
           def rest_cols
             [:recipients] + super
