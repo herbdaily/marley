@@ -16,13 +16,7 @@ module Marley
       end
     end
     def self.class_attr(attr_name, val=nil, op=nil, &block)
-      if !block
-        if !op
-          block= lambda {|old, new| Marley::Utils.combine(old,new)}
-        else
-          block = lambda{ |o, x| o.__send__(op, x) }
-        end
-      end
+      block||=op ? lambda{ |o, x| o.__send__(op, x) } : lambda {|old, new| Marley::Utils.combine(old,new)}
       Module.new do |m|
         define_method :"#{attr_name}!" do |*args|
           if instance_variable_defined?("@#{attr_name}")
