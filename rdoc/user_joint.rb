@@ -23,7 +23,6 @@ DB.create_table :messages do
   text :message
 end
 
-Sequel::Model.plugin :validation_helpers
 Marley.plugin('orm_rest_convenience').apply(Sequel::Model)
 Marley.joint 'user'
 Marley.plugin('current_user_methods').apply(Sequel::Model)
@@ -47,7 +46,7 @@ module Marley
       end
     end
     class Announcement < Message
-      ro_cols[:current_user_role]={'reader' => [/.*/]}
+      ro_cols![:current_user_role]={'reader' => [/.*/]}
       def current_user_role
         super || 'reader' unless User.current_user.new?
       end

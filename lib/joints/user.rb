@@ -6,7 +6,7 @@ module Marley
       @default_opts={ :class_attributes =>  [ [:owner_col,:user_id] ] }
       module ClassMethods
         def self.extended(o)
-          o.ro_cols[:current_user_role]={nil => [/.*/] }
+          o.ro_cols![:current_user_role]={nil => [/.*/] }
         end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
@@ -82,15 +82,15 @@ module Marley
           sti
           set_dataset :users
           @owner_col=nil 
-          reject_cols[:all]=['pw_hash']
-          derived_after_cols[true]=[:password,:confirm_password]
-          @derived_after_cols[:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
-          ro_cols[:current_user_role]={'new' => ['id']} 
-          required_cols[true]=['password','confirm_password']
+          reject_cols![:all]=['pw_hash']
+          derived_after_cols![true]=[:password,:confirm_password]
+          derived_after_cols![:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
+          ro_cols![:current_user_role]={'new' => ['id']} 
+          required_cols![true]=['password','confirm_password']
           def self.join_to(klass, user_id_col_name=nil)
             user_id_col_name||='user_id'
             klass=MR.const_get(klass) if klass.class==String
-            klass.owner_col=user_id_col_name
+            klass.owner_col!(user_id_col_name)
             one_to_many klass.resource_name.to_sym, :class => klass, :key => user_id_col_name
             klass.send(:many_to_one, :user, :class => MR::User, :key => user_id_col_name)
           end
