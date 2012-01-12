@@ -15,14 +15,43 @@ module Marley
         new
       end
     end
+    def self.class_attr(attr_name, val=nil, op=nil, &block)
+      if !block
+        if !op
+          block= lambda {|old, new| Marley::Utils.combine(old,new)}
+        else
+          block = lambda{ |o, x| o.__send__(op, x) }
+        end
+      end
+      Module.new do |m|
+        define_method :"#{attr_name}!" do |*args|
+          if instance_variable_defined?("@#{attr_name}")
+            instance_variable_get("@#{attr_name}")
+          else
+            instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
+          end
+        end
+        define_method attr_name.to_sym do
+          ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
+            if a.respond_to?(:"#{attr_name}!")
+              block.call(v,a.__send__(:"#{attr_name}!"))
+            else
+              v
+            end
+          end
+        end
+      end
+    end
     def self.class_attributes(attr_name, val=nil, &block)
-      key_proc= block if block_given?
       Module.new do |m|
         attr_writer attr_name.to_sym
         @attr_name, @val=[attr_name,val]
         def self.extended(o)
           super
           o.send("#{@attr_name}=",Marshal.load(Marshal.dump(@val)))
+        end
+        define_method :"#{attr_name}!" do |*args|
+
         end
         define_method attr_name.to_sym do
           my_val=instance_variable_defined?("@#{attr_name}") && instance_variable_get("@#{attr_name}")
