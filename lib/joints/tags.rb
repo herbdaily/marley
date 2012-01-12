@@ -5,8 +5,8 @@ module Marley
       def apply(*klasses)
         klasses.each do |klass|
           klass=MR.const_get(klass) if klass.is_a?(String)
-          klass.derived_after_cols[:all]||=[]
-          klass.derived_after_cols[:all] << @tag_col_name.to_sym
+          klass.derived_after_cols![:all]||=[]
+          klass.derived_after_cols![:all] << @tag_col_name.to_sym
           @instance_methods_mod.send(:append_features,klass)
           tag_class=@tag_class
           join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
