@@ -1,7 +1,7 @@
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
-      @default_opts={:class_attributes =>  [
+      @default_opts={:class_attrs =>  [
         [:model_actions,{:get => [:new, :list]}],
         [:instance_actions,{:all => nil}],
         [:derived_before_cols,{:all => nil}],

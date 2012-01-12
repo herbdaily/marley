@@ -4,7 +4,7 @@ module Marley
   module Plugins
     class Section < Plugin
       @default_opts={ 
-        :class_attributes =>  [:section_title,:section_nav,:section_desc,:section_contents],
+        :class_attrs =>  [:section_title,:section_nav,:section_desc,:section_contents],
         :lazy_key => lambda {MR::User.current_user.class}
       }
       def apply(*klasses)
