@@ -9,7 +9,7 @@ DB.create_table :users do
   primary_key :id
   text :name,:unique => true, :null => false
   text :password, :null => false
-  text :description, :null => false
+  text :description
 end
 
 Marley.config(:http_auth => false)
