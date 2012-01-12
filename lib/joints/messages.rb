@@ -3,8 +3,8 @@ module Marley
     class Messages < Joint
       class Message < Sequel::Model
         sti 
-        instance_actions[false]={:get => 'reply'}
-        derived_before_cols[false]=[:author]
+        instance_actions![false]={:get => 'reply'}
+        derived_before_cols![false]=[:author]
         @ro_cols={:current_user_role => {'reader' => [/.*/],'owner' => [/^author$/]}}
         MR::User.join_to(self)
         def validate
