@@ -36,8 +36,20 @@ module Marley
         end
       end
     end
+    def self.lazy_class_attrs(key_proc,atts,op=nil,&block)
+      atts.map do |att|
+        att=[att] unless att.is_a?(Array)
+        Marley::Utils.class_attr(att[0], {key_proc => att[1]}, op) &block
+      end
+    end
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
+    end
+    class LazyAttrs < Hash
+      def [](key)
+        return super if key==:all
+        Marley::Utils.combine(self[:all],(key.respond_to?(:call) ?  super[key.call] : super))
+      end
     end
   end
 end
