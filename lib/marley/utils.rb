@@ -1,6 +1,44 @@
 
 module Marley
   module Utils
+    class LazyHash < Hash
+      def [](key)
+        key.respond_to?(:call) ?  super[key.call] : super
+      end
+      def combined
+        all=self.delete(:all)
+        keys.inject(all) { |res, key| Marley::Utils.combine(res,self[key])}
+      end
+    end
+    module ClassAttrs
+      def lazy_class_attrs(key_proc,atts,op=nil,&block)
+        atts.each do |att|
+          att=[att] unless att.is_a?(Array)
+          class_attr(att[0], Marley::Utils::LazyHash[key_proc => att[1]], op) &block
+        end
+      end
+      def class_attr(attr_name, val=nil, op=nil, &block)
+        block||=op ? lambda{ |o, x| o.__send__(op, x) } : lambda {|old, new| Marley::Utils.combine(old,new)}
+        extend Module.new do |m|
+          define_method :"#{attr_name}!" do |*args|
+            if instance_variable_defined?("@#{attr_name}")
+              instance_variable_get("@#{attr_name}")
+            else
+              instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
+            end
+          end
+          define_method attr_name.to_sym do
+            ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
+              if a.respond_to?(:"#{attr_name}!")
+                block.call(v,a.__send__(:"#{attr_name}!"))
+              else
+                v
+              end
+            end
+          end
+        end
+      end
+    end
     def self.many_to_many_join(lclass, rclass)
       join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_')
       lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
@@ -36,20 +74,8 @@ module Marley
         end
       end
     end
-    def self.lazy_class_attrs(key_proc,atts,op=nil,&block)
-      atts.map do |att|
-        att=[att] unless att.is_a?(Array)
-        Marley::Utils.class_attr(att[0], {key_proc => att[1]}, op) &block
-      end
-    end
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
-    end
-    class LazyAttrs < Hash
-      def [](key)
-        return super if key==:all
-        Marley::Utils.combine(self[:all],(key.respond_to?(:call) ?  super[key.call] : super))
-      end
     end
   end
 end
