@@ -12,14 +12,14 @@ module Marley
     end
     module ClassAttrs
       def lazy_class_attrs(key_proc,atts,op=nil,&block)
-        atts.each do |att|
+        atts.to_a.each do |att|
           att=[att] unless att.is_a?(Array)
           class_attr(att[0], Marley::Utils::LazyHash[key_proc => att[1]], op) &block
         end
       end
       def class_attr(attr_name, val=nil, op=nil, &block)
         block||=op ? lambda{ |o, x| o.__send__(op, x) } : lambda {|old, new| Marley::Utils.combine(old,new)}
-        extend Module.new do |m|
+        extend(Module.new do |m|
           define_method :"#{attr_name}!" do |*args|
             if instance_variable_defined?("@#{attr_name}")
               instance_variable_get("@#{attr_name}")
@@ -36,7 +36,7 @@ module Marley
               end
             end
           end
-        end
+        end)
       end
     end
     def self.many_to_many_join(lclass, rclass)
