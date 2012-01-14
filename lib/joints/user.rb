@@ -54,14 +54,6 @@ module Marley
             return "owner" if owners.include?($request[:user])
           end
         end
-        def attr_for_current_user(attr_name)
-          a=self.class.send(attr_name)
-          if a.respond_to?(:keys) && a.keys.include?(current_user_role)
-            a[current_user_role]
-          else
-            a
-          end
-        end
         def owners
           if self.class.to_s.match(/User$/)||self.class.superclass.to_s.match(/User$/)
             [self]
