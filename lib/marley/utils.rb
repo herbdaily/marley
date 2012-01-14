@@ -53,27 +53,6 @@ module Marley
         new
       end
     end
-    def self.class_attr(attr_name, val=nil, op=nil, &block)
-      block||=op ? lambda{ |o, x| o.__send__(op, x) } : lambda {|old, new| Marley::Utils.combine(old,new)}
-      Module.new do |m|
-        define_method :"#{attr_name}!" do |*args|
-          if instance_variable_defined?("@#{attr_name}")
-            instance_variable_get("@#{attr_name}")
-          else
-            instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
-          end
-        end
-        define_method attr_name.to_sym do
-          ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
-            if a.respond_to?(:"#{attr_name}!")
-              block.call(v,a.__send__(:"#{attr_name}!"))
-            else
-              v
-            end
-          end
-        end
-      end
-    end
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }
     end
