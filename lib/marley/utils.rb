@@ -9,6 +9,7 @@ module Marley
           include(Module.new do |m|
             define_method :"_#{att[0]}" do
               a=self.class.send("#{att[0]}!")
+              p a
               a.keys.inject(nil) {|res,key| 
                 if key.respond_to?(:call)
                   all=a[key][:all]

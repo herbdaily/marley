@@ -3,9 +3,9 @@ module Marley
     class Messages < Joint
       class Message < Sequel::Model
         sti 
-        instance_actions![false]={:get => 'reply'}
-        derived_before_cols![false]=[:author]
-        ro_cols![:current_user_role] = {'reader' => [/.*/],'owner' => [/^author$/]}
+        instance_actions![MP::NEW_REC_PROC][false]={:get => 'reply'}
+        derived_before_cols![MP::NEW_REC_PROC][false]=[:author]
+        ro_cols![MP::CURRENT_USER_ROLE_PROC] = {'reader' => [/.*/],'owner' => [/^author$/]}
         MR::User.join_to(self)
         def validate
           super
@@ -20,7 +20,7 @@ module Marley
       end
       module Resources
         class PrivateMessage < Message
-          ro_cols![false] = [/.*/]
+          @ro_cols={MP::NEW_REC_PROC => {false => [/.*/], true => ['id', 'user_id','author']}}
           attr_writer :recipients
           def rest_cols
             [:recipients] + super
