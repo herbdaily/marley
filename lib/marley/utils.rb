@@ -8,12 +8,11 @@ module Marley
           class_attr(att[0], {key_proc => att[1]}, op, &block)
           include(Module.new do |m|
             define_method :"_#{att[0]}" do
-              a=self.class.send(att[0])
+              a=self.class.send("#{att[0]}!")
               a.keys.inject(nil) {|res,key| 
                 if key.respond_to?(:call)
-                  all=a[key].delete(:all)
-                  dyn_key=key.call(self)
-                  v=a[key].has_key?(dyn_key) ? a[key][dyn_key] : all
+                  all=a[key][:all]
+                  v=(a[key].has_key?(dyn_key=key.call(self)) && a[key][dyn_key] ) || all || res
                   Marley::Utils.combine(res,Marley::Utils.combine(all, v)) 
                 else
                   Marley::Utils.combine(res,a[:key])
@@ -31,12 +30,12 @@ module Marley
               instance_variable_get("@#{attr_name}")
             else
               #instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
-              instance_variable_set("@#{attr_name}", val.nil? ? nil : val.dup)
+              instance_variable_set("@#{attr_name}", (val.dup rescue val))
             end
           end
           define_method attr_name.to_sym do
             #ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
-            ancestors.reverse.inject(val.nil? ? nil : val.dup) do |v, a|
+            ancestors.reverse.inject((val.dup rescue val)) do |v, a|
               if a.respond_to?(:"#{attr_name}!")
                 block.call(v,a.__send__(:"#{attr_name}!"))
               else

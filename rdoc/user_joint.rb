@@ -46,7 +46,7 @@ module Marley
       end
     end
     class Announcement < Message
-      ro_cols![:current_user_role]={'reader' => [/.*/]}
+      ro_cols![MP::CURRENT_USER_ROLE_PROC]={'reader' => [/.*/]}
       def current_user_role
         super || 'reader' unless User.current_user.new?
       end

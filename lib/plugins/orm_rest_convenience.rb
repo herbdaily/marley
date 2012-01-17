@@ -6,8 +6,8 @@ module Marley
         :class_attrs =>[ [:model_actions,{:get => [:new, :list]}] ],
         :lazy_class_attrs_key_proc => NEW_REC_PROC,
         :lazy_class_attrs =>  [ [:instance_actions,{:all => nil}],
-        [:derived_before_cols,{:all => nil}],
-        [:derived_after_cols,{:all => nil}],
+        [:derived_before_cols,{:all => []}],
+        [:derived_after_cols,{:all => []}],
         [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
         [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
         [:hidden_cols,{:all => [/_id$/]}],
@@ -18,8 +18,10 @@ module Marley
         # the next 2 will have to be overridden for most applications
         def authorize(verb); true ; end
         def requires_user?; false; end
+
         def resource_name; self.name.sub(/.*::/,'').underscore; end
         def foreign_key_name; :"#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end
+
         def list(params={})
           if respond_to?(:list_dataset)
             list_dataset.filter(params).all
