@@ -8,7 +8,6 @@ setup
 end
 
 examples:
-
   => Marley::Resources::User
   >> MR::User.resource_name
   => "user"
@@ -69,33 +68,33 @@ examples:
   >> @client.update({},:instance_id => 1)
   => [:instance, {:url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 0, "ddd"]], :new_rec=>false, :actions=>nil, :name=>"user"}, []]
 
->> MR::User.reject_cols![true]=['name']
-=> ["name"]
+>> MR::User.reject_cols![MP::NEW_REC_PROC][true] << 'name'
+=> [/^id$/, /_type$/, /date_(created|updated)/, "name"]
 >> MR::User.new.rest_cols
 => [:password, :description]
 >> @client.read({}, :method => 'new')
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["text", :password, 4, nil], ["text", :description, 0, nil]], :name=>"user"}, []]
 >> @client.read
 => [[:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :name, 4, "asdf"], ["text", :password, 4, "asdf"], ["text", :description, 0, "ddd"]], :name=>"user"}, []]]
->> MR::User.reject_cols![false]=['name']
-=> ["name"]
+>> MR::User.reject_cols![MP::NEW_REC_PROC][false] << 'name'
+=> [/_type$/, "name"]
 >> @client.read
 => [[:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :password, 4, "asdf"], ["text", :description, 0, "ddd"]], :name=>"user"}, []]]
 
->> MR::User.ro_cols![false]=['description']
-=> ["description"]
+>> MR::User.ro_cols![MP::NEW_REC_PROC][false] << 'description'
+=> [/^id$/, /_id$/, /date_(created|updated)/, "description"]
 >> @client.read({},:method => 'new')
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["text", :password, 4, nil], ["text", :description, 0, nil]], :name=>"user"}, []]
 >> @client.read
 => [[:instance, {:new_rec=>false, :actions=>nil, :url=>"/user/1", :schema=>[["integer", :id, 2, 1], ["text", :password, 4, "asdf"], ["text", :description, 2, "ddd"]], :name=>"user"}, []]]
 
 
->> MR::User.hidden_cols![true]=['password']
+>> MR::User.hidden_cols![MP::NEW_REC_PROC][true]=['password']
 => ["password"]
 >> @client.read({},:method => 'new')
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["text", :password, 5, nil], ["text", :description, 0, nil]], :name=>"user"}, []]
 
->> MR::User.required_cols![true]=['description']
+>> MR::User.required_cols![MP::NEW_REC_PROC][true]=['description']
 => ["description"]
 >> @client.read({},:method => 'new')
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :schema=>[["text", :password, 5, nil], ["text", :description, 4, nil]], :name=>"user"}, []]

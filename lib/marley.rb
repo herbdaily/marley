@@ -97,7 +97,7 @@ module Marley
       $request[:verb]="rest_#{verb}"
       rn=$request[:path] ? $request[:path][0].camelize : @opts[:default_resource]
       raise AuthenticationError if (@opts[:http_auth] && $request[:user].new? && ! Resources.constants.include?(rn))
-      raise RoutingError unless Resources.constants.include?(rn)
+      raise RoutingError unless Resources.const_defined?(rn)
       @resource=Resources.const_get(rn)
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
       @controller=nil

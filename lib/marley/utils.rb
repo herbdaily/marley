@@ -1,20 +1,26 @@
 
 module Marley
   module Utils
-    class LazyHash < Hash
-      def [](key)
-        key.respond_to?(:call) ?  super[key.call] : super
-      end
-      def combined
-        all=self.delete(:all)
-        keys.inject(all) { |res, key| Marley::Utils.combine(res,self[key])}
-      end
-    end
     module ClassAttrs
       def lazy_class_attrs(key_proc,atts,op=nil,&block)
         atts.to_a.each do |att|
           att=[att] unless att.is_a?(Array)
-          class_attr(att[0], Marley::Utils::LazyHash[key_proc => att[1]], op) &block
+          class_attr(att[0], {key_proc => att[1]}, op, &block)
+          include(Module.new do |m|
+            define_method :"_#{att[0]}" do
+              a=self.class.send(att[0])
+              a.keys.inject(nil) {|res,key| 
+                if key.respond_to?(:call)
+                  all=a[key].delete(:all)
+                  dyn_key=key.call(self)
+                  v=a[key].has_key?(dyn_key) ? a[key][dyn_key] : all
+                  Marley::Utils.combine(res,Marley::Utils.combine(all, v)) 
+                else
+                  Marley::Utils.combine(res,a[:key])
+                end
+              }
+            end
+          end)
         end
       end
       def class_attr(attr_name, val=nil, op=nil, &block)
@@ -24,11 +30,13 @@ module Marley
             if instance_variable_defined?("@#{attr_name}")
               instance_variable_get("@#{attr_name}")
             else
-              instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
+              #instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
+              instance_variable_set("@#{attr_name}", val.nil? ? nil : val.dup)
             end
           end
           define_method attr_name.to_sym do
-            ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
+            #ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
+            ancestors.reverse.inject(val.nil? ? nil : val.dup) do |v, a|
               if a.respond_to?(:"#{attr_name}!")
                 block.call(v,a.__send__(:"#{attr_name}!"))
               else
@@ -39,11 +47,6 @@ module Marley
         end)
       end
     end
-    def self.many_to_many_join(lclass, rclass)
-      join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_')
-      lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
-      rclass.many_to_many(lclass.resource_name.pluralize.to_sym,:join_table => join_table, :class =>lclass,:left_key => rclass.foreign_key_name, :right_key => lclass.foreign_key_name)
-    end
     def self.combine(old,new)
       if old.is_a?(Hash) && new.is_a?(Hash)
         old.merge(new) {|k,o,n|Marley::Utils.combine(o,n)}
@@ -52,6 +55,11 @@ module Marley
       else
         new
       end
+    end
+    def self.many_to_many_join(lclass, rclass)
+      join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_')
+      lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
+      rclass.many_to_many(lclass.resource_name.pluralize.to_sym,:join_table => join_table, :class =>lclass,:left_key => rclass.foreign_key_name, :right_key => lclass.foreign_key_name)
     end
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }

@@ -1,16 +1,18 @@
 module Marley
   module Plugins
+    NEW_REC_PROC=lambda { |instance| instance.new? }
     class OrmRestConvenience < Plugin
-      @default_opts={:class_attrs =>  [
-        [:model_actions,{:get => [:new, :list]}],
-        [:instance_actions,{:all => nil}],
+      @default_opts={
+        :class_attrs =>[ [:model_actions,{:get => [:new, :list]}] ],
+        :lazy_class_attrs_key_proc => NEW_REC_PROC,
+        :lazy_class_attrs =>  [ [:instance_actions,{:all => nil}],
         [:derived_before_cols,{:all => nil}],
         [:derived_after_cols,{:all => nil}],
         [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
         [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
         [:hidden_cols,{:all => [/_id$/]}],
-        [:required_cols,{:all => []}]
-      ]}
+        [:required_cols,{:all => []}] ]
+      }
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
         # the next 2 will have to be overridden for most applications
@@ -36,22 +38,14 @@ module Marley
         # the next 2 will have to be overridden for most applications
         def authorize(verb); true ; end
         def requires_user?; false; end
+          
+        def col_mods_match(mod_type); lambda {|c| c.to_s.match(Regexp.union(send(:"_#{mod_type}")))}; end
 
-        def col_mods(mod_type)
-          @mod=self.class.send(mod_type)
-          if @mod.keys.include?(:all) && @mod.keys.include?(new?)
-            Marley::Utils.combine(@mod[:all],@mod[new?])
-          else
-            @mod[:all] || @mod[new?]
-          end
-        end
-        def col_mods_match(mod_type); lambda {|c| c.to_s.match(Regexp.union(col_mods(mod_type)))}; end
-
-        def rest_cols; col_mods(:derived_before_cols).to_a + (columns.reject &col_mods_match(:reject_cols)) + col_mods(:derived_after_cols).to_a;end
+        def rest_cols; _derived_before_cols.to_a + (columns.reject &col_mods_match(:reject_cols)) + _derived_after_cols.to_a;end
         def write_cols; rest_cols.reject &col_mods_match(:ro_cols);end
         def hidden_cols; rest_cols.select &col_mods_match(:hidden_cols);end
         def required_cols; rest_cols.select &col_mods_match(:required_cols);end
-        def actions(parent_instance=nil); col_mods(:instance_actions); end
+        def actions(parent_instance=nil); _instance_actions; end
 
         def rest_associations;[];end
 
