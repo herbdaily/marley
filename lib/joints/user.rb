@@ -2,12 +2,11 @@ require 'digest/sha1'
 Sequel::Model.plugin :validation_helpers
 module Marley
   module Plugins
-    CURRENT_USER_ROLE_PROC=lambda { |instance| instance.current_user_role }
     class CurrentUserMethods < Plugin
       @default_opts={ :class_attrs =>  [ [:owner_col,:user_id] ] }
       module ClassMethods
         def self.extended(o)
-          o.ro_cols![CURRENT_USER_ROLE_PROC]={nil => [/.*/] }
+          o.ro_cols![:current_user_role]={nil => [/.*/] }
         end
         def current_user_ds
           filter(@owner_col.to_sym => $request[:user][:id])
@@ -67,11 +66,11 @@ module Marley
           sti
           set_dataset :users
           @owner_col=nil 
-          required_cols![MP::NEW_REC_PROC][true]=['password','confirm_password']
-          derived_after_cols![MP::NEW_REC_PROC]={true => [:password,:confirm_password]}
-          derived_after_cols![MP::CURRENT_USER_ROLE_PROC]={'owner' => [:old_password,:password,:confirm_password]}
-          reject_cols![MP::CURRENT_USER_ROLE_PROC]={:all => ['pw_hash']}
-          ro_cols![MP::CURRENT_USER_ROLE_PROC]={'new' => ['id'],nil => [/.*/]} 
+          required_cols![:new?][true]=['password','confirm_password']
+          derived_after_cols![:new?]={true => [:password,:confirm_password]}
+          derived_after_cols![:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
+          reject_cols![:current_user_role]={:all => ['pw_hash']}
+          ro_cols![:current_user_role]={'new' => ['id'],nil => [/.*/]} 
           def self.join_to(klass, user_id_col_name=nil)
             user_id_col_name||='user_id'
             klass=MR.const_get(klass) if klass.class==String

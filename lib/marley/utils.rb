@@ -9,14 +9,13 @@ module Marley
           include(Module.new do |m|
             define_method :"_#{att[0]}" do
               a=self.class.send("#{att[0]}!")
-              p a
               a.keys.inject(nil) {|res,key| 
-                if key.respond_to?(:call)
+                if self.respond_to?(key)
                   all=a[key][:all]
-                  v=(a[key].has_key?(dyn_key=key.call(self)) && a[key][dyn_key] ) || all || res
+                  v=(a[key].has_key?(dyn_key=self.send(key)) && a[key][dyn_key] ) || all || res
                   Marley::Utils.combine(res,Marley::Utils.combine(all, v)) 
                 else
-                  Marley::Utils.combine(res,a[:key])
+                  Marley::Utils.combine(res,a[key])
                 end
               }
             end
@@ -30,13 +29,13 @@ module Marley
             if instance_variable_defined?("@#{attr_name}")
               instance_variable_get("@#{attr_name}")
             else
-              #instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
-              instance_variable_set("@#{attr_name}", (val.dup rescue val))
+              instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
+              #instance_variable_set("@#{attr_name}", (val.dup rescue val))
             end
           end
           define_method attr_name.to_sym do
-            #ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
-            ancestors.reverse.inject((val.dup rescue val)) do |v, a|
+            ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
+            #ancestors.reverse.inject((val.dup rescue val)) do |v, a|
               if a.respond_to?(:"#{attr_name}!")
                 block.call(v,a.__send__(:"#{attr_name}!"))
               else

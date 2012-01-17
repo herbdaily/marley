@@ -7,13 +7,13 @@ module Marley
           klass=MR.const_get(klass) if klass.is_a?(String)
           # not crazy about this nested if shit.  there may be a better way...
           if val=klass.instance_variable_get('@derived_after_cols')
-            if val[MP::NEW_REC_PROC]
-              val[MP::NEW_REC_PROC][:all] << @tag_col_name.to_sym
+            if val[:new?]
+              val[:new?][:all] << @tag_col_name.to_sym
             else
-              val[MP::NEW_REC_PROC]={:all => [@tag_col_name.to_sym]}
+              val[:new?]={:all => [@tag_col_name.to_sym]}
             end
           else
-            klass.instance_variable_set('@derived_after_cols',{MP::NEW_REC_PROC => {:all => [@tag_col_name.to_sym]}})
+            klass.instance_variable_set('@derived_after_cols',{:new? => {:all => [@tag_col_name.to_sym]}})
           end
           @instance_methods_mod.send(:append_features,klass)
           tag_class=@tag_class

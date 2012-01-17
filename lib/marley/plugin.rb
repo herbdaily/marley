@@ -13,11 +13,11 @@ module Marley
           resource=klass.class==String ? MR.const_get(klass) : klass
           plugin.constants.include?('ClassMethods') && resource.extend(plugin.const_get('ClassMethods'))
           plugin.constants.include?('InstanceMethods') && resource.send(:include, plugin.const_get('InstanceMethods'))
-          if key_proc=(@opts[:lazy_class_attrs_key_proc]) || @opts[:class_attrs] 
+          if @opts[:lazy_class_attrs] || @opts[:class_attrs] 
             resource.extend Marley::Utils::ClassAttrs
           end
-          if key_proc
-            resource.lazy_class_attrs(key_proc,@opts[:lazy_class_attrs])
+          if lazy_attrs=@opts[:lazy_class_attrs]
+            resource.lazy_class_attrs(lazy_attrs[0],lazy_attrs[1..-1])
           end
           @opts[:class_attrs].to_a.each do |att|
             resource.class_attr(*att)

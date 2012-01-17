@@ -1,11 +1,9 @@
 module Marley
   module Plugins
-    NEW_REC_PROC=lambda { |instance| instance.new? }
     class OrmRestConvenience < Plugin
       @default_opts={
         :class_attrs =>[ [:model_actions,{:get => [:new, :list]}] ],
-        :lazy_class_attrs_key_proc => NEW_REC_PROC,
-        :lazy_class_attrs =>  [ [:instance_actions,{:all => nil}],
+        :lazy_class_attrs =>  [ :new?,[:instance_actions,{:all => nil}],
         [:derived_before_cols,{:all => []}],
         [:derived_after_cols,{:all => []}],
         [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
