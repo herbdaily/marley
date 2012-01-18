@@ -4,11 +4,12 @@ module Marley
   module Plugins
     class Section < Plugin
       @default_opts={ 
-        :class_attrs =>  [:section_title,:section_nav,:section_desc,:section_contents],
-        :lazy_key => lambda {MR::User.current_user.class}
+        :lazy_class_attrs =>  [ :current_user_class, [:section_title,:section_nav,:section_desc,:section_contents]]
       }
       def apply(*klasses)
         super
+        klasses.each do |klass|
+        end
       end
       module ClassMethods
         def section
