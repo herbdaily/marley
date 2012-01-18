@@ -6,3 +6,8 @@ examples:  generate an instance
   >> @instance=Marley::ReggaeInstance.new({:name => 'foo',:schema => []})
   => [:instance, {:schema=>[], :name=>"foo"}, []]
 
+  >> @link=Marley::ReggaeLink.new({:url => '/', :title => 'asdf'})
+  => [:link, {:url=>"/", :title=>"asdf"}, []]
+  >> @link.update(:url => '/asdf/')
+  => [:link, {:url=>"/asdf/", :title=>"asdf"}, []]
+

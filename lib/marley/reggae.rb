@@ -67,6 +67,10 @@ module Marley
         super
       end
     end
+    def update(vals)
+      self.properties.update(vals)
+      self
+    end
   end
   class ReggaeSection < ReggaeResource
     properties :title,:description

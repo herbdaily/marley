@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 require 'json/ext'
 require 'json/add/core'
 require 'marley/reggae'
@@ -7,6 +7,7 @@ require 'rack'
 require 'rack/auth/basic'
 require 'rack/builder'
 require 'sequel'
+require 'marley/core_ext'
 require 'marley/controllers'
 require 'marley/joint' 
 require 'marley/plugin' 

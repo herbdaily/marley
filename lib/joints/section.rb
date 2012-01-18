@@ -1,23 +1,19 @@
 module Marley
   module Plugins
     class Section < Plugin
-      @default_opts={ 
-        :lazy_class_attrs =>  [ :current_user_class, :section_title,:section_nav,:section_desc,:section_contents]
-      }
-      def apply(*klasses)
-        super
-        klasses.each do |klass|
-          p klass
-          klass.instance_variable_set("@section_title",{:current_user_class => {:all => klass.name.to_s.humanize}})
-        end
-      end
       module ClassMethods
         def section
           ReggaeSection.new({
-            :title => section_title,
-            :navigation => section_nav,
-            :description => section_desc},
-            section_contents)
+            :title => send_or_default(:section_title, name.humanize) ,
+            :navigation => send_or_nil(:section_nav),
+            :description => send_or_nil(:section_desc)},
+            send_or_nil(section_contents))
+        end
+        def section_link
+          reggae_link('section').update(:title => resource_name.humanize.pluralize)
+        end
+        def section_nav
+          model_actions.map{|a| reggae_link(:a)}
         end
       end
     end
@@ -26,11 +22,14 @@ module Marley
     class Section < Joint
       module Resources
         class Section
+          def self.section_link
+            ReggaeLink.new({:url => '/' ,:title => 'Main Menu'})
+          end
           def self.rest_get
             ReggaeSection.new(
               :title => 'Main Menu',
               :decription => 'Welcome',
-              :navigation => MR.resources_responding_to(:section).map{|r| r.reggae_link('section')}
+              :navigation => MR.resources_responding_to(:section).map{|r| r.section_link}.compact
             )
           end
         end

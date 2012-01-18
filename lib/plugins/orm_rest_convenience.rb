@@ -28,7 +28,7 @@ module Marley
           end
         end
         def reggae_link(action='')
-          [:link,{:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip}]
+          ReggaeLink.new({:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip})
         end
         def sti
           plugin :single_table_inheritance, :"#{self.to_s.sub(/.*::/,'').underscore}_type", :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
@@ -81,7 +81,7 @@ module Marley
           "/#{self.class.resource_name}/#{self[:id]}/#{action}".sub(/\/$/,'')
         end
         def reggae_link(action='')
-          [:link,{:url => url,:title => "#{action.humanize}"}]
+          ReggaeLink.new({:url => url,:title => "#{action.humanize}"})
         end
       end
     end

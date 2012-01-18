@@ -8,8 +8,10 @@ module Marley
         def self.extended(o)
           o.ro_cols![:current_user_role]={nil => [/.*/] }
         end
+        def current_user; $request && $request[:user]; end
+        def current_user_class; current_user.class; end
         def current_user_ds
-          filter(@owner_col.to_sym => $request[:user][:id])
+          filter(@owner_col.to_sym => current_user[:id])
         end
         def requires_user?(verb=nil,meth=nil);true;end
         def authorize(meth)
@@ -41,9 +43,9 @@ module Marley
           end
         end
         def current_user_role
-          if $request && $request[:user]
-            return 'new' if $request[:user].new?
-            return "owner" if owners.include?($request[:user])
+          if u=self.class.current_user
+            return 'new' if u.new?
+            return "owner" if owners.include?(u)
           end
         end
         def owners
@@ -77,14 +79,6 @@ module Marley
             klass.owner_col!=user_id_col_name
             one_to_many klass.resource_name.to_sym, :class => klass, :key => user_id_col_name
             klass.send(:many_to_one, :user, :class => MR::User, :key => user_id_col_name)
-          end
-          def self.current_user
-            return nil unless $request
-            if block_given? 
-              yield $request[:user] 
-            else 
-              $request[:user]
-            end
           end
           attr_accessor :old_password,:password, :confirm_password
           def self.requires_user?

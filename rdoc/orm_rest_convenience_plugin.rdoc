@@ -14,9 +14,9 @@ examples:
   >> MR::User.foreign_key_name
   => :user_id
   >> MR::User.reggae_link
-  => [:link, {:url=>"/user/", :title=>"User"}]
+  => [:link, {:url=>"/user/", :title=>"User"},[]]
   >> MR::User.reggae_link('new')
-  => [:link, {:url=>"/user/new", :title=>"New User"}]
+  => [:link, {:url=>"/user/new", :title=>"New User"},[]]
   >> MR::User.model_actions
   => {:get => [:new,:list]}
   >> @client.read
@@ -34,9 +34,9 @@ examples:
   >> MR::User[1].url
   => "/user/1"
   >> MR::User[1].reggae_link
-  => [:link, {:url=>"/user/1", :title=>""}]
+  => [:link, {:url=>"/user/1", :title=>""},[]]
   >> MR::User[1].reggae_link('foobar')
-  => [:link, {:url=>"/user/1", :title=>"Foobar"}]
+  => [:link, {:url=>"/user/1", :title=>"Foobar"},[]]
   >> MR::User[1].rest_cols
   => [:id, :name, :password, :description]
   >> MR::User[1].write_cols

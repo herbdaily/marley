@@ -43,13 +43,13 @@ module Marley
           end
 
           define_method("#{tag_col_name}_ds".to_sym) { #e.g. _private_tags_ds
-            send(tags_ds_name).filter({:tags__user_id => (tag_class.associations.include?(:user) ? $request[:user][:id] : nil)})
+            send(tags_ds_name).filter({:tags__user_id => (tag_class.associations.include?(:user) ? self.class.current_user[:id] : nil)})
           }
           define_method(tag_col_name.to_sym) {    #e.g. _private_tags
             send("#{tag_col_name}_ds").map {|t| t.tag}.join(', ') unless new?
           }
           define_method("add#{tag_col_name}".to_sym) {|tags|  #e.g. add_private_tags
-            vals_hash={:user_id => (tag_class.associations.include?(:user) ? $request[:user][:id] : nil)}
+            vals_hash={:user_id => (tag_class.associations.include?(:user) ? self.class.current_user[:id] : nil)}
             tags.to_s.split(',').each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(vals_hash.update(:tag => tag))) }
           }
           define_method("replace#{tag_col_name}".to_sym) {  #e.g. replace_private_tags

@@ -27,10 +27,10 @@ module Marley
           end
           Marley::Utils.many_to_many_join(self, MR::User)
           def self.list_dataset
-            filter(:id => DB[:messages_users].filter(:user_id => MR::User.current_user[:id]).select(:message_id))
+            filter(:id => DB[:messages_users].filter(:user_id => current_user[:id]).select(:message_id))
           end
           def current_user_role
-            super || (self.users.include?(MR::User.current_user) && 'recipient')
+            super || (self.users.include?(self.class.current_user) && 'recipient')
           end
           def actions(parent_instance=nil)
             return super if new? || ! recipients.to_s.match(/,/) 
@@ -43,7 +43,7 @@ module Marley
             super.reggae_instance.set_values(:recipients => author)
           end
           def reply_all
-            reply.set_values(:recipients => "#{author},#{recipients}".sub(/\b#{MR::User.current_user.name}\b,?/,''))
+            reply.set_values(:recipients => "#{author},#{recipients}".sub(/\b#{self.class.current_user.name}\b,?/,''))
           end
           def validate
             super

@@ -2,4 +2,7 @@
 
 examples:
 
+>> MR::Section.rest_get
+=> [:section, {:decription=>"Welcome", :title=>"Main Menu", :navigation=>[[:link, {:title=>"Users", :url=>"/user/section"}, []], [:link, {:title=>"Main Menu", :url=>"/"}, []], [:link, {:title=>"Private messages", :url=>"/private_message/section"}, []], [:link, {:title=>"Public messages", :url=>"/public_message/section"}, []]]}, []]
+
 !!!
