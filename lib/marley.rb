@@ -24,8 +24,8 @@ log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
 module Marley 
-  JOINT_DIRS=[File.expand_path("joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
-  PLUGIN_DIRS=[File.expand_path("plugins/",File.dirname(__FILE__)),"#{Dir.pwd}/plugins"]
+  JOINT_DIRS=[File.expand_path("marley/joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
+  PLUGIN_DIRS=[File.expand_path("marley/plugins/",File.dirname(__FILE__)),"#{Dir.pwd}/plugins"]
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
@@ -73,7 +73,7 @@ module Marley
     }.to_app,{:Port => @marley_opts[:port]})
   end
 end
-  MR=Marley::Resources
-  MJ=Marley::Joints
-  MP=Marley::Plugins
+MR=Marley::Resources
+MJ=Marley::Joints
+MP=Marley::Plugins
 at_exit {Marley.run  if ARGV[0]=='run'}
