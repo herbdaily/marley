@@ -1,5 +1,3 @@
-
-
 module Marley
   module Plugins
     class Section < Plugin
@@ -9,7 +7,8 @@ module Marley
       def apply(*klasses)
         super
         klasses.each do |klass|
-          klass.section_title![:current_user_class]={:all => klass.name.to_s.humanize}
+          p klass
+          klass.instance_variable_set("@section_title",{:current_user_class => {:all => klass.name.to_s.humanize}})
         end
       end
       module ClassMethods
