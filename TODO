@@ -1,7 +1,5 @@
 
 
-- complete switchover to tdoc
-- complete joint/plugin refactoring
 - joint dependencies
 - improve error handling
 - rename client to sth like output
