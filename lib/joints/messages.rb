@@ -20,7 +20,7 @@ module Marley
       end
       module Resources
         class PrivateMessage < Message
-          @ro_cols={:new? => {false => [/.*/], true => ['id', 'user_id','author']}}
+          ro_cols![:new?]={false => [/.*/], true => ['id', 'user_id','author']}
           attr_writer :recipients
           def rest_cols
             [:recipients] + super

@@ -8,7 +8,7 @@ module Marley
           class_attr(att[0], {key_proc => att[1]}, op, &block)
           include(Module.new do |m|
             define_method :"_#{att[0]}" do
-              a=self.class.send("#{att[0]}!")
+              a=self.class.send(att[0])
               a.keys.inject(nil) {|res,key| 
                 if self.respond_to?(key)
                   all=a[key][:all]
