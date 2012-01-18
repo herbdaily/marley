@@ -34,7 +34,6 @@ example:  two users, several messages
 >> @u2msg=@client2.read({},:method => 'new')
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/public_message/", :name=>"public_message", :schema=>[["integer", :user_id, 3, 2], ["text", :title, 4, nil], ["text", :content, 0, nil]]}, []]
 
-!!!
 >> @u1m1=@client1.create(@u1msg.set_values(:title => 'usr1 msg1'))
 => [:instance, {:url=>"/public_message/1", :schema=>[["text", :author, 2, "user1"], ["integer", :id, 2, 1], ["integer", :user_id, 3, 1], ["text", :title, 4, "usr1 msg1"], ["text", :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/1"}}, []]
 
