@@ -4,11 +4,12 @@ module Marley
   module Plugins
     class Section < Plugin
       @default_opts={ 
-        :lazy_class_attrs =>  [ :current_user_class, [:section_title,:section_nav,:section_desc,:section_contents]]
+        :lazy_class_attrs =>  [ :current_user_class, :section_title,:section_nav,:section_desc,:section_contents]
       }
       def apply(*klasses)
         super
         klasses.each do |klass|
+          klass.section_title![:current_user_class]={:all => klass.name.to_s.humanize}
         end
       end
       module ClassMethods
