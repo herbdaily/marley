@@ -31,7 +31,7 @@ module Marley
       raise RoutingError unless Resources.const_defined?(rn)
       @resource=Resources.const_get(rn)
       raise AuthenticationError if @opts[:http_auth] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
-      @controller=nil
+      @controller=nil #clear from previous call
       @controller=@resource.controller if @resource.respond_to?(:controller)
       @controller=@resource if @resource.respond_to?($request[:verb]) 
       raise RoutingError unless @controller

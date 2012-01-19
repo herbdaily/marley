@@ -17,10 +17,6 @@ require 'marley/joint'
 require 'marley/plugin' 
 Sequel.extension :inflector
 
-Sequel::Model.plugin :validation_helpers
-Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
-Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
-
 log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 

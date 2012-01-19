@@ -13,6 +13,7 @@ DB.create_table :users do
 end
 
 Marley.config(:http_auth => false)
+Marley.plugin('orm_rest_convenience').apply(Sequel::Model)
 module Marley
   module Resources
     class User < Sequel::Model
@@ -25,4 +26,3 @@ module Marley
     end
   end
 end
-  Marley.plugin('orm_rest_convenience').apply('User')

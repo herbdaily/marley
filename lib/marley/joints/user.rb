@@ -1,5 +1,4 @@
 require 'digest/sha1'
-Sequel::Model.plugin :validation_helpers
 module Marley
   module Plugins
     class CurrentUserMethods < Plugin

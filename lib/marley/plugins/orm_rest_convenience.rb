@@ -1,6 +1,11 @@
 module Marley
   module Plugins
     class OrmRestConvenience < Plugin
+      #next 3 must go
+      Sequel::Model.plugin :validation_helpers
+      Sequel::Plugins::ValidationHelpers::DEFAULT_OPTIONS.merge!(:presence => {:message => 'is required'})
+      Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
+
       @default_opts={
         :class_attrs =>[ [:model_actions,{:get => [:new, :list]}] ],
         :lazy_class_attrs =>  [ :new?,[:instance_actions,{:all => nil}],
