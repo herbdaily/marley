@@ -1,7 +1,7 @@
 
 example: read new user form but not user list
-  >> @client.read({},:code => 401)
-  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+  >> @client.read({},:code => 403)
+  => [:error, {:description=>"You are not authorized for this operation", :error_type=>"authorization", :error_details=>nil}]
   >> @client.read({},:method => 'new')
   => [:instance, {:new_rec=>true, :actions=>nil, :schema=>[["text", :name, 0, nil], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["text", :description, 0, nil], ["text", :password, 4, nil], ["text", :confirm_password, 4, nil]], :name=>"user", :url=>"/user/"}, []]
 
@@ -14,18 +14,18 @@ example:  user validation
 
 
 example:  cannot list any other resources
-  >> @client.read({},{:resource_name => 'secrets',:code => 401})
-  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
-  >> @client.read({},{:resource_name => 'announcements',:code => 401})
-  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+  >> @client.read({},{:resource_name => 'secrets',:code => 403})
+  => [:error, {:description=>"You are not authorized for this operation", :error_type=>"authorization", :error_details=>nil}]
+  >> @client.read({},{:resource_name => 'announcements',:code => 403})
+  => [:error, {:description=>"You are not authorized for this operation", :error_type=>"authorization", :error_details=>nil}]
 
-example:  non-existent resource yields 401, not 404
-  >> @client.read({},{:resource_name => 'xxx',:code => 401})
-  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+example:  non-existent resource yields 403, not 404
+  >> @client.read({},{:resource_name => 'xxx',:code => 403})
+  => [:error, {:description=>"You are not authorized for this operation", :error_type=>"authorization", :error_details=>nil}]
 
 example: unable to create admin user
-  >> @client.create(@user.set_values(:name => 'admin',:password => 'asdfasdf',:confirm_password => 'asdfasdf'),:resource_name => 'admin', :code=> 401)
-  => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
+  >> @client.create(@user.set_values(:name => 'admin',:password => 'asdfasdf',:confirm_password => 'asdfasdf'),:resource_name => 'admin', :code=> 403)
+  => [:error, {:description=>"You are not authorized for this operation", :error_type=>"authorization", :error_details=>nil}]
 
   >> @client.create(@user.set_values(:name => 'admin',:password => 'asdfasdf',:confirm_password => 'asdfasdf').to_params.update("user[user_type]" => 'Admin'),:code => 403)
   => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
