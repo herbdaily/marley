@@ -36,19 +36,10 @@ module Marley
   end
   
   def self.plugin(plugin_name, *opts)
-    plugin_name=plugin_name.to_s
-    unless Plugins.constants.include?(plugin_name.camelize)
-      Plugins.load(plugin_name)
-    end
-    Plugins.const_get(plugin_name.camelize).new(*opts)
+    Plugins.const_get(plugin_name.to_s.camelize).new(*opts)
   end
   def self.joint(joint_name, *opts)
-    joint_name=joint_name.to_s
-    unless Joints.constants.include?(joint_name.camelize)
-      Joints.load(joint_name)
-      @marley_opts && @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
-    end
-    Joints.const_get(joint_name.camelize).new(*opts).smoke
+    Joints.const_get(joint_name.to_s.camelize).new(*opts).smoke
   end
 
   def self.run(opts={})

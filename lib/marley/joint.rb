@@ -1,7 +1,7 @@
 module Marley
   module Joints
-    def self.load(joint)
-      require Gem.find_files("lib/marley/joints/#{joint}")[0]
+    Gem.find_files("lib/marley/joints/*.rb").each do |f|
+      self.autoload(File.basename(f,'.rb').camelize, f)
     end
     class Joint
       extend Marley::Utils::ClassAttrs

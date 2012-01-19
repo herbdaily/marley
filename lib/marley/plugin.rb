@@ -1,8 +1,8 @@
 require 'rubygems'
 module Marley
   module Plugins
-    def self.load(plugin)
-      require Gem.find_files("lib/marley/plugins/#{plugin}")[0]
+    Gem.find_files("lib/marley/plugins/*.rb").each do |f|
+      self.autoload(File.basename(f,'.rb').camelize, f)
     end
     class Plugin
       extend Marley::Utils::ClassAttrs
