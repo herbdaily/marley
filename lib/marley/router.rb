@@ -21,13 +21,13 @@ module Marley
       rn=$request[:path] ? $request[:path][0].camelize : @opts[:default_resource]
       raise AuthenticationError if (@opts[:authenticate] && $request[:user].new? && ! Resources.constants.include?(rn))
       raise RoutingError unless Resources.const_defined?(rn)
-      @resource=Resources.const_get(rn)
-      raise AuthenticationError if @opts[:authenticate] && @resource.respond_to?('requires_user?') && @resource.requires_user? && $request[:user].new?
-      @controller=nil #clear from previous call
-      @controller=@resource.controller if @resource.respond_to?(:controller)
-      @controller=@resource if @resource.respond_to?($request[:verb]) 
-      raise RoutingError unless @controller
-      json=@controller.send($request[:verb]).to_json
+      resource=Resources.const_get(rn)
+      raise AuthenticationError if @opts[:authenticate] && resource.respond_to?('requires_user?') && resource.requires_user? && $request[:user].new?
+      controller=nil #clear from previous call
+      controller=resource.controller if resource.respond_to?(:controller)
+      controller=resource if resource.respond_to?($request[:verb]) 
+      raise RoutingError unless controller
+      json=controller.send($request[:verb]).to_json
       html=@opts[:client] ? @opts[:client].to_s(json) : json
       resp_code=RESP_CODES[verb]
       headers||={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}

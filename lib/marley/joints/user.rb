@@ -21,9 +21,7 @@ module Marley
       module ClassMethods
         def current_user; $request && $request[:user]; end
         def current_user_class; current_user.class; end
-        def current_user_ds
-          filter(@owner_col.to_sym => current_user[:id])
-        end
+        def current_user_ds; filter(@owner_col.to_sym => current_user[:id]); end
         def requires_user?(verb=nil,meth=nil);true;end
         def authorize(meth)
           if respond_to?(auth_type="authorize_#{$request[:verb]}")
@@ -77,7 +75,6 @@ module Marley
       module Resources
         class User < Sequel::Model
           sti
-          set_dataset :users
           @owner_col=nil 
           required_cols![:new?][true]=['password','confirm_password']
           derived_after_cols![:new?]={true => [:password,:confirm_password]}
