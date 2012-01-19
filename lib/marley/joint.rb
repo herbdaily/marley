@@ -1,5 +1,8 @@
 module Marley
   module Joints
+    def self.load(joint)
+      require Gem.find_files("lib/marley/joints/#{joint}")[0]
+    end
     class Joint
       extend Marley::Utils::ClassAttrs
       class_attr(:default_opts)

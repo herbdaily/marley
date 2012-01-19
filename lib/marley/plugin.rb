@@ -1,6 +1,9 @@
-
+require 'rubygems'
 module Marley
   module Plugins
+    def self.load(plugin)
+      require Gem.find_files("lib/marley/plugins/#{plugin}")[0]
+    end
     class Plugin
       extend Marley::Utils::ClassAttrs
       class_attr(:default_opts)

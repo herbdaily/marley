@@ -24,8 +24,6 @@ log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
 module Marley 
-  JOINT_DIRS=[File.expand_path("marley/joints/",File.dirname(__FILE__)),"#{Dir.pwd}/joints"]
-  PLUGIN_DIRS=[File.expand_path("marley/plugins/",File.dirname(__FILE__)),"#{Dir.pwd}/plugins"]
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
@@ -48,16 +46,14 @@ module Marley
   def self.plugin(plugin_name, *opts)
     plugin_name=plugin_name.to_s
     unless Plugins.constants.include?(plugin_name.camelize)
-      plugin_d=PLUGIN_DIRS.find {|d| File.exists?("#{d}/#{plugin_name}.rb") }
-      require "#{plugin_d}/#{plugin_name}"
+      Plugins.load(plugin_name)
     end
     Plugins.const_get(plugin_name.camelize).new(*opts)
   end
   def self.joint(joint_name, *opts)
     joint_name=joint_name.to_s
     unless Joints.constants.include?(joint_name.camelize)
-      joint_d=JOINT_DIRS.find {|d| File.exists?("#{d}/#{joint_name}.rb") }
-      require "#{joint_d}/#{joint_name}"
+      Joints.load(joint_name)
       @marley_opts && @marley_opts[:client] && @marley_opts[:client].joint(joint_d,joint_name)
     end
     Joints.const_get(joint_name.camelize).new(*opts).smoke
