@@ -11,6 +11,7 @@ require 'marley/utils'
 require 'marley/reggae'
 require 'marley/errors'
 require 'marley/router'
+require 'marley/resources'
 require 'marley/controllers'
 require 'marley/joint' 
 require 'marley/plugin' 
@@ -26,15 +27,6 @@ $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout)
 module Marley 
   DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
-  
-  module Resources
-    def self.resources_responding_to(method)
-      constants.map{|c| r=const_get(c); r if r.respond_to?(method)}.compact
-    end
-    def self.map_resource_methods(method)
-      constants.map{|c| r=const_get(c); r.send(method) if r.respond_to?(method)}.compact
-    end
-  end
   
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
@@ -60,8 +52,7 @@ module Marley
   end
 
   def self.run(opts={})
-    @marley_opts||=DEFAULT_OPTS
-    marley_opts=@marley_opts.merge!(opts)
+    marley_opts=self.configure(opts)
     Rack::Handler.get(marley_opts[:server]).run(Rack::Builder.new {
       use Rack::Reloader,0
       use Rack::Static, :urls => [opts[:image_path]] if opts[:image_path]
@@ -72,4 +63,5 @@ end
 MR=Marley::Resources
 MJ=Marley::Joints
 MP=Marley::Plugins
+MU=Marley::Utils
 at_exit {Marley.run  if ARGV[0]=='run'}
