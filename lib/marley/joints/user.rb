@@ -2,11 +2,23 @@ require 'digest/sha1'
 module Marley
   module Plugins
     class CurrentUserMethods < Plugin
-      @default_opts={ :class_attrs =>  [ [:owner_col,:user_id] ] }
-      module ClassMethods
-        def self.extended(o)
-          o.ro_cols![:current_user_role]={nil => [/.*/] }
+      @default_opts={ :class_attrs =>  [ [:owner_col,:user_id] ], :http_auth => true}
+      def apply(*args)
+        super
+        if @opts[:http_auth]
+          Marley.config(:authenticate => lambda { |env|
+            require 'rack/auth/basic'
+            auth =  Rack::Auth::Basic::Request.new(env)
+            if (auth.provided? && auth.basic? && auth.credentials)
+              $request[:user]=MR::User.authenticate(auth.credentials)
+              raise AuthenticationError unless $request[:user]
+            else
+              $request[:user]=MR::User.new
+            end
+          })
         end
+      end
+      module ClassMethods
         def current_user; $request && $request[:user]; end
         def current_user_class; current_user.class; end
         def current_user_ds

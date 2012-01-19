@@ -2,7 +2,6 @@
 require 'json/ext'
 require 'json/add/core'
 require 'rack'
-require 'rack/auth/basic'
 require 'rack/builder'
 require 'logger'
 require 'sequel'
@@ -21,7 +20,11 @@ log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
 
 module Marley 
-  DEFAULT_OPTS={:http_auth => true,:app_name => 'Application',:port => 1620,:default_user_class => :User, :auth_class => :User,:default_resource => 'Menu', :server => 'thin'}
+  DEFAULT_OPTS={
+    :app_name => 'Application',
+    :port => 1620,
+    :default_resource => 'Menu',
+    :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
   def self.config(opts=nil)

@@ -30,12 +30,10 @@ module Marley
               instance_variable_get("@#{attr_name}")
             else
               instance_variable_set("@#{attr_name}", Marshal.load(Marshal.dump(val)))
-              #instance_variable_set("@#{attr_name}", (val.dup rescue val))
             end
           end
           define_method attr_name.to_sym do
             ancestors.reverse.inject(Marshal.load(Marshal.dump(val))) do |v, a|
-            #ancestors.reverse.inject((val.dup rescue val)) do |v, a|
               if a.respond_to?(:"#{attr_name}!")
                 block.call(v,a.__send__(:"#{attr_name}!"))
               else
