@@ -23,7 +23,7 @@ module Marley
   DEFAULT_OPTS={
     :app_name => 'Application',
     :port => 1620,
-    :default_resource => 'Menu',
+    :default_resource => 'MainMenu',
     :server => 'thin'}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   

@@ -7,7 +7,7 @@ module Marley
             :title => send_or_default(:section_title, resource_name.humanize) ,
             :navigation => send_or_nil(:section_nav),
             :description => send_or_nil(:section_desc)},
-            send_or_nil(section_contents))
+            send_or_nil(:section_contents))
         end
         def section_link
           reggae_link('section').update(:title => resource_name.humanize.pluralize)
@@ -21,36 +21,19 @@ module Marley
   module Joints
     class Section < Joint
       class Section
-        class << self
-          attr_accessor :title,:navigation,:description
-        end
-        def self.section_link
-          ReggaeLink.new({:url => '/' ,:title => 'Main Menu'})
-        end
+        Marley.plugin('rest_convenience').apply(self)
+        Marley.plugin('section').apply(self)
         def self.rest_get
-          new.to_reggae
-        end
-        def initialze(title=nil,navigation=nil,description=nil)
-          @title=title || self.class.title || self.class.name.sub(/.*::/,'').humanize ####
-          @navigation=navigation || self.class.navigation
-          @description=description || self.class.description
-        end
-        def to_reggae
-          ReggaeSection.new(
-            :title => @title
-            :navigation => @navigation,
-            :decription => @description
-          )
+          section
         end
       end
       module Resources
         class MainMenu < Section
-          def to_reggae
-            ReggaeSection.new(
-              :title => name.sub(/.*::/,'').humanize
-              :decription => 'Welcome',
-              :navigation => MR.resources_responding_to(:section).map{|r| r.section_link}.compact
-            )
+          def self.section_nav
+            MR.resources_responding_to(:section).map{|r| r.section_link}.compact
+          end
+          def self.section_link
+            ReggaeLink.new({:url => '/',:title => 'Main Menu'})
           end
         end
       end
