@@ -21,12 +21,15 @@ module Marley
       $request[:verb]="rest_#{verb}"
 
       @opts[:authenticate].call(env) if @opts[:authenticate]
+
       unless Resources.const_defined?(rn)
         raise AuthorizationError if (@opts[:authenticate] && $request[:user].new?)
         raise RoutingError 
       end
       resource=Resources.const_get(rn)
-      raise AuthorizationError if @opts[:authenticate] && resource.respond_to?('requires_user?') && resource.requires_user? && $request[:user].new?
+
+      raise AuthenticationError if @opts[:authenticate] && resource.respond_to?('requires_user?') && resource.requires_user? && $request[:user].new?
+      #test for above, below prob not necessary
 
       controller=nil #clear from previous call
       controller=resource.controller if resource.respond_to?(:controller)
