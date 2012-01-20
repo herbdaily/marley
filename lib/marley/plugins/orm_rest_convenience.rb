@@ -7,6 +7,7 @@ module Marley
       Sequel::Model.plugin :timestamps, :create => :date_created, :update => :date_updated
 
       @default_opts={
+        :required_plugins => [:rest_convenience],
         :class_attrs =>[ [:model_actions,{:get => [:new, :list]}] ],
         :lazy_class_attrs =>  [ :new?,[:instance_actions,{:all => nil}],
         [:derived_before_cols,{:all => []}],
@@ -22,7 +23,6 @@ module Marley
         def authorize(verb); true ; end
         def requires_user?; false; end
 
-        def resource_name; self.name.sub(/.*::/,'').underscore; end
         def foreign_key_name; :"#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end
 
         def list(params={})
@@ -31,9 +31,6 @@ module Marley
           else
             filter(params).all
           end
-        end
-        def reggae_link(action='')
-          ReggaeLink.new({:url => "/#{self.resource_name}/#{action}",:title => "#{action.humanize} #{self.resource_name.humanize}".strip})
         end
         def sti
           plugin :single_table_inheritance, :"#{self.to_s.sub(/.*::/,'').underscore}_type", :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}

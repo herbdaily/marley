@@ -21,19 +21,37 @@ module Marley
   module Joints
     class Section < Joint
       class Section
+        class << self
+          attr_accessor :title,:navigation,:description
+        end
         def self.section_link
           ReggaeLink.new({:url => '/' ,:title => 'Main Menu'})
         end
         def self.rest_get
+          new.to_reggae
+        end
+        def initialze(title=nil,navigation=nil,description=nil)
+          @title=title || self.class.title || self.class.name.sub(/.*::/,'').humanize ####
+          @navigation=navigation || self.class.navigation
+          @description=description || self.class.description
+        end
+        def to_reggae
           ReggaeSection.new(
-            :title => name.sub(/.*::/,'').humanize
-            :decription => 'Welcome',
-            :navigation => MR.resources_responding_to(:section).map{|r| r.section_link}.compact
+            :title => @title
+            :navigation => @navigation,
+            :decription => @description
           )
         end
       end
       module Resources
         class MainMenu < Section
+          def to_reggae
+            ReggaeSection.new(
+              :title => name.sub(/.*::/,'').humanize
+              :decription => 'Welcome',
+              :navigation => MR.resources_responding_to(:section).map{|r| r.section_link}.compact
+            )
+          end
         end
       end
     end
