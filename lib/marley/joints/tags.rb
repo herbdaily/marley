@@ -88,10 +88,7 @@ module Marley
           set_dataset DB[:tags].filter(:tags__user_id => nil).order(:tag)
         end
         class PrivateTag < Tag
-          if MR::User
-            Marley.plugin('current_user_methods').apply(self)
-            MR::User.join_to(self)
-          end
+          MR::User.join_to(self) if MR::User
           def self.list_dataset
             current_user_dataset.order(:tag)
           end

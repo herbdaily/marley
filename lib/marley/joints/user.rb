@@ -85,6 +85,7 @@ module Marley
           def self.join_to(klass, user_id_col_name=nil)
             user_id_col_name||='user_id'
             klass=MR.const_get(klass) if klass.class==String
+            Marley.plugin(:current_user_methods).apply(klass)
             klass.owner_col!=user_id_col_name
             one_to_many klass.resource_name.to_sym, :class => klass, :key => user_id_col_name
             klass.send(:many_to_one, :user, :class => MR::User, :key => user_id_col_name)
