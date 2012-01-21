@@ -33,7 +33,6 @@ module Marley
       def self.requires_user?; true;end
     end
     class Message < Sequel::Model
-      sti # sets single_table_inheritance plugin
       def validate
         super
         validates_presence [:name]

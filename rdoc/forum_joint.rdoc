@@ -1,0 +1,19 @@
+==Forum Joint
+
+setup
+    DB[:users].delete
+    DB[:messages].delete
+    DB[:messages_users].delete
+    DB[:tags].delete
+    DB[:SQLITE_SEQUENCE].update(:seq => 0)
+    user_client=Marley::TestClient.new(:resource_name => 'user')
+    user=user_client.read({},:method => 'new').set_values(:password => 'asdfasdf', :confirm_password => 'asdfasdf')
+    (1 .. 5).each { |i|
+      user_client.create(user.set_values(:name => "user#{i}"))
+      instance_variable_set(:"@client#{i}", Marley::TestClient.new(:auth => ["user#{i}",'asdfasdf'] ))
+    }
+end
+
+example:
+
+!!!

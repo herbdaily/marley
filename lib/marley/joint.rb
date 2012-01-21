@@ -5,12 +5,15 @@ module Marley
     end
     class Joint
       extend Marley::Utils::ClassAttrs
-      class_attr(:default_opts)
+      class_attr(:default_opts,{})
       attr_accessor :opts
       def initialize(opts={})
         config(opts)
       end
       def smoke
+        @opts[:required_joints].to_a.each do |j|
+          Marley.joint(j)
+        end
         self.class::Resources.constants.each do |resource_name|
           MR.const_set(resource_name, self.class::Resources.const_get(resource_name)) unless (@opts[:resources] && ! @opts[:resources].include?(resource_name) )
           @opts[:plugins].to_a.each do |plugin_name|

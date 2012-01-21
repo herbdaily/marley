@@ -2,7 +2,7 @@ module Marley
   module Joints
     class Messages < Joint
       class Message < Sequel::Model
-        sti 
+        MU.sti(self)
         instance_actions![:new?][false]={:get => 'reply'}
         derived_before_cols![:new?][false]=[:author]
         ro_cols![:current_user_role] = {'reader' => [/.*/],'owner' => [/^author$/]}

@@ -2,7 +2,7 @@ require 'digest/sha1'
 module Marley
   module Plugins
     class CurrentUserMethods < Plugin
-      @default_opts={ :class_attrs =>  [ [:owner_col,:user_id] ], :http_auth => true}
+      @default_opts={ :plugins => [:orm_rest_convenience],:class_attrs =>  [ [:owner_col,:user_id] ], :http_auth => true}
       def apply(*args)
         super
         if @opts[:http_auth]
@@ -74,7 +74,8 @@ module Marley
       module Resources
         class User < Sequel::Model
           LOGIN_FORM= [:instance,{:link => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
-          sti
+          Marley.plugin('current_user_methods').apply(self)
+          MU.sti(self)
           @owner_col=nil 
           required_cols![:new?][true]=['password','confirm_password']
           derived_after_cols![:new?]={true => [:password,:confirm_password]}

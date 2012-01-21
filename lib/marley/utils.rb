@@ -53,6 +53,9 @@ module Marley
         new
       end
     end
+    def self.sti(klass)
+      klass.plugin :single_table_inheritance, :"#{klass.to_s.sub(/.*::/,'').underscore}_type", :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|clss|clss.name.sub(/.*::/,'')}
+    end
     def self.many_to_many_join(lclass, rclass)
       join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_')
       lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)

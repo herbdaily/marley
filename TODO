@@ -1,6 +1,5 @@
 
 
-- joint dependencies
 - improve error handling
 - rename client to sth like output
   - move all output there
