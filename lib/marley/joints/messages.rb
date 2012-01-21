@@ -3,10 +3,13 @@ module Marley
     class Messages < Joint
       class Message < Sequel::Model
         MU.sti(self)
+        if MR::User
+          Marley.plugin('current_user_methods').apply(self)
+          MR::User.join_to(self)
+        end
         instance_actions![:new?][false]={:get => 'reply'}
         derived_before_cols![:new?][false]=[:author]
         ro_cols![:current_user_role] = {'reader' => [/.*/],'owner' => [/^author$/]}
-        MR::User.join_to(self)
         def validate
           super
           validates_presence [:title]

@@ -14,11 +14,12 @@ module Marley
         @opts[:required_joints].to_a.each do |j|
           Marley.joint(j)
         end
-        self.class::Resources.constants.each do |resource_name|
-          MR.const_set(resource_name, self.class::Resources.const_get(resource_name)) unless (@opts[:resources] && ! @opts[:resources].include?(resource_name) )
+        resources=self.class::Resources
+        resources.constants.each do |resource_name|
           @opts[:plugins].to_a.each do |plugin_name|
-            Marley.plugin(plugin_name).apply(resource_name)
+            Marley.plugin(plugin_name).apply(resources.const_get(resource_name))
           end
+          MR.const_set(resource_name, resources.const_get(resource_name)) unless (@opts[:resources] && ! @opts[:resources].include?(resource_name) )
         end
         self
       end
