@@ -1,14 +1,31 @@
 == The Section Joint
 
   setup
-    @client=Marley::TestClient.new(:resource_name => 'user')
+    @client=Marley::TestClient.new
+    DB[:users].delete
+    DB[:messages].delete
+    DB[:messages_users].delete
+    DB[:SQLITE_SEQUENCE].update(:seq => 0)
+    user_client=Marley::TestClient.new(:resource_name => 'user')
+    user=user_client.read({},:method => 'new').set_values(:password => 'asdfasdf', :confirm_password => 'asdfasdf')
+    (1 .. 5).each { |i|
+      user_client.create(user.set_values(:name => "user#{i}"))
+      instance_variable_set(:"@client#{i}", Marley::TestClient.new(:auth => ["user#{i}",'asdfasdf'] ))
+    }
   end
 
 
-examples:
+examples: 
 
->> MR::MainMenu.rest_get
-=> [:section, {:title=>"Main menu", :description=>nil, :navigation=>[[:link, {:title=>"Main Menu", :url=>"/"}, []], [:link, {:title=>"Private messages", :url=>"/private_message/section"}, []], [:link, {:title=>"Public messages", :url=>"/public_message/section"}, []], [:link, {:title=>"Users", :url=>"/user/section"}, []]]}, [nil]]
+>> @m=@client.read
+=> [:section, {:title=>"Main menu", :description=>nil, :navigation=>[[:instance, {"schema"=>[[:text, "name", 4], [:password, "password", 4]], "description"=>"Existing users please log in here:", "link"=>"login", "new_rec"=>true}], [:link, {"title"=>"New users, please click here to register", "url"=>"/user/new"}, []]]}, [nil]]
+>> @client.read({},:url => @m.navigation[1].url)
+=> [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :name=>"user", :schema=>[["text", :name, 0, nil], ["text", :description, 0, nil], ["text", :password, 4, nil], ["text", :confirm_password, 4, nil]]}, []]
+
+>> @client1.read
+=> [:section, {:navigation=>[[:link, {"title"=>"Main Menu", "url"=>"/"}, []], [:link, {"title"=>"Private messages", "url"=>"/private_message/section"}, []], [:link, {"title"=>"Public messages", "url"=>"/public_message/section"}, []], [:link, {"title"=>"Account", "url"=>"/user/1"}, []]], :title=>"Main menu", :description=>nil}, [nil]]
 
 
-!!!
+
+
+

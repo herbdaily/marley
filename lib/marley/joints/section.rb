@@ -23,14 +23,26 @@ module Marley
       class Section
         Marley.plugin('rest_convenience').apply(self)
         Marley.plugin('section').apply(self)
+        Marley.plugin('current_user_methods').apply(self) if MP.const_defined?(:CurrentUserMethods)
         def self.rest_get
           section
         end
       end
       module Resources
         class MainMenu < Section
+          def self.requires_user?
+            if respond_to?(:current_user)
+              ! ($request[:path].nil? || $request[:path].empty?)
+            else
+              false
+            end
+          end
           def self.section_nav
-            MR.resources_responding_to(:section).map{|r| r.section_link}.compact
+            if respond_to?(:current_user) && (current_user.nil? || current_user.new?)
+              [MR::User::LOGIN_FORM,ReggaeLink.new({:url => '/user/new', :title => 'New users, please click here to register'})]
+            else
+              MR.resources_responding_to(:section).map{|r| r.section_link}.compact
+            end
           end
           def self.section_link
             ReggaeLink.new({:url => '/',:title => 'Main Menu'})

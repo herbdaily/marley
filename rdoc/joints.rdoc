@@ -13,18 +13,18 @@ The Joint#smoke method scans the classes constants for a module namee 'Resources
 * If the 'Resources' module exists, Joint#smoke will copy all of its constants to Marley::Resources.
 * For every module whose name ends in 'Plugin', if a corresponding class exists in Marley::Resources, it will be extended by the internal 'ClassMethods' module and have the internal 'InstanceMethods' module's features appended to it.
 
-For now, there are 5 joints included in the Marley distribution:
-
-* User
-* Messaging
-* Menu System
-* Tagging
-
-With a bit of configuration, these comprise the example forum application.
-
 :include: rdoc/hello.rb
 
 :include: rdoc/example_joint.rb
+
+For now, there are 4 joints included in the Marley distribution:
+
+* User
+* Messages
+* Tags
+* Section
+
+With a bit of configuration, these comprise the example forum application.
 
     setup
       @client=Marley::TestClient.new(:resource_name => 'hello')
@@ -63,5 +63,7 @@ example: without the joint, then with the joint
 :include: rdoc/tags_joint.rdoc
 
 :include: rdoc/messages_joint.rdoc
+
+:include: rdoc/section_joint.rdoc
 
 

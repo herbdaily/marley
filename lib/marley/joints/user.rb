@@ -71,9 +71,9 @@ module Marley
   end
   module Joints
     class User < Joint
-      LOGIN_FORM= [:instance,{:link => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
       module Resources
         class User < Sequel::Model
+          LOGIN_FORM= [:instance,{:link => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
           sti
           @owner_col=nil 
           required_cols![:new?][true]=['password','confirm_password']
