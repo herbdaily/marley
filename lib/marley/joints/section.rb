@@ -13,7 +13,7 @@ module Marley
           reggae_link('section').update(:title => resource_name.humanize.pluralize)
         end
         def section_nav
-          model_actions.map{|a| reggae_link(a)}
+          send_or_default(model_actions,[]).map{|a| reggae_link(a)}
         end
       end
     end

@@ -1,5 +1,10 @@
 == The Section Joint
 
+  setup
+    @client=Marley::TestClient.new(:resource_name => 'user')
+  end
+
+
 examples:
 
 >> MR::MainMenu.rest_get

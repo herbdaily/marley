@@ -46,6 +46,9 @@ example: without the joint, then with the joint
     => Marley::Joints::ExampleJoint
     >> MR.constants.sort
     => ["GoodBye", "Hello"]
+    >> Marley.plugin('HelloPlugin').apply(MR::Hello)
+    => nil
+
     >> @client.read({}, :resource_name => 'goodbye')
     => false
     >> @client.read({}, :resource_name => 'good_bye')

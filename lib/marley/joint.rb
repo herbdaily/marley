@@ -17,15 +17,6 @@ module Marley
             Marley.plugin(plugin_name).apply(resource_name)
           end
         end
-        self.class.constants.grep(/.+Plugin$/).each do |plugin_name|
-          plugin=self.class.const_get(plugin_name)
-          resource_name=plugin_name.sub(/Plugin$/,'')
-          if MR.constants.include?(resource_name)
-            resource=MR.const_get(resource_name)
-            plugin.constants.include?('ClassMethods') && resource.extend(plugin.const_get('ClassMethods'))
-            plugin.constants.include?('InstanceMethods') && plugin.const_get('InstanceMethods').send(:append_features,resource)
-          end
-        end
         self
       end
       def config(opts)
