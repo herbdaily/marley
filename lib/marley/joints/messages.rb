@@ -1,6 +1,15 @@
 module Marley
   module Joints
     class Messages < Joint
+      def smoke
+        super
+        if @opts[:tags]
+          Marley.joint('tags')
+          Marley.plugin(:tagging,{:tag_type => 'private'}).apply(Resources::PrivateMessage)
+          Marley.plugin(:tagging,{:tag_type => 'private'}).apply(Resources::PublicMessage)
+          Marley.plugin(:tagging,{:tag_type => 'public'}).apply(Resources::PublicMessage)
+        end
+      end
       class Message < Sequel::Model
         MU.sti(self)
         MR::User.join_to(self) if MR::User
