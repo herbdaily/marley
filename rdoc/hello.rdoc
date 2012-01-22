@@ -6,7 +6,6 @@ setup
 end
 
 example: return hello world
-!!!
 
     >> @client.read
     => "\"Hello World!\""

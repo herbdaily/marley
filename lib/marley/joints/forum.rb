@@ -10,7 +10,6 @@ module Marley
         Marley.joint('messages',{:tags => true})
         Marley.joint('section')
 
-        #Marley.plugin('current_user_methods').apply(Sequel::Model)
       end
     end
   end

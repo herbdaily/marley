@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 require 'json/ext'
-require 'json/add/core'
 require 'rack'
 require 'rack/builder'
 require 'logger'
@@ -14,6 +13,7 @@ require 'marley/resources'
 require 'marley/controllers'
 require 'marley/joint' 
 require 'marley/plugin' 
+require 'client/jamaica' #should prob be ditched
 Sequel.extension :inflector
 
 log_fn='log/marley.log'
@@ -24,7 +24,8 @@ module Marley
     :app_name => 'Application',
     :port => 1620,
     :default_resource => 'MainMenu',
-    :server => 'thin'}
+    :server => 'thin',
+    :client => Marley::Client.new}
   RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
   
   def self.config(opts=nil)
@@ -42,7 +43,7 @@ module Marley
   end
 
   def self.run(opts={})
-    marley_opts=self.configure(opts)
+    marley_opts=self.config(opts)
     Rack::Handler.get(marley_opts[:server]).run(Rack::Builder.new {
       use Rack::Reloader,0
       use Rack::Static, :urls => [opts[:image_path]] if opts[:image_path]

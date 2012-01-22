@@ -12,7 +12,11 @@ module Marley
       $request[:post_params]=Marley::Utils.hash_keys_to_syms(request.POST)
       $request[:content_type]=request.xhr? ? 'application/json' : env['HTTP_ACCEPT'].to_s.sub(/,.*/,'') 
       $request[:content_type]='text/html' unless $request[:content_type] > ''
-      $request[:content_type]='application/json' if env['rack.test']==true #there has to be a better way to do this...
+
+      if env['rack.test']==true #there has to be a better way to do this...
+        require 'json/add/core' 
+        $request[:content_type]='application/json' 
+      end
 
       @opts[:authenticate].call(env) if @opts[:authenticate]
 
@@ -38,6 +42,7 @@ module Marley
       html=@opts[:client] ? @opts[:client].to_s(json) : json
       resp_code=RESP_CODES[verb]
       headers||={'Content-Type' => "#{$request[:content_type]}; charset=utf-8"}
+
       [resp_code,headers,$request[:content_type].match(/json/) ? json : html]
     rescue Sequel::ValidationFailed
       ValidationError.new($!.errors).to_a
