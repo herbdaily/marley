@@ -9,6 +9,8 @@ module Marley
         Marley.joint('user')
         Marley.joint('messages',{:tags => true})
         Marley.joint('section')
+        Marley.plugin(:section).apply('PrivateMessage')
+        Marley.plugin(:section).apply('PublicMessage')
 
       end
     end
