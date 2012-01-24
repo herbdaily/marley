@@ -56,6 +56,7 @@ module Marley
             rest_cols.map do |col_name|
               db_spec=db_schema.to_hash[col_name]
               col_type=db_spec ? db_spec[:db_type].downcase : "text"
+              col_type=:password if col_name.to_s.match(/password/)
               restrictions=0
               restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
               restrictions|=RESTRICT_RO unless write_cols.include?(col_name)

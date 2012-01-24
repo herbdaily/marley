@@ -67,7 +67,7 @@ module Marley
     class User < Joint
       module Resources
         class User < Sequel::Model
-          LOGIN_FORM= [:instance,{:url => 'login',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
+          LOGIN_FORM= [:instance,{:name => 'login',:url => 'main_menu',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
           Marley.plugin('current_user_methods').apply(self)
           MU.sti(self)
           @owner_col=nil 

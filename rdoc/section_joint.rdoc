@@ -18,7 +18,7 @@
 examples: 
 
 >> @m=@client.read
-=> [:section, {:title=>"Main menu", :description=>nil, :navigation=>[[:instance, {"schema"=>[[:text, "name", 4], [:password, "password", 4]], "description"=>"Existing users please log in here:", "url"=>"login", "new_rec"=>true}], [:link, {"title"=>"New users, please click here to register", "url"=>"/user/new"}, []]]}, [nil]]
+=> [:section, {:title=>"Main menu", :description=>nil, :navigation=>[[:instance, {"name"=>"login","schema"=>[[:text, "name", 4], [:password, "password", 4]], "description"=>"Existing users please log in here:", "url"=>"main_menu", "new_rec"=>true}], [:link, {"title"=>"New users, please click here to register", "url"=>"/user/new"}, []]]}, [nil]]
 >> @client.read({},:url => @m.navigation[1].url)
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/user/", :name=>"user", :schema=>[["text", :name, 0, nil], ["text", :description, 0, nil], ["text", :password, 4, nil], ["text", :confirm_password, 4, nil]]}, []]
 
