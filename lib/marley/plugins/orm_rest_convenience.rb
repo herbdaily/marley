@@ -20,7 +20,7 @@ module Marley
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
         # the next 2 will have to be overridden for most applications
-        def authorize(verb); true ; end
+        def authorize(verb); send_or_default("authorize_#{verb}",true) ; end
         def requires_user?; false; end
 
         def foreign_key_name; :"#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end

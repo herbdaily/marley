@@ -23,20 +23,14 @@ module Marley
         def current_user_class; current_user.class; end
         def current_user_ds; filter(@owner_col.to_sym => current_user[:id]); end
         def requires_user?(verb=nil,meth=nil);true;end
-        def authorize(meth)
-          if respond_to?(auth_type="authorize_#{$request[:verb]}")
-            send(auth_type,meth)
-          else
-            case $request[:verb]
-            when 'rest_put','rest_delete'
-              false 
-            when 'rest_post'
-              new(($request[:post_params][resource_name.to_sym]||{}).reject {|k,v| v.nil?}).current_user_role=='owner' && meth.nil?
-            when 'rest_get'
-              model_actions[:get].to_a.include?(meth.to_sym)
-            end
-          end
+        def authorize_rest_get(meth)
+          model_actions[:get].to_a.include?(meth.to_sym) && !current_user.new?
         end
+        def authorize_rest_post(meth)
+          new(($request[:post_params][resource_name.to_sym]||{}).reject {|k,v| v.nil?}).current_user_role=='owner' && meth.nil?
+        end
+        def authorize_rest_put(meth);false; end
+        def authorize_rest_delete(meth):false; end
       end
       module InstanceMethods
         def after_initialize
