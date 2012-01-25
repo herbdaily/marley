@@ -5,7 +5,8 @@ module Marley
     # It will have its actual UI metadata in the global variable '_jamaica_json'
     # and onDocumentReady, this will be turned into the client UI.
     CLIENT_DIR=File.dirname(__FILE__)
-    LIBS = [ 'jquery-1.6.2.js', 'jquery.form.js', 'jamaica.js' ]
+    #LIBS = [ 'jquery-1.6.2.js', 'jquery.form.js', 'jamaica.js' ]
+    LIBS = ['prevel-full.js','prevel-core-ext.js','jamaica.js'] 
     STYLES = [ 'jamaica.css' ]
     def initialize(opts={})
       @opts={:name => 'Application',:css => '', :js => ''}.merge(opts)

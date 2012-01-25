@@ -4,7 +4,8 @@ module Marley
       module ClassMethods
         def section
           ReggaeSection.new({
-            :title => send_or_default(:section_title, resource_name.humanize) ,
+            :name => send_or_default(:section_name, resource_name.underscore),
+            :title => send_or_default(:section_title, resource_name.humanize),
             :navigation => send_or_nil(:section_nav),
             :description => send_or_nil(:section_desc)},
             send_or_nil(:section_contents))
