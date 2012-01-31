@@ -1,9 +1,12 @@
 
 
+- fix JS
+  - change reggae error object to rely on status code?
+  - abstract out ajax behavior...
+
 - improve error handling
 - rename client to sth like output
   - move all output there
-- fix JS
 - ditch Sequel dependency
   - ORM as a Joint??
   - automate sequel plugin loading in options
