@@ -14,7 +14,7 @@ module Marley
           reggae_link('section').update(:title => resource_name.humanize.pluralize)
         end
         def section_nav
-          send_or_default(model_actions,[]).map{|a| reggae_link(a)}.compact
+          send_or_default(:model_actions,{})[:get].map{|a| reggae_link(a)}.compact
         end
         def authorize_rest_get(meth)
           super || (meth.to_s=='section' && (respond_to?(:current_user) ? ! current_user.new? : true) )
