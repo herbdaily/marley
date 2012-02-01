@@ -111,7 +111,7 @@ module Marley
             end
           end
           def create_msg
-            [[:msg,{:title => 'Success!'},"Your login, '#{self.name}', has been sucessfully created. You can now log in."]]
+            [:msg,{:title => 'Success!'},"Your login, '#{self.name}', has been sucessfully created. You can now log in."]
           end
         end
       end

@@ -3,14 +3,14 @@ example: read new user form but not user list
   >> @client.read({},:code => 401)
   => [:error, {:error_type=>"authentication", :error_details=>nil, :description=>nil}]
   >> @client.read({},:method => 'new')
-  => [:instance, {:new_rec=>true, :actions=>nil, :schema=>[["text", :name, 0, nil], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["text", :description, 0, nil], ["text", :password, 4, nil], ["text", :confirm_password, 4, nil]], :name=>"user", :url=>"/user/"}, []]
+  => [:instance, {:new_rec=>true, :actions=>nil, :schema=>[["text", :name, 0, nil], ["text", :email, 0, nil], ["date", :birthday, 0, nil], ["text", :description, 0, nil], [:password, :password, 4, nil], [:password, :confirm_password, 4, nil]], :name=>"user", :url=>"/user/"}, []]
 
 
 example:  user validation
   >> @client.create({}, :code => 400)
   => [:error, {:error_type=>"validation", :error_details=>{:name=>["is required"], :password=>["Password must contain at least 8 characters"]}, :description=>nil}]
   >> @client.create(@user.set_values(:name => 'asdf', :password => 'asdfasdf',:confirm_password => 'asdfasdf'))
-  => [[:msg, {:title=>"Success!"}, "Your login, 'asdf', has been sucessfully created. You can now log in."]]
+  => [:msg, {:title=>"Success!"}, "Your login, 'asdf', has been sucessfully created. You can now log in."]
 
 
 example:  cannot list any other resources
