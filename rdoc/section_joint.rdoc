@@ -17,13 +17,3 @@
 
 examples: 
 
->> @m=@client.read
-=> [:section, {:title=>"Main menu", :description=>nil, :name=>"main_menu", :navigation=>[[:link, {"title"=>"Existing users, please click here to log in.", "url"=>"/main_menu"}, []], [:msg, {}, ["New users, please sign up below", [:instance, {"name"=>"user", "actions"=>nil, "schema"=>[["text", :name, 0, nil], ["text", :description, 0, nil], [:password, :password, 4, nil], [:password, :confirm_password, 4, nil]], "url"=>"/user/", "new_rec"=>true}, []]]]]}, [nil]]
-
->> @client1.read
-=> [:section, {:navigation=>[[:link, {"title"=>"Main Menu", "url"=>"/"}, []], [:link, {"title"=>"Private messages", "url"=>"/private_message/section"}, []], [:link, {"title"=>"Public messages", "url"=>"/public_message/section"}, []], [:link, {"title"=>"Account", "url"=>"/user/1"}, []]], :title=>"Main menu",:name=>"main_menu", :description=>nil}, [nil]]
-
-
-
-
-
