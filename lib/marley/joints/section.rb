@@ -43,7 +43,8 @@ module Marley
           end
           def self.section_nav
             if respond_to?(:current_user) && (current_user.nil? || current_user.new?)
-              [MR::User::LOGIN_FORM,ReggaeLink.new({:url => '/user/new', :title => 'New users, please click here to register'})]
+              [ReggaeLink.new({:url => '/main_menu', :title => 'Existing users, please click here to log in.'}),
+               [:msg,{},['New users, please sign up below',MR::User.new]]]
             else
               MR.resources_responding_to(:section).sort {|l,r|l.resource_name <=> r.resource_name}.map{|r| r.section_link}.compact
             end
