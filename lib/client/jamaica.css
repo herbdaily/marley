@@ -1,12 +1,19 @@
 html, body, div, span, h1, p, strong, ul, li, form, label {margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent;}
 input {vertical-align:middle;}
 h1 {font-weight: bold;}
-body {background: #C9DE96; color: #000; font:13px/1.231 sans-serif; *font-size:small;}
-input, textarea {font:sans-serif;}
-textarea {overflow: auto;}
-input[type=submit] {cursor: pointer;}
-input, textarea {margin: 0;}
-body {height: 100%; min-height: 100%;}
+body {background: #C9DE96; color: #000; font:13px/1.231 sans-serif; *font-size:small;height: 100%; min-height: 100%;}
+input, textarea {
+	border: 1px solid #398235;
+	line-height: 1.5em;
+  margin: 0;
+}
+textarea {
+	height: 150px;
+	line-height: 1.25em;
+	margin: 0 0 1em;
+	width: 100%;
+  overflow: auto;
+}
 .hidden {display: none;}
 .editable {
 	border: 1px dotted #398235;
@@ -18,8 +25,7 @@ body {height: 100%; min-height: 100%;}
 	font-size: 125%;
 	padding: 0 0 0 3px;
 }
-#signup__section,
-#main__section {
+#main_menu__section {
 	background: #fff;
 	border: 1px solid #398235;
 	-moz-border-radius: 8px;
@@ -27,17 +33,9 @@ body {height: 100%; min-height: 100%;}
 	-moz-box-shadow: 0 0 10px rgba(51,51,51,0.5);
 	box-shadow: 0 0 10px rgba(51,51,51,0.5);
 	margin: 20px auto;
-	width: 960px;
+	width: 90%;
 }
-#signup__section {
-	height: 350px;	
-	left: 50%;
-	margin: -175px 0 0 -480px;
-	position: absolute;
-	top: 50%;
-}
-	#signup__section h1,
-	#main__section > h1 {
+	#main_menu__section > h1 {
 		background: #398235;
 		border-bottom: 1px solid #398235;
 		-moz-border-radius-topright: 8px;
@@ -50,78 +48,32 @@ body {height: 100%; min-height: 100%;}
 		text-align: center;
 		text-transform: capitalize;
 	}
-	#signup__section .sectionDescription {font-weight: bold;}
-	#signup__section .sectionDescription,
-	#main__section > .sectionDescription,
-	#signup_section {margin: 0 20px 20px;}
-		#signup_section li {
-			display: inline-block;
-			vertical-align: top;
-			width: 440px;
-		}
-		#signup_section li:first-child {margin: 0 40px 0 0;}
-			#signup_navigation li > div {
-				border: 1px solid #398235;
-				-moz-border-radius: 8px;
-				border-radius: 8px;
-				overflow: hidden;
-			}
-			#signup_navigation li .form_description {
-				background: #398235;
-				border-bottom: 1px solid #398235;
-				-moz-border-radius-topright: 8px;
-				-moz-border-radius-topleft: 8px;
-				border-top-right-radius: 8px;
-				border-top-left-radius: 8px;
-				color: #fff;
-				font-size: 85%;
-				font-weight: bold;
-				line-height: 200%;
-				margin: 0 0 1.5em;
-				text-align: center;
-			}
-			#signup_section .colContainer {margin: 0 20px 1em;}
-			#signup_section input {width: 240px;}
-			#signup_section input[type=submit] {
-				margin: 0 20px 20px 0;
-				width: auto;
-			}
-		#signup_section label {width: 150px;}
 label {
 	color: #398235;
 	display: inline-block;
 	font: bold 85%/1.5em sans-serif;
-	width: 150px;
-}
-input,
-textarea {
-	border: 1px solid #398235;
-	line-height: 1.5em;
-}
-textarea {
-	height: 150px;
-	line-height: 1.25em;
-	margin: 0 0 1em;
-	width: 100%;
+	width: 10em;
+  text-align:right;
+  padding: 0 5px 0 0;
 }
 input[type=submit],
-#main__section .navigation li a,
+#main_menu__section .navigation li a,
 .instanceActions a {
+	background: -webkit-linear-gradient(top, #c9de96 0%, #398235 100%);
 	background: -moz-linear-gradient(top, #c9de96 0%, #398235 100%);
 	background: linear-gradient(top, #c9de96 0%,#398235 100%);
 	border: 1px solid #398235;
-	-moz-border-radius: 8px;
-	border-radius: 8px;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
 	color: #fff;
 	font: bold 93% sans-serif;
-	margin: 0 0 0 150px;
-	padding: 5px 10px;
+	padding: .5em 1em;
 	text-decoration: none;
 	text-transform: uppercase;
 	width: auto;
 }
 input[type=submit]:hover,
-#main__section .navigation li a:hover,
+.navigation li a:hover,
 .instanceActions a:hover {
 	background: -moz-linear-gradient(top, #398235 0%, #c9de96 100%);
 	background: linear-gradient(top, #398235 0%,#c9de96 100%);
@@ -129,66 +81,66 @@ input[type=submit]:hover,
 	cursor: pointer;
 	font-weight: bold;
 }
-#main__section #main_navigation {
+#main_menu__section #main_menu__navigation {
 	border-bottom: 1px solid #398235;
 	margin: 0 20px 20px;
 	padding: 0 0 20px;
 	text-align: center;
 }
-#main__section #main_navigation li {
+#main_menu__section #main_menu__navigation li {
 	display: inline-block;
-	margin: 0 10px;
+	margin: 0 2em;
 }
-	#main__section > #main_navigation li a,
-	#main__section > .content > .section > .navigation li a {margin: 0;}
-#main__section > .content {margin: 20px;}
-	#main__section > .content > .section {
+	#main_menu__section > #main_menu__navigation li a,
+	#main_menu__section > .content > .section > .navigation li a {margin: 0;}
+#main_menu__section > .content {margin: 20px;}
+	#main_menu__section > .content > .section {
 		overflow: hidden;
 		padding: 0 0 0 225px;
 	}
-		#main__section > .content h1,
-		#main__section > .content .sectionDescription,
-		#main__section > .content .navigation {
+		#main_menu__section > .content h1,
+		#main_menu__section > .content .sectionDescription,
+		#main_menu__section > .content .navigation {
 			clear: left;
 			float: left;
 			margin: 0 0 0 -225px;
 			width: 200px;
 		}
-		#main__section > .content h1 {
+		#main_menu__section > .content h1 {
 			color: #398235;
 			font: bold 167%/150% "Rockwell STD", Rockwell, serif;
 			text-transform: capitalize;
 		}
-		#main__section .navigation li {
+		#main_menu__section .navigation li {
 			display: block;
-			margin: 0 0 0.25em;
+			margin: 2em 1em;
 		}
-		#main__section .content .navigation li a {
+		#main_menu__section .content .navigation li a {
 			display: block;
 			font-size: 77%;
 			text-transform: none;
 		}
-		#main__section > .content > .section > .content {
+		#main_menu__section > .content > .section > .content {
 			float: left;
 			width: 695px;
 		}
-		#main__section > .content > .section > .content > .instanceContainer {
+		#main_menu__section > .content > .section > .content > .instanceContainer {
 			border: 1px solid #398235;
 			-moz-border-radius: 8px;
 			border-radius: 8px;
 			margin: 0 0 2em;
 		}
-		#main__section > .content > .section > .content .instanceContainer .instanceContainer {
+		#main_menu__section > .content > .section > .content .instanceContainer .instanceContainer {
 			border: 1px solid #398235;
 			border-width: 1px 0 0 1px;
 			margin: 0 0 0 5em;
 		}
-		#main__section > .content > .section > .content .instance {
+		#main_menu__section > .content > .section > .content .instance {
 			overflow: hidden;
 			padding: 42px 10px 10px 145px;
 			position: relative;
 		}
-		#main__section > .content > .section > .content .private_messageInstance {padding: 10px;}
+		#main_menu__section > .content > .section > .content .private_messageInstance {padding: 10px;}
 		.post__titleColContainer {
 			background: #398235;
 			border-bottom: 1px solid #398235;
@@ -202,16 +154,11 @@ input[type=submit]:hover,
 			top: 0;
 			width: 100%;
 		}
-		.colContainer label {
-			font-size: 75%;
-			padding: 0 5px 0 0;
-			width: auto;
-		}
 		.colContainer div {
 			display: inline-block;
 			font-size: 75%;
 		}
-		#main__section .content > .instanceContainer > .instance > .post__titleColContainer {
+		#main_menu__section .content > .instanceContainer > .instance > .post__titleColContainer {
 			-moz-border-radius-topright: 8px;
 			-moz-border-radius-topleft: 8px;
 			border-top-right-radius: 8px;
@@ -262,7 +209,7 @@ input[type=submit]:hover,
 				float: none;
 				margin: 0 0 0 5px;
 			}
-		#main__section > .content > .section > .content .private_messageInstance label {width: 100px;}
+		#main_menu__section > .content > .section > .content .private_messageInstance label {width: 100px;}
 .errorCol {background: #febebe;}
 .errorMsg {
 	color: #EA8989;
