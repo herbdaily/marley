@@ -116,60 +116,10 @@ input[type=submit]:hover,
 			padding: 42px 10px 10px 145px;
 			position: relative;
 		}
-		#main_menu__section > .content > .section > .content .private_messageInstance {padding: 10px;}
-		.public_message__titleColContainer {
-			background: #398235;
-			border-bottom: 1px solid #398235;
-			color: #fff;
-			height: 32px;
-			left: 0;
-			line-height: 32px;
-			margin: 0;
-			overflow: hidden;
-			position: absolute;
-			top: 0;
-			width: 100%;
-		}
 		.colContainer div {
 			display: inline-block;
 			font-size: 75%;
 		}
-		#main_menu__section .content > .instanceContainer > .instance > .public_message__titleColContainer {
-			-moz-border-radius-topright: 8px;
-			-moz-border-radius-topleft: 8px;
-			border-top-right-radius: 8px;
-			border-top-left-radius: 8px;
-		}
-			.instance .public_message__titleColContainer label {
-				color: #fff;
-				font: bold 85%/32px sans-serif;
-				padding: 0 10px;
-			}
-			.instance .public_message__titleColContainer div {font-size: 93%;}
-		.public_message__idColContainer,
-		.public_message__author_idColContainer,
-		.public_message__thread_idColContainer,
-		.public_message__date_createdColContainer,
-		.public_message__date_updatedColContainer {
-			clear: left;
-			float: left;
-			margin: 0 0 0.25em -135px;
-			width: 125px;
-		}
-		.public_message__contentColContainer {font-size: 125%;}
-			.public_message__contentColContainer label {display: none;}
-			.public_message__contentColContainer span {position:relative;display:block;margin: 1.5em;}
-		.public_message__tagsColContainer {margin: 0 0 0.75em;}
-			.public_message__tagsColContainer .col {
-				overflow: hidden;
-				vertical-align: middle;
-			}
-			.public_message__tagsColContainer input[type=text] {width: 120px;}
-			.public_message__tagsColContainer input[type=submit] {
-				float: right;
-				margin: 0 0 0 10px;
-				padding: 0 5px;
-			}
 		.instanceActions {overflow: hidden;}
 			.instanceActions a,
 			.instance input[type=submit] {
@@ -185,7 +135,6 @@ input[type=submit]:hover,
 				float: none;
 				margin: 0 0 0 5px;
 			}
-		#main_menu__section > .content > .section > .content .private_messageInstance label {width: 100px;}
 .errorCol {background: #febebe;}
 .errorMsg {
 	color: #EA8989;
