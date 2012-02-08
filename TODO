@@ -2,7 +2,9 @@
 
 - fix JS
   - change reggae error object to rely on status code?
-  - abstract out ajax behavior...
+
+- implement dev,test, prod environments
+  - reloader only for dev environment
 
 - improve error handling
 - rename client to sth like output

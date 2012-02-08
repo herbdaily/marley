@@ -87,23 +87,18 @@ input[type=submit]:hover,
 	padding: 0 0 2em;
 	text-align: center;
 }
-#main_menu__section #main_menu__navigation li {
+#main_menu__navigation li {
 	display: inline-block;
 	margin: 0 2em;
 }
 
-		#main_menu__section .navigation li {
+		.navigation li {
 			display: block;
 			margin: 2em 1em;
 		}
-		#main_menu__section .content .navigation li a {
-			display: block;
-			font-size: 77%;
-			text-transform: none;
-		}
-		#main_menu__section > .content > .section > .content {
-			float: left;
-		}
+    .content .navigation, .content .content {display:inline-block;}
+    .content .navigation {min-width:15em;vertical-align:top;}
+    .content .content {width:80%;}
 		.instanceContainer {
       position:relative;
 			border: 1px solid #398235;
@@ -111,14 +106,8 @@ input[type=submit]:hover,
 			border-radius: 8px;
 			margin: 0 0 2em;
 		}
-		#main_menu__section > .content > .section > .content .instance {
-			overflow: hidden;
-			padding: 42px 10px 10px 145px;
-			position: relative;
-		}
 		.colContainer div {
 			display: inline-block;
-			font-size: 75%;
 		}
 		.instanceActions {overflow: hidden;}
 			.instanceActions a,
