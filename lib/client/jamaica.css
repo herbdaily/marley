@@ -28,20 +28,20 @@ textarea {
 #main_menu__section {
 	background: #fff;
 	border: 1px solid #398235;
-	-moz-border-radius: 8px;
-	border-radius: 8px;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
 	-moz-box-shadow: 0 0 10px rgba(51,51,51,0.5);
 	box-shadow: 0 0 10px rgba(51,51,51,0.5);
-	margin: 20px auto;
+	margin: 2em auto;
 	width: 90%;
 }
 	#main_menu__section > h1 {
 		background: #398235;
 		border-bottom: 1px solid #398235;
-		-moz-border-radius-topright: 8px;
-		-moz-border-radius-topleft: 8px;
-		border-top-right-radius: 8px;
-		border-top-left-radius: 8px;
+		-moz-border-radius-topright: .5em;
+		-moz-border-radius-topleft: .5em;
+		border-top-right-radius: .5em;
+		border-top-left-radius: .5em;
 		color: #fff;
 		font: bold 167%/150% "Rockwell STD", Rockwell, serif;
 		margin: 0 0 1em;
@@ -54,7 +54,7 @@ label {
 	font: bold 85%/1.5em sans-serif;
 	width: 10em;
   text-align:right;
-  padding: 0 5px 0 0;
+  padding: 0 .5em 0 0;
 }
 input[type=submit],
 #main_menu__section .navigation li a,
@@ -81,36 +81,17 @@ input[type=submit]:hover,
 	cursor: pointer;
 	font-weight: bold;
 }
-#main_menu__section #main_menu__navigation {
+#main_menu__navigation {
 	border-bottom: 1px solid #398235;
-	margin: 0 20px 20px;
-	padding: 0 0 20px;
+	margin: 0 2em 2em;
+	padding: 0 0 2em;
 	text-align: center;
 }
 #main_menu__section #main_menu__navigation li {
 	display: inline-block;
 	margin: 0 2em;
 }
-	#main_menu__section > #main_menu__navigation li a,
-	#main_menu__section > .content > .section > .navigation li a {margin: 0;}
-#main_menu__section > .content {margin: 20px;}
-	#main_menu__section > .content > .section {
-		overflow: hidden;
-		padding: 0 0 0 225px;
-	}
-		#main_menu__section > .content h1,
-		#main_menu__section > .content .sectionDescription,
-		#main_menu__section > .content .navigation {
-			clear: left;
-			float: left;
-			margin: 0 0 0 -225px;
-			width: 200px;
-		}
-		#main_menu__section > .content h1 {
-			color: #398235;
-			font: bold 167%/150% "Rockwell STD", Rockwell, serif;
-			text-transform: capitalize;
-		}
+
 		#main_menu__section .navigation li {
 			display: block;
 			margin: 2em 1em;
@@ -122,18 +103,12 @@ input[type=submit]:hover,
 		}
 		#main_menu__section > .content > .section > .content {
 			float: left;
-			width: 695px;
 		}
-		#main_menu__section > .content > .section > .content > .instanceContainer {
+		.instanceContainer {
 			border: 1px solid #398235;
 			-moz-border-radius: 8px;
 			border-radius: 8px;
 			margin: 0 0 2em;
-		}
-		#main_menu__section > .content > .section > .content .instanceContainer .instanceContainer {
-			border: 1px solid #398235;
-			border-width: 1px 0 0 1px;
-			margin: 0 0 0 5em;
 		}
 		#main_menu__section > .content > .section > .content .instance {
 			overflow: hidden;
