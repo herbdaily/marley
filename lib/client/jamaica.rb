@@ -6,7 +6,8 @@ module Marley
     # and onDocumentReady, this will be turned into the client UI.
     CLIENT_DIR=File.dirname(__FILE__)
     #LIBS = [ 'jquery-1.6.2.js', 'jquery.form.js', 'jamaica.js' ]
-    LIBS = ['prevel-full.js','prevel-dom-ext.js','prevel-ajax-ext.js','prevel-core-ext.js','jamaica.js','reggae.js'] 
+    #LIBS = ['prevel-full.js','prevel-dom-ext.js','prevel-ajax-ext.js','prevel-core-ext.js','jamaica.js','reggae.js'] 
+    LIBS = ['ender.js','jamaica.js','reggae.js'] 
     STYLES = [ 'jamaica.css' ]
     def initialize(opts={})
       @opts={:name => 'Application',:css => '', :js => ''}.merge(opts)
