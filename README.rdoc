@@ -7,7 +7,6 @@ Marley is a framework for quickly building RESTful web services and applications
 * A plugin system similar to Sequel's.
 * Marley Joints - A framework for creating reusable Marley resource sets.
 * Reggae - A JSON data format
-* Jamaica - A minimal JS/jQuery client which renders Reggae resources as browser DOM objects.
 
 The point of the whole thing is to minimize the amount of non-model (non-datacentric) code that needs to be written to implement a web service/application.
 
@@ -45,5 +44,5 @@ One of the things that the RestConvenience Sequel plugin does is add a #controll
 
 ==Jamaica
 
-The default Marley client is "Jamaica", which consists of JS/CSS for browsers.  It sucks right now and I'm hoping somebody takes it over as a sub-project, but it does work - at least on FF.
+The default Marley client is "Jamaica", which consists of JS/CSS for browsers.  It has now been moved to a separate repository at https://github.com/herbdaily/jamaica
 
