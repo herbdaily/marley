@@ -26,7 +26,7 @@ module Marley
     :default_resource => 'MainMenu',
     :server => 'thin',
     :client => Marley::Client.new}
-  RESP_CODES={'get' => 200,'post' => 201,'put' => 204,'delete' => 204}
+  RESP_CODES={'get' => 200,'post' => 201,'put' => 203,'delete' => 204}
   
   def self.config(opts=nil)
     @marley_opts||=DEFAULT_OPTS
