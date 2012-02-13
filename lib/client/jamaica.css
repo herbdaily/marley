@@ -25,6 +25,15 @@ textarea {
 	font-size: 125%;
 	padding: 0 0 0 3px;
 }
+.editing span,.editable input,.editable textarea{display:none;}
+.editing input[type=text] {
+    background: #DCFCBD;
+    padding: 1px 5px;
+  }
+.editing input[type=submit] {
+  float: none;
+  margin: 0 0 0 5px;
+}
 #main_menu__section {
 	background: #fff;
 	border: 1px solid #398235;
@@ -115,14 +124,6 @@ input[type=submit]:hover,
 				float: right;
 				margin: 0;
 				width: auto;
-			}
-			.editing input[type=text] {
-					background: #DCFCBD;
-					padding: 1px 5px;
-				}
-			.editing input[type=submit] {
-				float: none;
-				margin: 0 0 0 5px;
 			}
 .errorCol {background: #febebe;}
 .errorMsg {
