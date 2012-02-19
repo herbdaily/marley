@@ -1,29 +1,19 @@
 
+
 module Marley
   module Plugins
     class MessageThreading < Plugin
-      def apply(*klasses)
-        super
-        klasses.each {|klass| klass.plugin :tree}
-      end
       module ClassMethods
         def topics
           self.dataset.filter(:parent_id => nil)
         end
         def list(params=nil)
-          p topics.map{|t| t.thread}
           topics.map{|t| t.thread}
         end
       end
       module InstanceMethods
         def write_cols
           super.push(:topic_id, :parent_id)
-        end
-        def topic_msg
-          self.class.topics.filter(:topic_id => topic_id).first
-        end
-        def topic
-          self.topic_msg.tree
         end
         def children
           self.class.filter(:parent_id => id).all
@@ -47,6 +37,20 @@ module Marley
         end
       end
     end
+    class MessageNav < Plugin
+      module ClassMethods
+        def section_nav
+          [
+            self.reggae_link(:recent, 'Recent Posts'),
+            self.reggae_link(:recent_topics, 'Recent Topics'),
+          ]
+        end
+        def recent
+        end
+        def recent_topics
+        end
+      end
+    end
   end
   module Joints
     class Forum < Joint
@@ -58,6 +62,10 @@ module Marley
         Marley.plugin(:section).apply('PrivateMessage')
         Marley.plugin(:section).apply('PublicMessage')
         Marley.plugin(:message_threading).apply('PublicMessage')
+        Marley.plugin(:message_nav).apply('PublicMessage')
+        class << MR::PublicMessage
+          def section_title;'Public Forums';end
+        end
       end
     end
   end
