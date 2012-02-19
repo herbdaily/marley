@@ -9,7 +9,7 @@ DB.create_table :users do
   text :name, :unique => true
   text :user_type, :index => true
   text :pw_hash
-  datetime :date_created
+  datetime :date_created, :index => true
   text :description
 end
 DB.create_table :messages do
@@ -18,6 +18,7 @@ DB.create_table :messages do
   text :message_type, :index => true
   text :title,  :index => true,:null => false
   text :content
+  datetime :date_created, :index => true
 end
 DB.create_table :messages_users do
   primary_key :id

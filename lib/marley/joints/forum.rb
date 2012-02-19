@@ -1,14 +1,13 @@
 
-
 module Marley
   module Plugins
     class MessageThreading < Plugin
       module ClassMethods
-        def topics
-          self.dataset.filter(:parent_id => nil)
+        def topics(params=nil)
+          self.dataset.filter(:parent_id => nil).filter(params || true)
         end
         def list(params=nil)
-          topics.map{|t| t.thread}
+          (params.is_a?(Sequel::Dataset) ?  params : topics(params)).map{|t| t.thread}
         end
       end
       module InstanceMethods
@@ -41,6 +40,7 @@ module Marley
       module ClassMethods
         def section_nav
           [
+            self.reggae_link(:list, 'All Posts'),
             self.reggae_link(:recent, 'Recent Posts'),
             self.reggae_link(:recent_topics, 'Recent Topics'),
           ]
@@ -48,6 +48,7 @@ module Marley
         def recent
         end
         def recent_topics
+          list(:date_created > Date.today - 2)
         end
       end
     end
@@ -65,6 +66,11 @@ module Marley
         Marley.plugin(:message_nav).apply('PublicMessage')
         class << MR::PublicMessage
           def section_title;'Public Forums';end
+        end
+      end
+      module Resources
+        class Admin < User
+          def self.requires_user?; true;end
         end
       end
     end
