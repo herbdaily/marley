@@ -18,7 +18,6 @@ DB.create_table :messages do
   text :message_type, :index => true
   text :title,  :index => true,:null => false
   text :content
-  datetime :date_created, :index => true
 end
 DB.create_table :messages_users do
   primary_key :id

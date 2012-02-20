@@ -40,10 +40,16 @@ module Marley
       module ClassMethods
         def section_nav
           [
+            self.reggae_link(:new, 'New Post'),
             self.reggae_link(:list, 'All Posts'),
             self.reggae_link(:recent, 'Recent Posts'),
             self.reggae_link(:recent_topics, 'Recent Topics'),
-          ]
+            Marley::ReggaeMsg.new(:title => 'Topics Tagged With:')
+          ].concat(
+            topics.map{|t|}
+          )
+        end
+        def section_contents
         end
         def recent
         end
@@ -55,21 +61,23 @@ module Marley
   end
   module Joints
     class Forum < Joint
-      def smoke
-        Marley.plugin('orm_rest_convenience').apply(Sequel::Model)
-        Marley.joint('user')
-        Marley.joint('messages',{:tags => true})
-        Marley.joint('section')
-        Marley.plugin(:section).apply('PrivateMessage')
-        Marley.plugin(:section).apply('PublicMessage')
-        Marley.plugin(:message_threading).apply('PublicMessage')
-        Marley.plugin(:message_nav).apply('PublicMessage')
-        class << MR::PublicMessage
-          def section_title;'Public Forums';end
-        end
+      Marley.plugin('orm_rest_convenience').apply(Sequel::Model)
+      Marley.joint('user')
+      Marley.joint('messages',{:tags => true})
+      Marley.joint('section')
+      Marley.plugin(:section).apply('PrivateMessage')
+      Marley.plugin(:section).apply('PublicMessage')
+      Marley.plugin(:message_threading).apply('PublicMessage')
+      Marley.plugin(:message_nav).apply('PublicMessage')
+      class << MR::PublicMessage
+        def section_title;'Public Forums';end
       end
       module Resources
-        class Admin < User
+        class Topic < MJ::Messages::Message
+        end
+        class TopicTag < MR::Tag
+        end
+        class Admin < MR::User
           def self.requires_user?; true;end
         end
       end

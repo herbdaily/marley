@@ -26,6 +26,7 @@ module Marley
       $request[:verb]="rest_#{verb}"
 
       rn=$request[:path] ? $request[:path][0].camelize : @opts[:default_resource]
+      return nil if rn=='Favicon.ico'
       unless Resources.const_defined?(rn) 
         raise AuthenticationError if (@opts[:authenticate] && $request[:user].new? )
         raise RoutingError 

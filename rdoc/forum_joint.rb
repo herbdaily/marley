@@ -16,6 +16,7 @@ DB.create_table :messages do
   integer :topic_id, :index => true
   integer :parent_id, :index => true
   integer :user_id, :index => true
+  datetime :date_created, :index => true
   text :message_type, :index => true
   text :title,  :index => true,:null => false
   clob :content
