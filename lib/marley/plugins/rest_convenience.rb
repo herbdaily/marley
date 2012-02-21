@@ -10,8 +10,8 @@ module Marley
         def resource_name; self.name.sub(/.*::/,'').underscore; end
         def url
         end
-        def reggae_link(action=nil, title=nil)
-            ReggaeLink.new({:url => "/#{self.resource_name}/#{action}",:title => (title||"#{action.to_s.humanize} #{self.resource_name.humanize}".strip)})
+        def reggae_link(action=nil, title=nil, args=nil)
+          ReggaeLink.new({:url => "/#{self.resource_name}/#{action}?#{args}",:title => (title||"#{action.to_s.humanize} #{self.resource_name.humanize}".strip)})
         end
       end
       module InstanceMethods
