@@ -46,7 +46,7 @@ module Marley
             self.reggae_link(:recent_topics, 'Recent Topics'),
             Marley::ReggaeMsg.new(:title => 'Topics Tagged With:')
           ].concat(
-            topics.map{|t|}
+            topics.map{|p|p.public_tags.map{|t| t.tag}}.flatten
           )
         end
         def section_contents
