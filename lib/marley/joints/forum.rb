@@ -47,7 +47,7 @@ module Marley
           ].push(
             Marley::ReggaeMsg.new({
               :title => 'Topics Tagged With:', 
-              :description => topics.map{|p|p.public_tags.map{|t| reggae_link(nil,t.tag,"tag=#{t.tag}")}}.flatten})
+              :description => MR::Tag.filter(:id => topics.join(:messages_tags).where(:messages__id => :message_id).select(:tag_id)).map{|t| reggae_link(nil,t.tag,"tag=#{t.tag}")}})
           )
         end
         def section_contents
