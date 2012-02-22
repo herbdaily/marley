@@ -4,7 +4,11 @@ module Marley
     class MessageThreading < Plugin
       module ClassMethods
         def topics(params=nil)
-          self.dataset.filter(:parent_id => nil).filter(params || true)
+          filters=[]
+          if params && params[:tags]
+            filters << {:id => MR::Tag.join(:messages_tags, :tag_id => :id).select(:message_id).filter(:tag => params[:tags])}
+          end
+          filters.inject(self.dataset.filter(:parent_id => nil)) {|ds,f| ds.filter(f)}
         end
         def list(params=nil)
           (params.is_a?(Sequel::Dataset) ?  params : topics(params)).map{|t| t.thread}
@@ -42,17 +46,14 @@ module Marley
           [
             self.reggae_link(:new, 'New Post'),
             self.reggae_link(:list, 'All Posts'),
-            self.reggae_link(:recent, 'Recent Posts'),
             self.reggae_link(:recent_topics, 'Recent Topics')
           ].push(
             Marley::ReggaeMsg.new({
               :title => 'Topics Tagged With:', 
-              :description => MR::Tag.filter(:id => topics.join(:messages_tags).where(:messages__id => :message_id).select(:tag_id)).map{|t| reggae_link(nil,t.tag,"tag=#{t.tag}")}})
+              :description => MR::Tag.filter(:id => topics.join(:messages_tags).where(:messages__id => :message_id).select(:tag_id)).map{|t| reggae_link('list',t.tag,"#{resource_name}[tags]=#{t.tag}")}})
           )
         end
         def section_contents
-        end
-        def recent
         end
         def recent_topics
           list(:date_created > Date.today - 2)
