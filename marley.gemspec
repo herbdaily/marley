@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{marley}
-  s.version = "0.5.0"
+  s.version = "0.6.0"
   s.summary = %q{Irie default restful routes for your models and other objects}
   s.description = %q{Marley implements a web services microframework on top of Rack and Sequel on the server side and Jquery on the client side.  This version implements what will most likely be the long term Marley API.  The client still doesn't work, and the plan is to release 0.6.0 when it is.
   }
@@ -14,5 +14,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rack', '~>1.2.2'
   s.add_runtime_dependency 'json', '~>1.1.7'
   s.add_development_dependency 'tdoc', '~>0.13.4'
-  s.files = Dir.glob(["*","lib/**/*","examples/**/*","test/**/*"])
+  s.files = Dir.glob(["README.rdoc","reggae.ebnf","lib/**/*","rdoc/**/*"])
 end
