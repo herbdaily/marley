@@ -1,8 +1,5 @@
 
 
-- fix JS
-  - change reggae error object to rely on status code?
-
 - implement dev,test, prod environments
   - reloader only for dev environment
 

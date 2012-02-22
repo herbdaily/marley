@@ -3,9 +3,8 @@
 Gem::Specification.new do |s|
   s.name = %q{marley}
   s.version = "0.6.0"
-  s.summary = %q{Irie default restful routes for your models and other objects}
-  s.description = %q{Marley implements a web services microframework on top of Rack and Sequel on the server side and Jquery on the client side.  This version implements what will most likely be the long term Marley API.  The client still doesn't work, and the plan is to release 0.6.0 when it is.
-  }
+  s.summary = %q{Irie default restful routes for models and other objects}
+  s.description = %q{Marley is a framework for quickly building RESTful web services and applications.  Development is fast because Marley implements lots of sensible defaults, all of which can be overridden and most of which can be overridden easily. }
   s.authors     = ["Herb Daily"]
   s.email       = 'herb.daily@safe-mail.net'
   s.homepage    = 'http://github.com/herbdaily/marley'
