@@ -31,6 +31,7 @@ module Marley
           super
           self.topic_id||=self.class.max(:topic_id).to_i+1
         end
+        #this needs to change
         def reply
           foo=reggae_instance.set_values(:parent_id => id,:title => "re: #{title}")
           foo.new_rec=true
@@ -46,12 +47,9 @@ module Marley
           [
             self.reggae_link(:new, 'New Post'),
             self.reggae_link(:list, 'All Posts'),
-            self.reggae_link(:recent_topics, 'Recent Topics')
-          ].push(
-            Marley::ReggaeMsg.new({
-              :title => 'Topics Tagged With:', 
-              :description => MR::Tag.filter(:id => topics.join(:messages_tags).where(:messages__id => :message_id).select(:tag_id)).map{|t| reggae_link('list',t.tag,"#{resource_name}[tags]=#{t.tag}")}})
-          )
+            self.reggae_link(:recent_topics, 'Recent Topics'),
+            Marley::ReggaeSection.new({:title => 'Topics Tagged With:', :navigation => MR::Tag.filter(:id => topics.join(:messages_tags).where(:messages__id => :message_id).select(:tag_id)).map{|t| reggae_link('list',t.tag,"#{resource_name}[tags]=#{t.tag}")}})
+          ]
         end
         def section_contents
         end

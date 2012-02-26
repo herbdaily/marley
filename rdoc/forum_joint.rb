@@ -47,4 +47,5 @@ DB.create_table :topics_tags do
 end
  
 
+Marley.config(:app_name => 'Forum',:client => Marley::Client.new(:app_name => 'Forum'))
 Marley.joint('forum')

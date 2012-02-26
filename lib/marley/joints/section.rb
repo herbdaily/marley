@@ -28,7 +28,7 @@ module Marley
         Marley.plugin('rest_convenience').apply(self)
         Marley.plugin('section').apply(self)
         Marley.plugin('current_user_methods').apply(self) if MP.const_defined?(:CurrentUserMethods)
-        def self.rest_get
+        def self.rest_get(params=nil)
           section
         end
       end
@@ -41,11 +41,14 @@ module Marley
               false
             end
           end
+          def self.section_title
+            Marley.config[:app_name]
+          end
           def self.section_nav
             if respond_to?(:current_user) && (current_user.nil? || current_user.new?)
               [[:msg,{},'New users, please sign up below'],MR::User.new]
             else
-              MR.resources_responding_to(:section).sort {|l,r|l.resource_name <=> r.resource_name}.map{|r| r.section_link}.compact
+              MR.resources_responding_to(:section).sort {|l,r|l.resource_name <=> r.resource_name}.map{|r| next if r==self; r.section}.compact
             end
           end
           def self.section_desc

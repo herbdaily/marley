@@ -6,7 +6,7 @@ module Marley
       if $request[:path][1].to_s.match(/^\d+$/) #references a specific instance by ID
         @instance=@model[$request[:path][1].to_i]
         raise RoutingError unless @instance
-        @method_name=$request[:path][2].sub(/[\?\&\+]$/,'') rescue nil
+        @method_name=$request[:path][2].sub(/[\?\&\+]$/,'') rescue nil #ditch trailing characters, if any
         if @method_name
           raise RoutingError unless @instance.respond_to?(@method_name)
           @method=@instance.method(@method_name)
