@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'marley/jamaica' #should prob be ditched
 require 'json/ext'
 require 'rack'
 require 'rack/builder'
@@ -13,8 +14,7 @@ require 'marley/resources'
 require 'marley/controllers'
 require 'marley/joint' 
 require 'marley/plugin' 
-require 'client/jamaica' #should prob be ditched
-Sequel.extension :inflector
+Sequel.extension :inflector #needs to be replaced, probably
 
 log_fn='log/marley.log'
 $log=Logger.new(File.exists?(log_fn) ? log_fn : $stdout) 
