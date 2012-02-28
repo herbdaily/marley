@@ -45,19 +45,19 @@ module Marley
             Marley.config[:app_name]
           end
           def self.section_nav
+            if !(respond_to?(:current_user) && (current_user.nil? || current_user.new?))
+              MR.resources_responding_to(:section).sort {|l,r|l.resource_name <=> r.resource_name}.map{|r| next if r==self; r.section}.compact
+            end
+          end
+          def self.section_contents
             if respond_to?(:current_user) && (current_user.nil? || current_user.new?)
               [[:msg,{},'New users, please sign up below'],MR::User.new]
-            else
-              MR.resources_responding_to(:section).sort {|l,r|l.resource_name <=> r.resource_name}.map{|r| next if r==self; r.section}.compact
             end
           end
           def self.section_desc
             if respond_to?(:current_user) && (current_user.nil? || current_user.new?)
               ReggaeLink.new({:url => '/main_menu', :title => 'Existing users, please click here to log in.'})
             end
-          end
-          def self.section_link
-            ReggaeLink.new({:url => '/',:title => 'Main Menu'})
           end
         end
       end

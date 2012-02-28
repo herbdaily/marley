@@ -31,13 +31,8 @@ module Marley
           super
           self.topic_id||=self.class.max(:topic_id).to_i+1
         end
-        #this needs to change
         def reply
-          foo=reggae_instance.set_values(:parent_id => id,:title => "re: #{title}")
-          foo.new_rec=true
-          foo.url=self.class.new.url
-          foo.schema.delete_if {|c| [:author,:id].include?(c[NAME_INDEX])}
-          foo
+          self.class.new(self.values.dup.delete_if{|k,v| k==:id}.merge({:parent_id => self[:id],:title => "re: #{title}"}))
         end
       end
     end
