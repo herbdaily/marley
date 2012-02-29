@@ -46,8 +46,6 @@ module Marley
             Marley::ReggaeSection.new({:title => 'Topics Tagged With:', :navigation => MR::Tag.filter(:id => topics.join(:messages_tags).where(:messages__id => :message_id).select(:tag_id)).map{|t| reggae_link('list',t.tag,"#{resource_name}[tags]=#{t.tag}")}})
           ]
         end
-        def section_contents
-        end
         def recent_topics
           list(:date_created > Date.today - 2)
         end

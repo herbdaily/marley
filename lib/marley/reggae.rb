@@ -33,7 +33,7 @@ module Marley
         @resource_type=self[0]=self[0].to_sym
         self[1]=Utils.hash_keys_to_syms(self[1]) if self[1].class==Hash
         @properties=self[1]
-        @contents=self[2 .. -1]
+        @contents=self[2]
         self.class.mk_prop_methods
       else
         replace(map {|r| r.class==Array ? Reggae.new(r).to_resource : r})
@@ -62,7 +62,7 @@ module Marley
     def initialize(*args)
       @resource_type=self.class.to_s.sub(/.*Reggae/,'').underscore.to_sym
       if args[0].class==Hash
-        initialize [@resource_type,args[0],args[1 .. -1]]
+        initialize [@resource_type,args[0],args[1]]
       else
         super
       end

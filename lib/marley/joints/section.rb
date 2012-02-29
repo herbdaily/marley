@@ -8,7 +8,7 @@ module Marley
             :title => send_or_default(:section_title, resource_name.humanize),
             :navigation => send_or_nil(:section_nav),
             :description => send_or_nil(:section_desc)},
-            send_or_nil(:section_contents))
+            send_or_nil(:section_content))
         end
         def section_link
           reggae_link('section').update(:title => resource_name.humanize.pluralize)
@@ -47,11 +47,13 @@ module Marley
           def self.section_nav
             if !(respond_to?(:current_user) && (current_user.nil? || current_user.new?))
               MR.resources_responding_to(:section).sort {|l,r|l.resource_name <=> r.resource_name}.map{|r| next if r==self; r.section}.compact
+            else
+              []
             end
           end
-          def self.section_contents
+          def self.section_content
             if respond_to?(:current_user) && (current_user.nil? || current_user.new?)
-              [[:msg,{},'New users, please sign up below'],MR::User.new]
+              [[:msg,{:title => 'New users, please sign up below'}],MR::User.new]
             end
           end
           def self.section_desc
