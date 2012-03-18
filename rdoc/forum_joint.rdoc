@@ -11,6 +11,7 @@ setup
     (1 .. 5).each { |i|
       user_client.create(user.set_values(:name => "user#{i}"))
       instance_variable_set(:"@client#{i}", Marley::TestClient.new(:auth => ["user#{i}",'asdfasdf'] ))
+      instance_variable_set(:"@new_post#{i}", instance_variable_get(:"@client#{i}").read({},{:resource_name => 'public_message'}))
     }
 end
 
