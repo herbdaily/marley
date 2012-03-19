@@ -1,4 +1,4 @@
-require 'ruby-prof'
+#require 'ruby-prof'
 
 module Marley
   class Router  
@@ -58,8 +58,8 @@ module Marley
     ensure
       $log.info $request.merge({:request => nil,:user => $request[:user] ? $request[:user].name : nil})
       $request=nil #mostly for testing
-      #prof=RubyProf.stop
-      #RubyProf::FlatPrinter.new(prof).print(STDOUT, 0)
+#      prof=RubyProf.stop
+#      RubyProf::FlatPrinter.new(prof).print(STDOUT, 0)
     end
   end
 end

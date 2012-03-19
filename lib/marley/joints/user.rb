@@ -48,7 +48,7 @@ module Marley
         def current_user_role
           if u=self.class.current_user
             return 'new' if u.new?
-            return "owner" if owners.include?(u)
+            return "owner" if (@owners||=owners).include?(u) #avoid multiple calls to `owners`
           end
         end
         def owners

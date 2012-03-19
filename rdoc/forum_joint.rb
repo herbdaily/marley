@@ -49,3 +49,4 @@ end
 
 Marley.config(:app_name => 'Forum',:client => Marley::Client.new(:app_name => 'Forum'))
 Marley.joint('forum')
+#require 'test/forum_load.rb'
