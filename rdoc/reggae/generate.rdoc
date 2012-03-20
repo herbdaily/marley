@@ -4,10 +4,10 @@
 examples:  generate an instance
 
   >> @instance=Marley::ReggaeInstance.new({:name => 'foo',:schema => []})
-  => [:instance, {:schema=>[], :name=>"foo"}, []]
+  => [:instance, {:schema=>[], :name=>"foo"}, nil]
 
   >> @link=Marley::ReggaeLink.new({:url => '/', :title => 'asdf'})
-  => [:link, {:url=>"/", :title=>"asdf"}, []]
+  => [:link, {:url=>"/", :title=>"asdf"}, nil]
   >> @link.update(:url => '/asdf/')
-  => [:link, {:url=>"/asdf/", :title=>"asdf"}, []]
+  => [:link, {:url=>"/asdf/", :title=>"asdf"}, nil]
 

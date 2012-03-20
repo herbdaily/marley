@@ -11,7 +11,8 @@ module Marley
         def url
         end
         def reggae_link(action=nil, title=nil, args=nil)
-          ReggaeLink.new({:url => "/#{self.resource_name}/#{action}?#{args}",:title => (title||"#{action.to_s.humanize} #{self.resource_name.humanize}".strip)})
+          args="?#{args}" if args
+          ReggaeLink.new({:url => "/#{self.resource_name}/#{action}#{args}",:title => (title||"#{action.to_s.humanize} #{self.resource_name.humanize}".strip)})
         end
       end
       module InstanceMethods

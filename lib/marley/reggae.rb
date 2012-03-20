@@ -125,6 +125,11 @@ module Marley
     end
   end
   class ReggaeColSpec < Array
+    def initialize(*args)
+      super 
+      self[0]=self[0].to_sym #type and name should always be syms
+      self[1]=self[1].to_sym
+    end
     ['col_type','col_name','col_restrictions', 'col_value'].each_with_index do |prop_name, i|
       define_method(prop_name.to_sym) {self[i]} 
       define_method(:"#{prop_name}=") {|val|self[i]=val} 
