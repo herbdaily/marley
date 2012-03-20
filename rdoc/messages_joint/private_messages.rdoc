@@ -29,15 +29,15 @@ example: user2 sends message to user3 and user4, each of which replies
 >> @msg=@client2.read({},:method => 'new')
 => [:instance, {:url=>"/private_message/", :schema=>[[:text, :recipients, 0, ""], [:integer, :user_id, 3, 2], [:text, :title, 4, nil], [:text, :content, 0, nil]], :name=>"private_message", :new_rec=>true, :actions=>nil}, nil]
 >> @client2.create(@msg.set_values(:title => 'message1',:recipients => 'user3,user4'))
-=> [:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]
+=> [:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get => ["reply", "reply_all"]}}, []]
 >> @client1.read
 => []
 >> @client2.read
 => []
 >> @client3.read
-=> [[:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
+=> [[:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get => ["reply", "reply_all"]}}, []]]
 >> @orig=@client4.read
-=> [[:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
+=> [[:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get => ["reply", "reply_all"]}}, []]]
 
 >> @u3r=@client3.read({},:url => @orig[0].url+'/reply')
 => [:instance, {:url=>"/private_message/", :schema=>[[:text, :recipients, 0, "user2"], [:integer, :user_id, 3, 3], [:text, :title, 4, "re: message1"], [:text, :content, 0, nil]], :name=>"private_message", :new_rec=>true, :actions=>nil}, nil]
@@ -50,10 +50,10 @@ example: user2 sends message to user3 and user4, each of which replies
 => [[:instance, {:url=>"/private_message/2", :schema=>[[:text, :recipients, 2, "user2"], [:text, :author, 2, "user3"], [:integer, :id, 2, 2], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []]]
 
 >> @client3.create(@u3ra)
-=> [:instance, {:url=>"/private_message/3", :schema=>[[:text, :recipients, 2, "user2,user4"], [:text, :author, 2, "user3"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]
+=> [:instance, {:url=>"/private_message/3", :schema=>[[:text, :recipients, 2, "user2,user4"], [:text, :author, 2, "user3"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get => ["reply", "reply_all"]}}, []]
 >> @client2.read
-=> [[:instance, {:url=>"/private_message/2", :schema=>[[:text, :recipients, 2, "user2"], [:text, :author, 2, "user3"], [:integer, :id, 2, 2], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []], [:instance, {:url=>"/private_message/3", :schema=>[[:text, :recipients, 2, "user2,user4"], [:text, :author, 2, "user3"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
+=> [[:instance, {:url=>"/private_message/2", :schema=>[[:text, :recipients, 2, "user2"], [:text, :author, 2, "user3"], [:integer, :id, 2, 2], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []], [:instance, {:url=>"/private_message/3", :schema=>[[:text, :recipients, 2, "user2,user4"], [:text, :author, 2, "user3"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get => ["reply", "reply_all"]}}, []]]
 
 >> @client4.read
-=> [[:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []], [:instance, {:url=>"/private_message/3", :schema=>[[:text, :recipients, 2, "user2,user4"], [:text, :author, 2, "user3"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>[:reply, :reply_all]}, []]]
+=> [[:instance, {:url=>"/private_message/1", :schema=>[[:text, :recipients, 2, "user3,user4"], [:text, :author, 2, "user2"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 2], [:text, :title, 6, "message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get => ["reply", "reply_all"]}}, []], [:instance, {:url=>"/private_message/3", :schema=>[[:text, :recipients, 2, "user2,user4"], [:text, :author, 2, "user3"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 3], [:text, :title, 6, "re: message1"], [:text, :content, 2, nil]], :name=>"private_message", :new_rec=>false, :actions=>{:get => ["reply", "reply_all"]}}, []]]
 

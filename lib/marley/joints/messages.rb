@@ -13,7 +13,7 @@ module Marley
       class Message < Sequel::Model
         MU.sti(self)
         MR::User.join_to(self) if MR::User
-        instance_actions![:new?][false]={:get => 'reply'}
+        instance_actions![:new?][false]={:get => :reply}
         derived_before_cols![:new?][false]=[:author]
         ro_cols![:current_user_role] = {'reader' => [/.*/],'owner' => [/^author$/]}
         def validate
@@ -43,7 +43,7 @@ module Marley
           end
           def actions(parent_instance=nil)
             return super if new? || ! recipients.to_s.match(/,/) 
-            [:reply, :reply_all]
+            {:get => [:reply, :reply_all]}
           end
           def recipients
             users.map{|u|u.name}.join(',')
