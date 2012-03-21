@@ -12,7 +12,7 @@ module Marley
           @method=@instance.method(@method_name)
         end
       else #class method -- should yield 0 or more instances of model in an array
-        @method_name=$request[:path][1] 
+        @method_name=$request[:path][1].sub(/[\?\&\+]$/,'') rescue nil #ditch trailing characters, if any 
         @method_name='list' if @method_name.nil? && $request[:verb]=='rest_get'
         if @method_name
           raise RoutingError unless @model.respond_to?(@method_name)

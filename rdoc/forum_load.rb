@@ -1,5 +1,5 @@
 #require 'rubygems'
-#require 'rdoc/forum_joint.rb'
+require 'rdoc/forum_joint.rb'
 require 'factory_girl'
 
 #this kinda sucks...
