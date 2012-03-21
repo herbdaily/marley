@@ -19,13 +19,13 @@ example: user1 writes, edits, deletes post
 => [:error, {:error_type=>"validation", :description=>nil, :error_details=>{:title=>["is required"]}}]
 
 >> @msg=@client1.create(@msg.set_values(:title => 'test'))
-=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "test"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/1"}}, []]
+=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "test"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply, :delete=>"/public_message/1"}}, []]
 
 >> @client1.update(@msg.set_values(:content => 'asdf'),:url => @msg.url)
-=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "test"], [:text, :content, 0, "asdf"]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/1"}}, []]
+=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "test"], [:text, :content, 0, "asdf"]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply, :delete=>"/public_message/1"}}, []]
 
 >> @client1.del({},:url => @msg.url)
-=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "test"], [:text, :content, 0, "asdf"]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/1"}}, []]
+=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "test"], [:text, :content, 0, "asdf"]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply, :delete=>"/public_message/1"}}, []]
 
 
 example:  two users, several messages
@@ -35,28 +35,28 @@ example:  two users, several messages
 => [:instance, {:new_rec=>true, :actions=>nil, :url=>"/public_message/", :name=>"public_message", :schema=>[[:integer, :user_id, 3, 2], [:text, :title, 4, nil], [:text, :content, 0, nil]]}, nil]
 
 >> @u1m1=@client1.create(@u1msg.set_values(:title => 'usr1 msg1'))
-=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "usr1 msg1"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/1"}}, []]
+=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "usr1 msg1"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply, :delete=>"/public_message/1"}}, []]
 
 >> @client3.read
-=> [[:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 6, "usr1 msg1"], [:text, :content, 2, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []]]
+=> [[:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 6, "usr1 msg1"], [:text, :content, 2, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply}}, []]]
 
 >> @u1m2=@client1.create(@u1msg.set_values(:title => 'usr1 msg2'))
-=> [:instance, {:url=>"/public_message/2", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 2], [:integer, :user_id, 3, 1], [:text, :title, 4, "usr1 msg2"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/2"}}, []]
+=> [:instance, {:url=>"/public_message/2", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 2], [:integer, :user_id, 3, 1], [:text, :title, 4, "usr1 msg2"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply, :delete=>"/public_message/2"}}, []]
 >> @client3.read
-=> [[:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 6, "usr1 msg1"], [:text, :content, 2, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []], [:instance, {:url=>"/public_message/2", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 2], [:integer, :user_id, 3, 1], [:text, :title, 6, "usr1 msg2"], [:text, :content, 2, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply"}}, []]]
+=> [[:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 6, "usr1 msg1"], [:text, :content, 2, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply}}, []], [:instance, {:url=>"/public_message/2", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 2], [:integer, :user_id, 3, 1], [:text, :title, 6, "usr1 msg2"], [:text, :content, 2, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply}}, []]]
 
 >> @client3.update(@u1m1.set_values(:title => 'asdf'),:url => @u1m1.url,:code => 403)
 => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
 >> @client2.update(@u1m1.set_values(:title => 'asdf'),:url => @u1m1.url,:code => 403)
 => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
 >> @client1.update(@u1m1.set_values(:title => 'asdf'),:url => @u1m1.url)
-=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "asdf"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/1"}}, []]
+=> [:instance, {:url=>"/public_message/1", :schema=>[[:text, :author, 2, "user1"], [:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :title, 4, "asdf"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply, :delete=>"/public_message/1"}}, []]
 
 >> @u2r1=@client2.read({},:url => @u1m1.url+'/reply')
 => [:instance, {:url=>"/public_message/", :schema=>[[:integer, :user_id, 3, 2], [:text, :title, 4, "re: asdf"], [:text, :content, 0, nil]], :name=>"public_message", :new_rec=>true, :actions=>nil}, nil]
 
 >> @client2.create(@u2r1.set_values(:content => 'xxxxxx'))
-=> [:instance, {:url=>"/public_message/3", :schema=>[[:text, :author, 2, "user2"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 2], [:text, :title, 4, "re: asdf"], [:text, :content, 0, "xxxxxx"]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>"reply", :delete=>"/public_message/3"}}, []]
+=> [:instance, {:url=>"/public_message/3", :schema=>[[:text, :author, 2, "user2"], [:integer, :id, 2, 3], [:integer, :user_id, 3, 2], [:text, :title, 4, "re: asdf"], [:text, :content, 0, "xxxxxx"]], :name=>"public_message", :new_rec=>false, :actions=>{:get=>:reply, :delete=>"/public_message/3"}}, []]
 
 
 
