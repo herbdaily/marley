@@ -40,7 +40,8 @@ module Marley
       end
     end
     def is_resource?
-      [String, Symbol].include?(self[0].class) && Marley.constants.include?("reggae_#{self[0]}".camelcase)
+      #below is for 1.8-1.9 and is fucking awful!
+      [String, Symbol].include?(self[0].class) && (Marley.constants.include?("reggae_#{self[0]}".camelcase) || Marley.constants.include?("reggae_#{self[0]}".camelcase.to_sym))
     end
     def contents=(*args)
       self[2]=*args
@@ -117,7 +118,7 @@ module Marley
   end
   class ReggaeSchema < Array
     def initialize(*args)
-      super 
+      super
       replace(map{|spec| ReggaeColSpec.new(spec)})
     end
     def [](i)

@@ -17,8 +17,11 @@ module Marley
           @opts[:required_plugins].to_a.each do |p|
             Marley.plugin(p).apply(klass)
           end
+          #below 4 lines vs 2 is for 1.8-1.9 and is fucking awful!
           plugin.constants.include?('ClassMethods') && resource.extend(plugin.const_get('ClassMethods'))
+          plugin.constants.include?(:ClassMethods) && resource.extend(plugin.const_get(:ClassMethods))
           plugin.constants.include?('InstanceMethods') && resource.send(:include, plugin.const_get('InstanceMethods'))
+          plugin.constants.include?(:InstanceMethods) && resource.send(:include, plugin.const_get(:InstanceMethods))
           if @opts[:lazy_class_attrs] || @opts[:class_attrs] 
             resource.extend Marley::Utils::ClassAttrs
           end
