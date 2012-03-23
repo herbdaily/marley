@@ -48,16 +48,7 @@ module Marley
         def current_user_role
           if u=self.class.current_user
             return 'new' if u.new?
-            return "owner" if (@owners||=owners).include?(u[:id]) #avoid multiple calls to `owners`
-          end
-        end
-        def owners
-          if self.class.to_s.match(/User$/)||self.class.superclass.to_s.match(/User$/)
-            [self[:id]]
-          elsif self.class.owner_col
-            [send(self.class.owner_col)]
-          else
-            self.class.association_reflections.select {|k,v| v[:type]==:many_to_one}.map {|a| self.send(a[0]) && self.send(a[0]).owners}.flatten.compact
+            return "owner" if send_or_nil(self.class.owner_col)==u[:id]
           end
         end
       end
@@ -70,12 +61,13 @@ module Marley
           LOGIN_FORM= [:instance,{:name => 'login',:url => 'main_menu',:description => 'Existing users please log in here:',:new_rec => true,:schema => [[:text,'name',RESTRICT_REQ],[:password,'password',RESTRICT_REQ]]}]
           Marley.plugin('current_user_methods').apply(self)
           MU.sti(self)
-          @owner_col=nil 
+          @owner_col=:id
           required_cols![:new?][true]=['password','confirm_password']
           derived_after_cols![:new?]={true => [:password,:confirm_password]}
           derived_after_cols![:current_user_role]={'owner' => [:old_password,:password,:confirm_password]}
           reject_cols![:current_user_role]={:all => ['pw_hash']}
           ro_cols![:current_user_role]={'new' => ['id'],nil => [/.*/]} 
+          def after_initialize;end
           def self.join_to(klass, user_id_col_name=nil)
             user_id_col_name||=:user_id
             klass=MR.const_get(klass) if klass.class==String
