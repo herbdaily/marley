@@ -36,7 +36,7 @@ module Marley
           end
           Marley::Utils.many_to_many_join(self, MR::User)
           def self.list_dataset
-            filter(:id => DB[:messages_users].filter(:user_id => current_user[:id]).select(:message_id))
+            filter(:messages__id => DB[:messages_users].filter(:user_id => current_user[:id]).select(:message_id))
           end
           def current_user_role
             super || (self.users.include?(self.class.current_user) && 'recipient')

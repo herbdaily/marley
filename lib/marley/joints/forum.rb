@@ -11,7 +11,7 @@ module Marley
           filters.inject(self.dataset.filter(:parent_id => nil)) {|ds,f| ds.filter(f)}
         end
         def list(params=nil)
-          (params.is_a?(Sequel::Dataset) ?  params : topics(params)).map{|t| t.thread}
+          (params.is_a?(Sequel::Dataset) ?  params : topics(params)).eager(associations).all.map{|t| t.thread}
         end
       end
       module InstanceMethods
@@ -19,12 +19,12 @@ module Marley
           super.push(:topic_id, :parent_id)
         end
         def children
-          self.class.filter(:parent_id => id).all
+          self.class.filter(:parent_id => id).eager(associations)
         end
         def thread
-          return reggae_instance if children.length==0
+          return reggae_instance if children.all.length==0
           foo=reggae_instance
-          foo[2] = children.map{|m| m.thread} 
+          foo[2] = children.all.map{|m| m.thread} 
           foo
         end
         def before_save

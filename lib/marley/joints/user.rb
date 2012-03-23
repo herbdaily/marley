@@ -48,14 +48,14 @@ module Marley
         def current_user_role
           if u=self.class.current_user
             return 'new' if u.new?
-            return "owner" if (@owners||=owners).include?(u) #avoid multiple calls to `owners`
+            return "owner" if (@owners||=owners).include?(u[:id]) #avoid multiple calls to `owners`
           end
         end
         def owners
           if self.class.to_s.match(/User$/)||self.class.superclass.to_s.match(/User$/)
-            [self]
+            [self[:id]]
           elsif self.class.owner_col
-            [MR::User[send(self.class.owner_col)]]
+            [send(self.class.owner_col)]
           else
             self.class.association_reflections.select {|k,v| v[:type]==:many_to_one}.map {|a| self.send(a[0]) && self.send(a[0]).owners}.flatten.compact
           end

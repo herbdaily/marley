@@ -26,11 +26,7 @@ module Marley
         def foreign_key_name; :"#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end
 
         def list(params={})
-          if respond_to?(:list_dataset)
-            list_dataset.filter(params).all
-          else
-            filter(params).all
-          end
+          (respond_to?(:list_dataset) ? list_dataset : dataset).filter(params).eager(associations).all
         end
         def sti
           plugin :single_table_inheritance, :"#{self.to_s.sub(/.*::/,'').underscore}_type", :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
