@@ -7,9 +7,7 @@ module Marley
           klass=MR.const_get(klass) if klass.is_a?(String)
           klass.derived_after_cols![:new?][:all] << @tag_col_name.to_sym
           @instance_methods_mod.send(:append_features,klass)
-          tag_class=@tag_class
-          join_type=@opts[:"#{klass}_join_type"] || @opts[:join_type]
-          Marley::Utils.many_to_many_join(klass, tag_class)
+          Marley::Utils.many_to_many_join(klass, @tag_class)
         end
       end
       def initialize(opts={})
