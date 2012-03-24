@@ -3,6 +3,7 @@ require 'user_joint.rb'
 DB.create_table :tags do
   primary_key :id
   integer :user_id
+  text :tag_type
   text :tag
 end
 DB.create_table :messages_tags do

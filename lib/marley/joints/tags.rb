@@ -70,6 +70,10 @@ module Marley
     class Tags < Joint
       module Resources
         class Tag < Sequel::Model
+          sti
+          def self.list_dataset
+            dataset.order(:tag)
+          end
           def validate
             validates_presence :tag
             validates_unique [:tag,:user_id]
@@ -85,12 +89,11 @@ module Marley
         end
         class PublicTag < Tag
           @owner_col=nil
-          set_dataset DB[:tags].filter(:tags__user_id => nil).order(:tag)
         end
         class PrivateTag < Tag
           MR::User.join_to(self) if MR::User
           def self.list_dataset
-            current_user_dataset.order(:tag)
+            current_user_ds.order(:tag)
           end
         end
       end
