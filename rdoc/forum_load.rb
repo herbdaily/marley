@@ -27,7 +27,7 @@ FactoryGirl.define do
     _public_tags ''
     _private_tags ''
   end
-  factory :private_message,:class => MR::PublicMessage do |n|
+  factory :private_message,:class => MR::PrivateMessage do |n|
     user
     recipients ''
     title
@@ -46,7 +46,7 @@ USERS.times do
   FactoryGirl.create(:user) do |u|
     $request={:user => u}
     TOPICS.times do 
-      FactoryGirl.create(:post,:user_id => u[:id])
+      FactoryGirl.create(:post,:user_id => u[:id],:_public_tags => (1 .. TAGS).to_a.map{|i| "tag#{i}"}.join(','))
     end
   end
 end

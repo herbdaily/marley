@@ -17,7 +17,7 @@ module Marley
         tag_class=@tag_class=MR.const_get(@tag_col_name.sub(/^_/,'').singularize.camelcase)
         tags_ds_name=@tags_ds_name="#{tag_col_name.sub(/^_/,'')}_dataset"
         @instance_methods_mod=Module.new do |m|
-          attr_accessor tag_col_name
+          attr_writer tag_col_name
           define_method(:write_cols) {
             super << tag_col_name.to_sym
           }

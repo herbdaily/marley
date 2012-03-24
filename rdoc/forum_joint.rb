@@ -31,6 +31,7 @@ end
 DB.create_table :tags do
   primary_key :id
   integer :user_id,:index => true
+  text :tag_type, :index => true
   text :tag,:index => true
 end
 DB.create_table :messages_tags do
