@@ -5,9 +5,10 @@ module Marley
       def apply(*klasses)
         klasses.each do |klass|
           klass=MR.const_get(klass) if klass.is_a?(String)
+
           klass.derived_after_cols![:new?][:all] << @tag_col_name.to_sym
           @instance_methods_mod.send(:append_features,klass)
-          Marley::Utils.many_to_many_join(klass, @tag_class)
+          @tag_class.join_to(klass)
         end
       end
       def initialize(opts={})
@@ -22,7 +23,6 @@ module Marley
             super << tag_col_name.to_sym
           }
 
-          #list dataset should take care of most of this
           
           define_method("#{tag_col_name}_ds".to_sym) { #e.g. _private_tags_ds
             send(tags_ds_name).filter({:tags__user_id => (tag_class.associations.include?(:user) ? self.class.current_user[:id] : nil)})
@@ -53,6 +53,10 @@ module Marley
       module Resources
         class Tag < Sequel::Model
           sti
+          def self.join_to(klass)
+            Marley::Utils.many_to_many_join(klass, self)
+            #DB.create_or_replace_view(:"#{klass.resource_name}_tags",klass.dataset.join(:messages_tags, :message_id => :id).join(:tags,:id => :tag_id).group(:messages__id).select_append(:group_concat[:tag].as(:tags)))
+          end
           def self.list_dataset
             dataset.order(:tag)
           end

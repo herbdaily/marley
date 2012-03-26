@@ -56,10 +56,10 @@ module Marley
     def self.sti(klass)
       klass.plugin :single_table_inheritance, :"#{klass.to_s.sub(/.*::/,'').underscore}_type", :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|clss|clss.name.sub(/.*::/,'')}
     end
-    def self.many_to_many_join(lclass, rclass)
+    def self.many_to_many_join(lclass, rclass,lopts={},ropts={})
       join_table=[lclass.table_name.to_s,rclass.table_name.to_s ].sort.join('_').to_sym
-      lclass.many_to_many(rclass.resource_name.pluralize.to_sym,:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name)
-      rclass.many_to_many(lclass.resource_name.pluralize.to_sym,:join_table => join_table, :class =>lclass,:left_key => rclass.foreign_key_name, :right_key => lclass.foreign_key_name)
+      lclass.many_to_many(rclass.resource_name.pluralize.to_sym,{:join_table => join_table,:class =>rclass, :left_key => lclass.foreign_key_name, :right_key => rclass.foreign_key_name}).update(lopts)
+      rclass.many_to_many(lclass.resource_name.pluralize.to_sym,{:join_table => join_table, :class =>lclass,:left_key => rclass.foreign_key_name, :right_key => lclass.foreign_key_name}.update(ropts))
     end
     def self.hash_keys_to_syms(hsh)
       hsh.inject({}) {|h,(k,v)| h[k.to_sym]= v.class==Hash ? hash_keys_to_syms(v) : v;h }

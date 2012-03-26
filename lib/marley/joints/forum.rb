@@ -2,6 +2,7 @@
 module Marley
   module Plugins
     class MessageThreading < Plugin
+      # implement 'Materialized Path for tree'
       module ClassMethods
         def topics(params=nil)
           filters=[]
