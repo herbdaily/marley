@@ -21,7 +21,7 @@ module Marley
         tags_meth=tag_class.resource_name.pluralize.to_sym
         @class_methods_mod=Module.new do |m|
           define_method(:list_dataset) {|*args|
-            super.eager_graph(tags_meth => proc{|ds| ds.filter(:tags__user_id => tag_class.associations.include?(:user) ? current_user[:id] : nil)})
+            super.eager_graph({tags_meth => proc{|ds| ds.filter(:tags__user_id => tag_class.associations.include?(:user) ? current_user[:id] : nil)}})
           }
         end
         @instance_methods_mod=Module.new do |m|

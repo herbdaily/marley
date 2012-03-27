@@ -107,8 +107,7 @@ module Marley
     end
   end
   class ReggaeInstanceList < ReggaeResource
-    properties :name,:description,:actions,:items
-    #not implemented yet
+    properties :name,:description,:actions,:group_actions,:items
   end
   class ReggaeMsg < ReggaeResource
     properties :title,:description

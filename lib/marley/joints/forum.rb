@@ -8,18 +8,18 @@ module Marley
           if params && params[:tags]
             filters << {:id => MR::Tag.join(:messages_tags, :tag_id => :id).select(:message_id).filter(:tag => params[:tags])}
           end
-          filters.inject(self.dataset.filter(:parent_id => nil)) {|ds,f| ds.filter(f)}
+          filters.inject(self.list_dataset(:parent_id => nil)) {|ds,f| ds.filter(f)}
         end
         def list(params=nil)
-          (params.is_a?(Sequel::Dataset) ?  params : topics(params)).eager(associations).all.map{|t| t.thread}
+          topics(params).eager_graph(:user).all.map{|t| t.thread}
         end
       end
       module InstanceMethods
         def write_cols
-          super.push(:topic_id, :parent_id)
+          new? ? super.push(:topic_id, :parent_id) : super
         end
         def children
-          self.class.filter(:parent_id => id).eager(associations)
+          self.class.list_dataset.filter(:parent_id => id)
         end
         def thread
           return reggae_instance if children.all.length==0
@@ -47,7 +47,7 @@ module Marley
           ]
         end
         def recent_topics
-          list(:date_created > Date.today - 2)
+          list(lambda {date_created > Date.today - 2})
         end
       end
     end

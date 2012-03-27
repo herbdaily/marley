@@ -30,7 +30,20 @@ module Marley
           dataset.filter(params)
         end
         def list(params={})
-          list_dataset.filter(params).all
+          list_dataset(params).all
+        end
+        def reggae_instance_list(params={})
+          items=list(params)
+          if items.length==0
+            Marley::ReggaeMessage.new(:title => 'Nothing Found')
+          else
+            cols=items[0].rest_cols
+            Marley::ReggaeInstanceList.new(
+              :name => resource_name,
+              :schema => items[0].schema(true),
+              :items => items.map{|i| cols.map{|c|i.send(c)}}
+            )
+          end
         end
         def sti
           plugin :single_table_inheritance, :"#{self.to_s.sub(/.*::/,'').underscore}_type", :model_map => lambda{|v| MR.const_get(v.to_sym)}, :key_map => lambda{|klass|klass.name.sub(/.*::/,'')}
@@ -51,43 +64,28 @@ module Marley
 
         def rest_associations;[];end
 
-        def ro_reggae_schema
+        def reggae_schema(list_schema=false)
           Marley::ReggaeSchema.new(
             rest_cols.map do |col_name|
               db_spec=db_schema.to_hash[col_name]
               col_type=db_spec ? db_spec[:db_type].downcase : "text"
               col_type=:password if col_name.to_s.match(/password/)
-              restrictions=RESTRICT_RO
-              restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
-              [col_type, col_name, restrictions,send(col_name)]
-            end 
-          )
-        end
-        def reggae_schema
-          Marley::ReggaeSchema.new(
-            rest_cols.map do |col_name|
-              db_spec=db_schema.to_hash[col_name]
-              col_type=db_spec ? db_spec[:db_type].downcase : "text"
-              col_type=:password if col_name.to_s.match(/password/)
-              restrictions=0
-              restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
-              restrictions|=RESTRICT_RO unless write_cols.include?(col_name)
-              restrictions|=RESTRICT_REQ if required_cols.include?(col_name) || (db_spec && !db_spec[:allow_null])
-              [col_type, col_name, restrictions,send(col_name)]
+              if list_schema
+                restrictions=RESTRICT_RO
+                restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
+                [col_type, col_name, restrictions]
+              else
+                restrictions=0
+                restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
+                restrictions|=RESTRICT_RO unless write_cols.include?(col_name)
+                restrictions|=RESTRICT_REQ if required_cols.include?(col_name) || (db_spec && !db_spec[:allow_null])
+                [col_type, col_name, restrictions,send(col_name)]
+              end
             end 
           )
         end
         def to_s
           respond_to?('name') ? name : "#{self.class.name} #{id.to_s}"
-        end
-        def ro_reggae_instance(parent_instance=nil)
-          a=Marley::ReggaeInstance.new( 
-            {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => ro_reggae_schema,:actions => self.actions(parent_instance)}
-          )
-          a.contents=rest_associations.to_a.map do |assoc|
-            assoc.map{|instance|  instance.ro_reggae_instance(self)} 
-          end unless new?
-          a
         end
         def reggae_instance(parent_instance=nil)
           a=Marley::ReggaeInstance.new( 
