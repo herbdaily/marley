@@ -7,8 +7,9 @@ module Marley
           klass=MR.const_get(klass) if klass.is_a?(String)
 
           klass.derived_after_cols![:new?][:all] << @tag_col_name.to_sym
+          klass.extend @class_methods_mod
           @instance_methods_mod.send(:append_features,klass)
-          @tag_class.join_to(klass)
+          Marley::Utils.many_to_many_join(klass, @tag_class)
         end
       end
       def initialize(opts={})
@@ -17,6 +18,11 @@ module Marley
         tag_col_name=@tag_col_name="_#{@tag_type}_tags"
         tag_class=@tag_class=MR.const_get(@tag_col_name.sub(/^_/,'').singularize.camelcase)
         tags_ds_name=@tags_ds_name="#{tag_col_name.sub(/^_/,'')}_dataset"
+        @class_methods_mod=Module.new do |m|
+          define_method(:list_dataset) {|*args|
+            super.eager_graph(tag_class.resource_name.pluralize.to_sym => proc{|ds| ds.filter(:tags__user_id => tag_class.associations.include?(:user) ? current_user[:id] : nil)})
+          }
+        end
         @instance_methods_mod=Module.new do |m|
           attr_writer tag_col_name
           define_method(:write_cols) {
@@ -28,7 +34,8 @@ module Marley
             send(tags_ds_name).filter({:tags__user_id => (tag_class.associations.include?(:user) ? self.class.current_user[:id] : nil)})
           }
           define_method(tag_col_name.to_sym) {    #e.g. _private_tags
-            send("#{tag_col_name}_ds").map {|t| t.tag}.join(', ') unless new?
+            #send("#{tag_col_name}_ds").map {|t| t.tag}.join(', ') unless new?
+             send(tag_class.resource_name.pluralize.to_sym).map {|t| t.tag}.join(', ') unless new?
           }
           define_method("add#{tag_col_name}".to_sym) {|tags|  #e.g. add_private_tags
             vals_hash={:user_id => (tag_class.associations.include?(:user) ? self.class.current_user[:id] : nil)}
@@ -53,11 +60,7 @@ module Marley
       module Resources
         class Tag < Sequel::Model
           sti
-          def self.join_to(klass)
-            Marley::Utils.many_to_many_join(klass, self)
-            #DB.create_or_replace_view(:"#{klass.resource_name}_tags",klass.dataset.join(:messages_tags, :message_id => :id).join(:tags,:id => :tag_id).group(:messages__id).select_append(:group_concat[:tag].as(:tags)))
-          end
-          def self.list_dataset
+          def self.list_dataset(params={})
             dataset.order(:tag)
           end
           def validate
@@ -78,7 +81,7 @@ module Marley
         end
         class PrivateTag < Tag
           MR::User.join_to(self) if MR::User
-          def self.list_dataset
+          def self.list_dataset(params={})
             current_user_ds.order(:tag)
           end
         end

@@ -63,8 +63,9 @@ example:  user1 reading/writing secrets
   => [[:instance, {:new_rec=>false, :actions=>nil, :schema=>[[:integer, :id, 2, 1], [:integer, :user_id, 3, 1], [:text, :name, 4, "this is my secret"], [:text, :message, 0, nil]], :name=>"secret", :url=>"/secret/1"}, []]]
   >> @client.read({},:auth => @user2_auth)
   => []
-  >> @client.read({},:auth => @user2_auth,:instance_id => 1, :code => 403)
-  => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
+  >> @client.read({},:auth => @user2_auth,:instance_id => 1, :code => 404)
+  => [:error, {:error_type=>"routing", :description=>"Not Found", :error_details=>nil}]
+
 
 example: user2 reading/writing secrets
   >> @client.auth=@user2_auth
@@ -80,8 +81,8 @@ example: user2 reading/writing secrets
 
   >> @client.read({}, :auth => @user1_auth)
   => []
-  >> @client.read({}, :auth => @user1_auth, :instance_id => 1,:code => 403)
-  => [:error, {:error_type=>"authorization", :error_details=>nil, :description=>"You are not authorized for this operation"}]
+  >> @client.read({}, :auth => @user1_auth, :instance_id => 1,:code => 404)
+  => [:error, {:error_type=>"routing", :description=>"Not Found", :error_details=>nil}]
 
 examples:  announcements
   >> @client.auth=@user1_auth

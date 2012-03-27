@@ -1,8 +1,4 @@
 
-- DDL files for joints
-  - views for concatenated tags created in joint code
-    - instead of trigger
-    - eager_graph for list ds
 
 
 - implement dev,test, prod environments

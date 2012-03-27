@@ -25,8 +25,8 @@ module Marley
 
         def foreign_key_name; :"#{(respond_to?(:table_name) ? table_name : resource_name).to_s.singularize}_id"; end
 
-        def list_dataset
-          dataset
+        def list_dataset(params={})
+          dataset.filter(params)
         end
         def list(params={})
           list_dataset.filter(params).all

@@ -40,7 +40,7 @@ module Marley
     end
     class Secret < Message
       User.join_to(self)
-      def self.list_dataset
+      def self.list_dataset(params={})
         current_user_ds
       end
     end
