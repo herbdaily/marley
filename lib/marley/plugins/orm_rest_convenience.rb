@@ -40,7 +40,7 @@ module Marley
             cols=items[0].rest_cols
             Marley::ReggaeInstanceList.new(
               :name => resource_name,
-              :schema => items[0].schema(true),
+              :schema => items[0].reggae_schema(true),
               :items => items.map{|i| cols.map{|c|i.send(c)}}
             )
           end

@@ -13,6 +13,19 @@ module Marley
         def list(params=nil)
           topics(params).eager_graph(:user).all.map{|t| t.thread}
         end
+        def reggae_instance_list(params={})
+          items=list_dataset(params).all
+          if items.length==0
+            Marley::ReggaeMessage.new(:title => 'Nothing Found')
+          else
+            cols=items[0].rest_cols 
+            Marley::ReggaeInstanceList.new(
+              :name => resource_name,
+              :schema => items[0].reggae_schema(true) << [:resource,resource_name,RESTRICT_RO],
+              :items => items.map{|i| cols.map{|c|i.send(c)}}
+            )
+          end
+        end
       end
       module InstanceMethods
         def write_cols
@@ -20,6 +33,8 @@ module Marley
         end
         def children
           self.class.list_dataset.filter(:parent_id => id)
+        end
+        def thread_vals
         end
         def thread
           return reggae_instance if children.all.length==0
