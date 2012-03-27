@@ -5,7 +5,7 @@ require 'factory_girl'
 #this kinda sucks...
 Sequel::Model.send(:alias_method, :save!, :save)
 
-USERS=5
+USERS=50
 TOPICS=5
 TAGS=3
 REPLIES=[4,2]

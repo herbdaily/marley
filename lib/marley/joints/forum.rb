@@ -1,4 +1,3 @@
-
 module Marley
   module Plugins
     class MessageThreading < Plugin

@@ -9,13 +9,14 @@ module Marley
       @default_opts={
         :required_plugins => [:rest_convenience],
         :class_attrs =>[ [:model_actions,{:get => [:new, :list]}] ],
-        :lazy_class_attrs =>  [ :new?,[:instance_actions,{:all => nil}],
-        [:derived_before_cols,{:all => []}],
-        [:derived_after_cols,{:all => []}],
-        [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
-        [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
-        [:hidden_cols,{:all => [/_id$/]}],
-        [:required_cols,{:all => []}] ]
+        :lazy_class_attrs =>  [ :new?,
+          [:instance_actions,{:all => nil}],
+          [:derived_before_cols,{:all => []}],
+          [:derived_after_cols,{:all => []}],
+          [:reject_cols,{true => [/^id$/,/_type$/,/date_(created|updated)/], false => [/_type$/]}],
+          [:ro_cols,{true => [/^id$/,/_id$/], false => [/^id$/,/_id$/,/date_(created|updated)/]}],
+          [:hidden_cols,{:all => [/_id$/]}],
+          [:required_cols,{:all => []}] ]
       }
       module ClassMethods
         def controller; Marley::ModelController.new(self); end
@@ -50,6 +51,18 @@ module Marley
 
         def rest_associations;[];end
 
+        def ro_reggae_schema
+          Marley::ReggaeSchema.new(
+            rest_cols.map do |col_name|
+              db_spec=db_schema.to_hash[col_name]
+              col_type=db_spec ? db_spec[:db_type].downcase : "text"
+              col_type=:password if col_name.to_s.match(/password/)
+              restrictions=RESTRICT_RO
+              restrictions|=RESTRICT_HIDE if hidden_cols.include?(col_name)
+              [col_type, col_name, restrictions,send(col_name)]
+            end 
+          )
+        end
         def reggae_schema
           Marley::ReggaeSchema.new(
             rest_cols.map do |col_name|
@@ -66,6 +79,15 @@ module Marley
         end
         def to_s
           respond_to?('name') ? name : "#{self.class.name} #{id.to_s}"
+        end
+        def ro_reggae_instance(parent_instance=nil)
+          a=Marley::ReggaeInstance.new( 
+            {:name => self.class.resource_name,:url => url ,:new_rec => self.new?,:schema => ro_reggae_schema,:actions => self.actions(parent_instance)}
+          )
+          a.contents=rest_associations.to_a.map do |assoc|
+            assoc.map{|instance|  instance.ro_reggae_instance(self)} 
+          end unless new?
+          a
         end
         def reggae_instance(parent_instance=nil)
           a=Marley::ReggaeInstance.new( 
