@@ -2,22 +2,24 @@ module Marley
   module Plugins
     class OrmManifestPath < Plugin
       @default_opts={:path_col => :path, :path_separator => '-'}
-      def apply(klass)
+      def apply(klasses)
         super
       end
       def initialize(opts={})
         super
-        @path_col=@opts[:path_col]
-        @sep=@opts[:path_separator]
+        [ClassMethods,InstanceMethods].each do |mod|
+          mod.const_set(:PATH_COL,@opts[:path_col])
+          mod.const_set(:SEP,@opts[:path_separator])
+        end
       end
       module ClassMethods
         def roots
-          list_dataset.filter(@path_col => 0)
+          list_dataset.filter(PATH_COL => 0)
         end
       end
       module InstanceMethods
         def tree_ds
-          list_dataset.filter(@path_col.like("#{send(@path_col)}-#{id}_%")).order(@path_col)
+          self.class.list_dataset.filter(PATH_COL.like("#{send(PATH_COL)}-#{id}_%")).order(PATH_COL)
         end
         def tree
           res=[self,[]]
@@ -38,7 +40,7 @@ module Marley
           res
         end
         def depth
-          send(@path_col).split(@sep).length
+          send(PATH_COL).split(SEP).length
         end
         def values_tree
         end
@@ -48,7 +50,7 @@ module Marley
           foo
         end
         def new_child
-          new({@path_col => "#{send(@path_col)}#{@sep}#{id}"})
+          self.class.new({PATH_COL => "#{send(PATH_COL)}#{SEP}#{id}"})
         end
       end
     end

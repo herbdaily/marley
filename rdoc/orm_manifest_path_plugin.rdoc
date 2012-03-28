@@ -1,4 +1,10 @@
 
 
 examples:
+
+>> MR::Tree.new(:name => 'asdf').save.reggae_instance
+=> [:instance, {:schema=> [[:integer, :id, 2, 1], [:text, :name, 0, "asdf"], [:text, :path, 0, nil]], :url=>"/tree/1", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+>> MR::Tree[1].new_child.reggae_instance
+=> [:instance, {:schema=>[[:text, :name, 0, nil], [:text, :path, 0, "-1"]], :url=>"/tree/", :new_rec=>true, :name=>"tree", :actions=>nil}, nil]
+
 !!!
