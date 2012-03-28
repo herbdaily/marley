@@ -22,19 +22,20 @@ module Marley
           self.class.list_dataset.filter(PATH_COL.like("#{send(PATH_COL)}-#{id}_%")).order(PATH_COL)
         end
         def tree
-          res=[self,[]]
-          targets=[res[1]]
+          res=block_given? ? (yield self) : [self,[]]
+          targets=[res[-1].is_a?(Array) ? res[-1] : res]
           current_depth=0
           tree_ds.all.each do |node|
+            n=block_given? ? (yield node) : [node,[]]
             if node.depth>current_depth
-              targets[node.depth]=[node,[]]
+              targets[node.depth]=n
               targets[current_depth] << targets[node.depth]
               current_depth=node.depth
             elsif node.depth<current_depth
               current_depth=node.depth
-              targets[current_depth]<<[node,[]]
+              targets[current_depth]<<n
             else
-              targets[current_depth]<<[node,[]]
+              targets[current_depth]<<n
             end
           end
           res
@@ -43,11 +44,11 @@ module Marley
           send(PATH_COL).split(SEP).length
         end
         def values_tree
+          tree do |n|
+            n.rest_cols.map{|c| n.send(c)}
+          end
         end
         def reggae_tree(node=nil)
-          foo=(node? ? node : self).reggae_instance
-          foo[2] = []
-          foo
         end
         def new_child
           self.class.new({PATH_COL => "#{send(PATH_COL)}#{SEP}#{id}"})
