@@ -16,6 +16,9 @@ module Marley
         def roots
           list_dataset.filter(PATH_COL => 0)
         end
+        def path_col_num
+          columns.index(PATH_COL)
+        end
       end
       module InstanceMethods
         def tree_ds; self.class.list_dataset.filter(PATH_COL.like("#{children_path}%")); end
@@ -31,34 +34,14 @@ module Marley
         def tree
           res=block_given? ? (yield self) : [self,[]]
           tree_ds.all.sort {|x,y| x.children_path_arr <=> y.children_path_arr}.each do |node|
-            target=node.path_arr.inject(res) {|arr,i| arr[-1]}
-            target << [node,[]]
-          end
-          res
-        end
-        def tree_foo
-          res=block_given? ? (yield self) : [self,[]]
-          targets=[]
-          current_depth=depth
-          targets[current_depth]=res[-1].is_a?(Array) ? res[-1] : res
-          tree_ds.all.sort {|x,y| x.children_path_arr <=> y.children_path_arr}.each do |node|
-            n=block_given? ? (yield node) : [node,[]]
-            if node.depth>current_depth
-              targets[node.depth]=n
-              targets[current_depth] << targets[node.depth]
-              current_depth=node.depth
-            elsif node.depth<current_depth
-              current_depth=node.depth
-              targets[current_depth]<<n
-            else
-              targets[current_depth]<<n
-            end
+            node.path_arr.inject(res) {|arr,i| arr[-1]} << [node,[]]
           end
           res
         end
         def values_tree
+          path_arr_proc=lambda {|n| n[self.class.path_col_num].to_s.split(SEP).map &:to_i}
           tree do |n|
-            n.rest_cols.map{|c| n.send(c)}
+            foo=n.rest_cols.map{|c| n.send(c)}
           end
         end
         def reggae_tree(node=nil)
