@@ -14,7 +14,7 @@ Marley.config {}
 module Marley
   module Resources
     class Tree < Sequel::Model
-      Marley.plugin('orm_manifest_path').apply(self)
+      Marley.plugin('orm_materialized_path').apply(self)
     end
   end
 end

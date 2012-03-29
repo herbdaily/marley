@@ -1,6 +1,6 @@
 module Marley
   module Plugins
-    class OrmManifestPath < Plugin
+    class OrmMaterializedPath < Plugin
       @default_opts={:path_col => :path, :path_separator => '-'}
       def apply(klasses)
         super
