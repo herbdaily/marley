@@ -5,28 +5,44 @@ examples:
 >> MR::Tree.new(:name => 'asdf').save.reggae_instance
 => [:instance, {:schema=> [[:integer, :id, 2, 1], [:text, :name, 0, "asdf"], [:text, :path, 0, nil]], :url=>"/tree/1", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[1].new_child.reggae_instance
-=> [:instance, {:schema=>[[:text, :name, 0, nil], [:text, :path, 0, "-1"]], :url=>"/tree/", :new_rec=>true, :name=>"tree", :actions=>nil}, nil]
+=> [:instance, {:schema=>[[:text, :name, 0, nil], [:text, :path, 0, "1-"]], :url=>"/tree/", :new_rec=>true, :name=>"tree", :actions=>nil}, nil]
 >> MR::Tree[1].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 2], [:text, :name, 0, nil], [:text, :path, 0, "-1"]], :url=>"/tree/2", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 2], [:text, :name, 0, nil], [:text, :path, 0, "1-"]], :url=>"/tree/2", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[1].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 3], [:text, :name, 0, nil], [:text, :path, 0, "-1"]], :url=>"/tree/3", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 3], [:text, :name, 0, nil], [:text, :path, 0, "1-"]], :url=>"/tree/3", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[1].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 4], [:text, :name, 0, nil], [:text, :path, 0, "-1"]], :url=>"/tree/4", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 4], [:text, :name, 0, nil], [:text, :path, 0, "1-"]], :url=>"/tree/4", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[2].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 5], [:text, :name, 0, nil], [:text, :path, 0, "-1-2"]], :url=>"/tree/5", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 5], [:text, :name, 0, nil], [:text, :path, 0, "1-2-"]], :url=>"/tree/5", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[5].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 6], [:text, :name, 0, nil], [:text, :path, 0, "-1-2-5"]], :url=>"/tree/6", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 6], [:text, :name, 0, nil], [:text, :path, 0, "1-2-5-"]], :url=>"/tree/6", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[3].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 7], [:text, :name, 0, nil], [:text, :path, 0, "-1-3"]], :url=>"/tree/7", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 7], [:text, :name, 0, nil], [:text, :path, 0, "1-3-"]], :url=>"/tree/7", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 
 >> MR::Tree[3].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 8], [:text, :name, 0, nil], [:text, :path, 0, "-1-3"]], :url=>"/tree/8", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 8], [:text, :name, 0, nil], [:text, :path, 0, "1-3-"]], :url=>"/tree/8", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[3].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 9], [:text, :name, 0, nil], [:text, :path, 0, "-1-3"]], :url=>"/tree/9", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 9], [:text, :name, 0, nil], [:text, :path, 0, "1-3-"]], :url=>"/tree/9", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 >> MR::Tree[3].new_child.save.reggae_instance
-=> [:instance, {:schema=> [[:integer, :id, 2, 10], [:text, :name, 0, nil], [:text, :path, 0, "-1-3"]], :url=>"/tree/10", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+=> [:instance, {:schema=> [[:integer, :id, 2, 10], [:text, :name, 0, nil], [:text, :path, 0, "1-3-"]], :url=>"/tree/10", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+
+>> MR::Tree[1].new_child.save.reggae_instance
+=> [:instance, {:schema=> [[:integer, :id, 2, 11], [:text, :name, 0, nil], [:text, :path, 0, "1-"]], :url=>"/tree/11", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+>> MR::Tree[1].new_child.save.reggae_instance
+=> [:instance, {:schema=> [[:integer, :id, 2, 12], [:text, :name, 0, nil], [:text, :path, 0, "1-"]], :url=>"/tree/12", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+>> MR::Tree[2].new_child.save.reggae_instance
+=> [:instance, {:schema=> [[:integer, :id, 2, 13], [:text, :name, 0, nil], [:text, :path, 0, "1-2-"]], :url=>"/tree/13", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+>> MR::Tree[5].new_child.save.reggae_instance
+=> [:instance, {:schema=> [[:integer, :id, 2, 14], [:text, :name, 0, nil], [:text, :path, 0, "1-2-5-"]], :url=>"/tree/14", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+>> MR::Tree[3].new_child.save.reggae_instance
+=> [:instance, {:schema=> [[:integer, :id, 2, 15], [:text, :name, 0, nil], [:text, :path, 0, "1-3-"]], :url=>"/tree/15", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+
+>> MR::Tree[7].new_child.save.reggae_instance 
+=> [:instance, {:schema=> [[:integer, :id, 2, 16], [:text, :name, 0, nil], [:text, :path, 0, "1-3-7-"]], :url=>"/tree/16", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
+>> MR::Tree[13].new_child.save.reggae_instance
+=> [:instance, {:schema=> [[:integer, :id, 2, 17], [:text, :name, 0, nil], [:text, :path, 0, "1-2-13-"]], :url=>"/tree/17", :new_rec=>false, :name=>"tree", :actions=>nil}, []]
 
 x>> MR::Tree[1].tree
-x=> [#<Marley::Resources::Tree @values={:name=>"asdf", :path=>nil, :id=>1}>, [[#<Marley::Resources::Tree @values={:name=>nil, :path=>"-1-2", :id=>5}>, [], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"-1-2-5", :id=>6}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"-1-3", :id=>7}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"-1-3", :id=>8}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"-1-3", :id=>9}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"-1-3", :id=>10}>, []]]]] 
+x=> [#<Marley::Resources::Tree @values={:name=>"asdf", :path=>nil, :id=>1}>, [[#<Marley::Resources::Tree @values={:name=>nil, :path=>"1-2-", :id=>5}>, [], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"1-2-5-", :id=>6}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"1-3-", :id=>7}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"1-3-", :id=>8}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"1-3-", :id=>9}>, []], [#<Marley::Resources::Tree @values={:name=>nil, :path=>"1-3-", :id=>10}>, []]]]] 
 
 !!!
