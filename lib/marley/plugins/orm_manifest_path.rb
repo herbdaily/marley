@@ -39,12 +39,9 @@ module Marley
           res
         end
         def values_tree
-          path_arr_proc=lambda {|n| n[self.class.path_col_num].to_s.split(SEP).map &:to_i}
           tree do |n|
-            foo=n.rest_cols.map{|c| n.send(c)}
+            foo=n.rest_cols.map{|c| n.send(c)} << []
           end
-        end
-        def reggae_tree(node=nil)
         end
       end
     end
