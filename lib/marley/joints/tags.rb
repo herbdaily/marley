@@ -40,7 +40,7 @@ module Marley
             super
             send("#{tags_meth}_dataset").filter({:tags__user_id => (tag_class.associations.include?(:user) ? self.class.current_user[:id] : nil)}).each {|tag| send("remove#{tag_col_name}".singularize,tag)}
             vals_hash={:user_id => (tag_class.associations.include?(:user) ? self.class.current_user[:id] : nil)}
-            instance_variable_get("@#{tag_col_name}").split(/\s*,\s*/).each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(vals_hash.update(:tag => tag))) }
+            instance_variable_get("@#{tag_col_name}").to_s.split(/\s*,\s*/).each {|tag| self.send("add#{tag_col_name.singularize}",tag_class.find_or_create(vals_hash.update(:tag => tag))) }
           }
         end
       end

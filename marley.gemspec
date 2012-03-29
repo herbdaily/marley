@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{marley}
-  s.version = "0.7.2"
+  s.version = "0.8.0"
   s.summary = %q{Irie default restful routes for models and other objects}
   s.description = %q{Marley is a framework for quickly building RESTful web services and applications.  Development is fast for two reasons: Marley implements lots of sensible defaults, all of which can be overridden and most of which can be overridden easily.  And Marley servers exchange only data and metadata with clients.  }
   s.authors     = ["Herb Daily"]

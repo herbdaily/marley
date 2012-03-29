@@ -50,4 +50,11 @@ USERS.times do
     end
   end
 end
+REPLIES.each do |r|
+  MR::PublicMessage.all.each do |m|
+    rep=m.reply
+    rep.user_id=m[:id].modulo USERS 
+    rep.save
+  end
+end
 

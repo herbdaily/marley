@@ -15,8 +15,8 @@ module Marley
           end
           filters.inject(self.roots) {|ds,f| ds.filter(f)}
         end
-        def list(params=nil)
-          topics(params).eager_graph(:user).all.map{|t| t.thread}
+        def list(params={})
+          reggae_instance_list(params)
         end
         def reggae_instance_list(params={})
           t=topics(params).all
@@ -53,7 +53,7 @@ module Marley
             self.reggae_link(:new, 'New Post'),
             self.reggae_link(:list, 'All Posts'),
             self.reggae_link(:recent_topics, 'Recent Topics'),
-            Marley::ReggaeSection.new({:title => 'Topics Tagged With:', :navigation => MR::Tag.filter(:id => topics.join(:messages_tags).where(:messages__id => :message_id).select(:tag_id)).map{|t| reggae_link('list',t.tag,"#{resource_name}[tags]=#{t.tag}")}})
+            Marley::ReggaeSection.new({:title => 'Public Tags', :navigation => MR::PublicTag.filter(:id => topics.all.map{|t|}).map{|t| reggae_link('list',t.tag,"#{resource_name}[_public_tags]=#{t.tag}")}})
           ]
         end
         def recent_topics
