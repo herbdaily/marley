@@ -1,53 +1,48 @@
 module Marley
   module Plugins
     class MessageThreading < Plugin
-      # implement 'Materialized Path for tree'
+      def apply(*klasses)
+        super
+        klasses.flatten.each do |klass|
+          Marley.plugin('orm_materialized_path').apply(klass)
+        end
+      end
       module ClassMethods
         def topics(params=nil)
           filters=[]
           if params && params[:tags]
             filters << {:id => MR::Tag.join(:messages_tags, :tag_id => :id).select(:message_id).filter(:tag => params[:tags])}
           end
-          filters.inject(self.list_dataset(:parent_id => nil)) {|ds,f| ds.filter(f)}
+          filters.inject(self.roots) {|ds,f| ds.filter(f)}
         end
         def list(params=nil)
           topics(params).eager_graph(:user).all.map{|t| t.thread}
         end
         def reggae_instance_list(params={})
-          items=list_dataset(params).all
-          if items.length==0
-            Marley::ReggaeMessage.new(:title => 'Nothing Found')
+          t=topics(params).all
+          if t.length==0
+            Marley::ReggaeMsg.new(:title => 'Nothing Found')
           else
-            cols=items[0].rest_cols 
             Marley::ReggaeInstanceList.new(
               :name => resource_name,
-              :schema => items[0].reggae_schema(true) << [:resource,resource_name,RESTRICT_RO],
-              :items => items.map{|i| cols.map{|c|i.send(c)}}
+              :schema => t[0].reggae_schema(true) << [:resource,resource_name,RESTRICT_RO],
+              :items => t.map{|t| t.thread_vals}
             )
           end
         end
       end
       module InstanceMethods
+        def thread_vals;values_tree;end
+        def thread; tree;end
         def write_cols
-          new? ? super.push(:topic_id, :parent_id) : super
-        end
-        def children
-          self.class.list_dataset.filter(:parent_id => id)
-        end
-        def thread_vals
-        end
-        def thread
-          return reggae_instance if children.all.length==0
-          foo=reggae_instance
-          foo[2] = children.all.map{|m| m.thread} 
-          foo
+          new? ? super.push(:topic_id, :path) : super
         end
         def before_save
           super
           self.topic_id||=self.class.max(:topic_id).to_i+1
         end
         def reply
-          self.class.new(self.values.dup.delete_if{|k,v| k==:id}.merge({:parent_id => self[:id],:title => "re: #{title}"}))
+          new_child(:title => "re: #{title}")
         end
       end
     end

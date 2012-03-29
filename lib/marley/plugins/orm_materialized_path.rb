@@ -13,8 +13,8 @@ module Marley
         end
       end
       module ClassMethods
-        def roots
-          list_dataset.filter(PATH_COL => 0)
+        def roots(params={})
+          list_dataset.filter({PATH_COL => nil}.update(params))
         end
         def path_col_num
           columns.index(PATH_COL)
@@ -28,7 +28,7 @@ module Marley
         def parent_id; path_arr[-1]; end
         def children_path;("#{_path}#{id}#{SEP}");end
         def children_path_arr; children_path.split(SEP).map &:to_i; end
-        def new_child; self.class.new({PATH_COL => children_path}); end
+        def new_child(vals={}); self.class.new({PATH_COL => children_path}.update(vals)); end
         def depth; path_arr.length; end
 
         def tree

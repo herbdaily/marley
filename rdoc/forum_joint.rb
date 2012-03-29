@@ -14,7 +14,7 @@ end
 DB.create_table :messages do
   primary_key :id
   integer :topic_id, :index => true
-  integer :parent_id, :index => true
+  text :path, :index => true
   integer :user_id, :index => true
   datetime :date_created, :index => true
   text :message_type, :index => true
