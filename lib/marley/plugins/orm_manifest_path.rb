@@ -34,7 +34,7 @@ module Marley
         def tree
           res=block_given? ? (yield self) : [self,[]]
           tree_ds.all.sort {|x,y| x.children_path_arr <=> y.children_path_arr}.each do |node|
-            node.path_arr.inject(res) {|arr,i| arr[-1]} << [node,[]]
+            node.path_arr.inject(res) {|arr,i| arr[-1]} << (block_given? ? (yield node) : [node,[]])
           end
           res
         end
