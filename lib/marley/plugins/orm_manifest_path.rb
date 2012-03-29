@@ -30,14 +30,11 @@ module Marley
 
         def tree
           res=block_given? ? (yield self) : [self,[]]
-          tree_ds.all.sort {|x,y| x.children_path_arr <=> y.children_path_arr}.inject(res) do |arr,node|
-            if arr[0].depth<node.depth
-              arr[-1] << node
-            else
-            end
-            current_depth=node.depth
-            arr
+          tree_ds.all.sort {|x,y| x.children_path_arr <=> y.children_path_arr}.each do |node|
+            target=node.path_arr.inject(res) {|arr,i| arr[-1]}
+            target << [node,[]]
           end
+          res
         end
         def tree_foo
           res=block_given? ? (yield self) : [self,[]]
