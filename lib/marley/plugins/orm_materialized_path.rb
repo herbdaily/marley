@@ -30,6 +30,7 @@ module Marley
         def children_path_arr; children_path.split(SEP).map &:to_i; end
         def new_child(vals={}); self.class.new({PATH_COL => children_path}.update(vals)); end
         def depth; path_arr.length; end
+        def rest_cols;super - [PATH_COL];end
 
         def tree
           res=block_given? ? (yield self) : [self,[]]
