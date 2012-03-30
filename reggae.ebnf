@@ -17,7 +17,7 @@ link_property ::= 'title' | 'description' | 'url'
 
 instance_property ::= 'name' | 'url' | 'new_rec' | 'search' | 'schema' | 'actions' 
 
-instance_list_property ::='title' | 'description' | 'schema' | 'actions' | 'group_actions' | 'items'
+instance_list_property ::='title' | 'description' | 'schema' | 'actions' | 'group_actions' | 'items' | 'recursive'
 
 msg_property ::= 'title' | 'description'
 
@@ -35,9 +35,11 @@ new_rec_value ::= boolean_value
 
 search_value ::= boolean_value
 
-schema_value ::= '[' col_spec (',' colspec)? ']'
+schema_value ::= '[' col_spec | schema_value (',' colspec | schema_value)? ']'
 
 items_value ::= '[' '[' col_value (',' col_value)* ']' (',' '[' col_value (',' col_value)* ']')* ']'
+
+recursive_value ::= boolean_value
 
 actions_value ::= '{' '"' ('get' | 'post' | 'put' | 'delete') '"' ':' methods (',' '"' ('get' | 'post' | 'put' | 'delete') '"' ':' methods )* '}'
 

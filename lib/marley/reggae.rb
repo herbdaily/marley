@@ -107,7 +107,7 @@ module Marley
     end
   end
   class ReggaeInstanceList < ReggaeResource
-    properties :name,:description,:actions,:group_actions,:items
+    properties :name,:description,:actions,:group_actions,:items,:recursive
   end
   class ReggaeMsg < ReggaeResource
     properties :title,:description
