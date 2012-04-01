@@ -21,7 +21,7 @@ module Marley
       module ClassMethods
         def current_user; $request && $request[:user]; end
         def current_user_class; current_user.class; end
-        def current_user_ds; filter(@owner_col.to_sym => current_user[:id]); end
+        def current_user_ds; filter("#{table_name}__#{@owner_col}".to_sym => current_user[:id]); end
         def requires_user?(verb=nil,meth=nil);true;end
         def authorize_rest_get(meth)
           model_actions[:get].to_a.include?(meth.to_sym) && !current_user.new?
