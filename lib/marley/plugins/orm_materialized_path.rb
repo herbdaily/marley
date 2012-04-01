@@ -33,15 +33,15 @@ module Marley
         def rest_cols;super - [PATH_COL];end
 
         def tree
-          res=block_given? ? (yield self) : [self,[]]
+          res=[block_given? ? (yield self) : [self,[]]]
           tree_ds.all.sort {|x,y| x.children_path_arr <=> y.children_path_arr}.each do |node|
-            node.path_arr.inject(res) {|arr,i| arr[-1]} << (block_given? ? (yield node) : [node,[]])
+            (1..(node.path_arr.length*2)).inject(res) {|arr,i| arr[-1]} << (block_given? ? (yield node) : [node,[]])
           end
-          res
+          res[0]
         end
         def values_tree
           tree do |n|
-            foo=n.rest_cols.map{|c| n.send(c)} << []
+            n.rest_cols.map{|c| n.send(c)} << []
           end
         end
       end

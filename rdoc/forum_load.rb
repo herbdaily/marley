@@ -6,11 +6,11 @@ require 'factory_girl'
 Sequel::Model.send(:alias_method, :save!, :save)
 
 USERS=5
-TOPICS=5
+TOPICS=40
 TAGS=3
-REPLIES=[4,2]
+REPLIES=4
 FactoryGirl.define do 
-  [:name,:title,:tag,:content].each do |seq|
+  [:name,:title,:tag,:message].each do |seq|
     sequence seq do |n|
       "#{seq.to_s}#{n}"
     end
@@ -23,7 +23,7 @@ FactoryGirl.define do
   factory :post,:class => MR::PublicMessage do |n|
     user
     title
-    content
+    message
     _public_tags ''
     _private_tags ''
   end
@@ -31,7 +31,7 @@ FactoryGirl.define do
     user
     recipients ''
     title
-    content
+    message
     _private_tags ''
   end
   factory :public_tag,:class => MR::PublicTag do |n|
@@ -50,10 +50,11 @@ USERS.times do
     end
   end
 end
-REPLIES.each do |r|
+REPLIES.times do
   MR::PublicMessage.all.each do |m|
     rep=m.reply
-    rep.user_id=m[:id].modulo USERS 
+    rep.user_id=m[:id].modulo(USERS) + 1
+    rep.message='asdfasdfasdfasdfasdfasdf'
     rep.save
   end
 end

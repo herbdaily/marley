@@ -35,7 +35,7 @@ new_rec_value ::= boolean_value
 
 search_value ::= boolean_value
 
-schema_value ::= '[' col_spec | schema_value (',' colspec | schema_value)? ']'
+schema_value ::= '[' col_spec | instance_value | instance_list_value (',' colspec | instance_value | instance_list_value)? ']'
 
 items_value ::= '[' '[' col_value (',' col_value)* ']' (',' '[' col_value (',' col_value)* ']')* ']'
 

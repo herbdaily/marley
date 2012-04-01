@@ -13,13 +13,12 @@ DB.create_table :users do
 end
 DB.create_table :messages do
   primary_key :id
-  integer :topic_id, :index => true
   text :path, :index => true
   integer :user_id, :index => true
   datetime :date_created, :index => true
   text :message_type, :index => true
   text :title,  :index => true,:null => false
-  clob :content
+  clob :message
 end
 DB.create_table :messages_users do
   primary_key :id

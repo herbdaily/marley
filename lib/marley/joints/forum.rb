@@ -36,11 +36,7 @@ module Marley
         def thread_vals;values_tree;end
         def thread; tree;end
         def write_cols
-          new? ? super.push(:topic_id, :path) : super
-        end
-        def before_save
-          super
-          self.topic_id||=self.class.max(:topic_id).to_i+1
+          new? ? super.push(:path) : super
         end
         def reply
           new_child(:title => "re: #{title}")
