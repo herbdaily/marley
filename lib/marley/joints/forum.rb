@@ -50,7 +50,8 @@ module Marley
             self.reggae_link(:new, 'New Post'),
             self.reggae_link(:list, 'All Posts'),
             self.reggae_link(:recent_topics, 'Recent Topics'),
-            Marley::ReggaeSection.new({:title => 'Public Tags', :navigation => MR::PublicTag.filter(:id => topics.select(:messages__id)).map{|t| reggae_link('list',t.tag,"#{resource_name}[_public_tags]=#{t.tag}")}})
+            Marley::ReggaeSection.new({:title => 'Public Tags', :navigation => MR::PublicTag.group(:tag).map{|t| reggae_link('list',t[:tag],"#{resource_name}[_public_tags]=#{t.tag}")}}),
+            Marley::ReggaeSection.new({:title => 'Private Tags', :navigation => MR::PrivateTag.current_user_ds.join(:messages_tags,:tags_id => :tags__id).join(:messages,:messages__id => :message_id).filter(:message_type => 'PublicMessage').group(:tag).map{|t| reggae_link('list',t[:tag],"#{resource_name}[_private_tags]=#{t.tag}")}})
           ]
         end
         def recent_topics

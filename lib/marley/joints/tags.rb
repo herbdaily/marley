@@ -72,6 +72,7 @@ module Marley
         end
         class PrivateTag < Tag
           MR::User.join_to(self) if MR::User
+          Marley.plugin(:current_user_methods).apply(self)
           def self.list_dataset(params={})
             current_user_ds.order(:tag)
           end
