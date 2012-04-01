@@ -1,9 +1,5 @@
 
 
-- implement instance_list
-  - implement in reggae.rb
-  - implement in list method as option
-  - implement in reggae.js
 
 - implement dev,test, prod environments
   - reloader only for dev environment

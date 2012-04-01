@@ -6,9 +6,9 @@ require 'factory_girl'
 Sequel::Model.send(:alias_method, :save!, :save)
 
 USERS=5
-TOPICS=40
+TOPICS=5
 TAGS=3
-REPLIES=4
+REPLIES=2
 FactoryGirl.define do 
   [:name,:title,:tag,:message].each do |seq|
     sequence seq do |n|
