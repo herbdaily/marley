@@ -1,6 +1,8 @@
 =Marley
 
-Marley is a framework for quickly building RESTful web services and applications.  It consists of several parts:
+Marley is a framework for building RESTful web services and applications with roughly _O(n)_ lines code where _n_ is lines of DDL.
+
+It consists of several parts:
 
 * A simple Rack application that acts as request parser/router.
 * A default controller for ORM model classes.
