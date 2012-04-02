@@ -25,6 +25,7 @@ module Marley
           else
             Marley::ReggaeInstanceList.new(
               :name => resource_name,
+              :actions => {:get => :reply},
               :schema => t[0].reggae_schema(true),
               :items => t.map{|t| t.thread_vals},
               :recursive => true
